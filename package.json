@@ -11,10 +11,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:api.list",
+    "onView:api-list",
+    "onView:api-group",
     "onCommand:extension.helloWorld"
   ],
-  "main": "./out/main.js",
+  "main": "./dist/main.js",
   "contributes": {
     "commands": [
       {
@@ -34,11 +35,11 @@
     "views": {
       "app": [
         {
-          "id": "api.list",
+          "id": "api-list",
           "name": "%view.list.title%"
         },
         {
-          "id": "api.group",
+          "id": "api-group",
           "name": "%view.detail.title%"
         }
       ]
@@ -48,18 +49,28 @@
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "yarn run compile",
-    "test": "node ./out/test/runTest.js"
+    "dev": "webpack --mode development --watch",
+    "pretest": "yarn run compile"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.38.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-loader": "^3.0.1",
+    "eslint-plugin-prettier": "^3.1.1",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
-    "typescript": "^3.3.1",
+    "prettier": "^1.18.2",
+    "standard-version": "^7.0.0",
+    "ts-loader": "^6.1.2",
     "tslint": "^5.12.1",
-    "vscode-test": "^1.2.0"
+    "typescript": "^3.3.1",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
   }
 }

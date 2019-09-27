@@ -1,20 +1,26 @@
-import * as vscode from 'vscode'
-import * as path from 'path'
-import * as fs from 'fs'
+import vscode, { TreeDataProvider, TreeItem } from 'vscode'
+import path from 'path'
+import fs from 'fs'
 
-import { localize, REG_KEY } from '@/utils'
+import { BaseTreeItem } from '@/base'
 
-export class ApiList implements vscode.TreeDataProvider<ApiListItem> {
-  // private _onDidChangeTreeData: vscode.EventEmitter<
-  //   ApiListItem | undefined
-  // > = new vscode.EventEmitter<ApiListItem | undefined>()
-  // readonly onDidChangeTreeData: vscode.Event<ApiListItem | undefined> = this._onDidChangeTreeData
-  //   .event
-  private workspaceRoot = vscode.workspace.rootPath
+// import { localize, REG_KEY } from '@/utils'
 
-  constructor() {}
+export class ApiList implements TreeDataProvider<BaseTreeItem> {
+  private _onDidChangeTreeData: vscode.EventEmitter<BaseTreeItem | undefined> = new vscode.EventEmitter<
+    BaseTreeItem | undefined
+  >()
+  readonly onDidChangeTreeData: vscode.Event<BaseTreeItem | undefined> = this._onDidChangeTreeData.event
 
-  getChildren(element?: ApiListItem): Thenable<ApiListItem[]> {
+  constructor(private workspaceRoot = vscode.workspace.rootPath || '') {}
+
+  getTreeItem(element: BaseTreeItem): TreeItem {
+    // console.log({ element })
+    return element
+  }
+
+  getChildren(element?: BaseTreeItem): Thenable<BaseTreeItem[]> {
+    // console.log('123333', element)
     if (!this.workspaceRoot) {
       vscode.window.showInformationMessage('No dependency in empty workspace')
       return Promise.resolve([])
@@ -22,9 +28,7 @@ export class ApiList implements vscode.TreeDataProvider<ApiListItem> {
 
     if (element) {
       return Promise.resolve(
-        this.getDepsInPackageJson(
-          path.join(this.workspaceRoot, 'node_modules', element.label, 'package.json')
-        )
+        this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.title, 'package.json'))
       )
     } else {
       const packageJsonPath = path.join(this.workspaceRoot, 'package.json')
@@ -37,36 +41,27 @@ export class ApiList implements vscode.TreeDataProvider<ApiListItem> {
     }
   }
 
-  getTreeItem(element: ApiListItem): vscode.TreeItem {
-    console.log({ element })
-    return element
-  }
-
-  private getDepsInPackageJson(packageJsonPath: string): ApiListItem[] {
+  private getDepsInPackageJson(packageJsonPath: string): BaseTreeItem[] {
     if (this.pathExists(packageJsonPath)) {
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
 
-      const toDep = (moduleName: string, version: string): ApiListItem => {
+      const toDep = (moduleName: string, version: string): BaseTreeItem => {
         if (this.pathExists(path.join(this.workspaceRoot || '', 'node_modules', moduleName))) {
-          return new ApiListItem(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed)
+          return new BaseTreeItem(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed)
         } else {
-          return new ApiListItem(moduleName, version, vscode.TreeItemCollapsibleState.None, {
+          return new BaseTreeItem(moduleName, version, vscode.TreeItemCollapsibleState.None, {
             command: 'extension.openPackageOnNpm',
-            title: '',
+            title: 'asdasdsad',
             arguments: [moduleName],
           })
         }
       }
 
       const deps = packageJson.dependencies
-        ? Object.keys(packageJson.dependencies).map(dep =>
-            toDep(dep, packageJson.dependencies[dep])
-          )
+        ? Object.keys(packageJson.dependencies).map(dep => toDep(dep, packageJson.dependencies[dep]))
         : []
       const devDeps = packageJson.devDependencies
-        ? Object.keys(packageJson.devDependencies).map(dep =>
-            toDep(dep, packageJson.devDependencies[dep])
-          )
+        ? Object.keys(packageJson.devDependencies).map(dep => toDep(dep, packageJson.devDependencies[dep]))
         : []
       return deps.concat(devDeps)
     } else {
@@ -85,7 +80,7 @@ export class ApiList implements vscode.TreeDataProvider<ApiListItem> {
   }
 
   refresh(): void {
-    // this._onDidChangeTreeData.fire()
+    this._onDidChangeTreeData.fire()
   }
 }
 
@@ -96,7 +91,8 @@ export class ApiListItem extends vscode.TreeItem {
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly command?: vscode.Command
   ) {
-    super(label, collapsibleState)
+    super(version, collapsibleState)
+    console.log(label, collapsibleState)
   }
 
   get tooltip(): string {
@@ -104,15 +100,15 @@ export class ApiListItem extends vscode.TreeItem {
   }
 
   get description(): string {
-    return this.version
+    return 'hahahahhahah'
   }
 
   // iconPath = path.resolve(__dirname, '../../assets/icon-tree-view.svg')
 
-  iconPath = {
-    light: path.resolve(__dirname, '../../assets/icon-tree-view.svg'),
-    dark: path.resolve(__dirname, '../../assets/icon-tree-view.svg'),
-  }
+  // iconPath = {
+  //   light: path.join(__dirname, '../../assets/light/dependency.svg'),
+  //   dark: path.join(__dirname, '../../assets/dark/dependency.svg'),
+  // }
 
-  contextValue = 'list-item'
+  contextValue = 'dependency'
 }
