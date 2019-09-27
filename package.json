@@ -28,7 +28,7 @@
         {
           "id": "app",
           "title": "%app.title%",
-          "icon": "src/assets/icon-tree-view.svg"
+          "icon": "src/assets/icons/menu.svg"
         }
       ]
     },
