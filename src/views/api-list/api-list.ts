@@ -1,121 +1,73 @@
-import vscode, { TreeDataProvider, TreeItem } from 'vscode'
+import vscode from 'vscode'
 import path from 'path'
 import fs from 'fs'
+import { registerApiListCommands } from '@/commands'
 
-import { BaseTreeItem } from '@/base'
+import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from '@/core'
 
 // import { localize, REG_KEY } from '@/utils'
 
-export class ApiList implements TreeDataProvider<BaseTreeItem> {
-  private _onDidChangeTreeData: vscode.EventEmitter<BaseTreeItem | undefined> = new vscode.EventEmitter<
-    BaseTreeItem | undefined
-  >()
-  readonly onDidChangeTreeData: vscode.Event<BaseTreeItem | undefined> = this._onDidChangeTreeData.event
+export class ApiList extends BaseTreeProvider<ApiListItem> {
+  public treeList: SwaggerJsonTreeItem[] = []
 
-  constructor(private workspaceRoot = vscode.workspace.rootPath || '') {}
-
-  getTreeItem(element: BaseTreeItem): TreeItem {
-    // console.log({ element })
-    return element
+  constructor() {
+    super()
+    registerApiListCommands(this)
   }
 
-  getChildren(element?: BaseTreeItem): Thenable<BaseTreeItem[]> {
-    // console.log('123333', element)
-    if (!this.workspaceRoot) {
-      vscode.window.showInformationMessage('No dependency in empty workspace')
-      return Promise.resolve([])
-    }
+  getChildren(element?: ApiListItem): Thenable<ApiListItem[]> {
+    console.log('getChildren element =>', element)
 
-    if (element) {
-      return Promise.resolve(
-        this.getDepsInPackageJson(path.join(this.workspaceRoot, 'node_modules', element.title, 'package.json'))
-      )
-    } else {
-      const packageJsonPath = path.join(this.workspaceRoot, 'package.json')
-      if (this.pathExists(packageJsonPath)) {
-        return Promise.resolve(this.getDepsInPackageJson(packageJsonPath))
+    return this.getListData().then(treeList => {
+      if (element) {
+        const { index = 0 } = element.options
+        return this.renderItem(treeList[index].children || [])
       } else {
-        vscode.window.showInformationMessage('Workspace has no package.json')
-        return Promise.resolve([])
+        return this.renderItem(treeList)
       }
-    }
+    })
   }
 
-  private getDepsInPackageJson(packageJsonPath: string): BaseTreeItem[] {
-    if (this.pathExists(packageJsonPath)) {
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+  getListData(): Promise<SwaggerJsonTreeItem[]> {
+    return new Promise(resolve => {
+      if (!this.treeList.length) {
+        getSwaggerJson().then(res => {
+          console.log('request')
+          this.treeList = parseSwaggerJson(res)
+          resolve(this.treeList)
+        })
+      } else {
+        resolve(this.treeList)
+      }
+    })
+  }
 
-      const toDep = (moduleName: string, version: string): BaseTreeItem => {
-        if (this.pathExists(path.join(this.workspaceRoot || '', 'node_modules', moduleName))) {
-          return new BaseTreeItem(moduleName, {
-            subTitle: version,
-            collapsible: 1,
-          })
-        } else {
-          return new BaseTreeItem(
-            moduleName,
-            { subTitle: version, collapsible: 0 },
-            {
-              command: 'extension.openPackageOnNpm',
-              title: 'asdasdsad',
-              arguments: [moduleName],
-            }
-          )
+  renderItem(itemList: SwaggerJsonTreeItem[]): ApiListItem[] {
+    return itemList.map((item, index) => {
+      const hasChildren = item.children && item.children.length
+      const options: BaseTreeItemOptions = {
+        index,
+        title: item.title,
+        type: item.type,
+        subTitle: item.subTitle,
+        collapsible: hasChildren ? 1 : 0,
+      }
+
+      if (!hasChildren) {
+        options.command = {
+          command: 'api.list.onSelect',
+          title: item.title,
+          arguments: [item],
         }
       }
-
-      const deps = packageJson.dependencies
-        ? Object.keys(packageJson.dependencies).map(dep => toDep(dep, packageJson.dependencies[dep]))
-        : []
-      const devDeps = packageJson.devDependencies
-        ? Object.keys(packageJson.devDependencies).map(dep => toDep(dep, packageJson.devDependencies[dep]))
-        : []
-      return deps.concat(devDeps)
-    } else {
-      return []
-    }
-  }
-
-  private pathExists(p: string): boolean {
-    try {
-      fs.accessSync(p)
-    } catch (err) {
-      return false
-    }
-
-    return true
+      return new ApiListItem(options)
+    })
   }
 
   refresh(): void {
+    this.treeList = []
     this._onDidChangeTreeData.fire()
   }
 }
 
-export class ApiListItem extends vscode.TreeItem {
-  constructor(
-    public readonly label: string,
-    private version: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly command?: vscode.Command
-  ) {
-    super(version, collapsibleState)
-    console.log(label, collapsibleState)
-  }
-
-  get tooltip(): string {
-    return `${this.label}-${this.version}`
-  }
-
-  get description(): string {
-    return 'hahahahhahah'
-  }
-
-  // iconPath = path.resolve(__dirname, '../../assets/icon-tree-view.svg')
-
-  // iconPath = {
-  //   light: path.join(__dirname, '../../assets/light/dependency.svg'),
-  //   dark: path.join(__dirname, '../../assets/dark/dependency.svg'),
-  // }
-
-  contextValue = 'dependency'
-}
+export class ApiListItem extends BaseTreeItem {}

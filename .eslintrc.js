@@ -37,6 +37,7 @@ module.exports = {
     'prettier/prettier': 'error', // prettier
     'prefer-rest-params': 0,
 
+    '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-explicit-any': 0, // 禁用 any 类型
     '@typescript-eslint/ban-ts-ignore': 0,

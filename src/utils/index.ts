@@ -1,17 +1,13 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import * as vscode from 'vscode'
+import fs from 'fs'
+import path from 'path'
+import vscode from 'vscode'
 import { execSync } from 'child_process'
 
 import Localize from './localize'
 
 const { workspaceFolders } = vscode.workspace
 
-export const WORKSPACE_PATH = workspaceFolders
-  ? workspaceFolders[0].uri.fsPath.replace(/\\/g, '/')
-  : undefined
-
-export const REG_KEY = /(?:\$t|this\.t|i18n\.t)\(['"]([^]+?)['"][^]*?\)/g
+export const WORKSPACE_PATH = workspaceFolders ? workspaceFolders[0].uri.fsPath.replace(/\\/g, '/') : undefined
 
 /**
  * 读取文件 (文本)
@@ -53,7 +49,8 @@ export function writeFile(path: string, data: string) {
  * @param {String} bash
  * @param {String} msg
  */
-export function syncExec(params: { bash: string; msg?: string; inputPath?: string }) {
+export function syncExec(paramsSrc: { bash: string; msg?: string; inputPath?: string }) {
+  let params = paramsSrc
   if (typeof params === 'string') params = { bash: params }
 
   const { bash, msg, inputPath = WORKSPACE_PATH } = params

@@ -52,6 +52,13 @@
   resolved "http://r.cnpmjs.org/@types/mocha/download/@types/mocha-5.2.7.tgz#315d570ccb56c53452ff8638738df60726d5b6ea"
   integrity sha1-MV1XDMtWxTRS/4Y4c432BybVtuo=
 
+"@types/node-fetch@^2.5.2":
+  version "2.5.2"
+  resolved "http://r.cnpmjs.org/@types/node-fetch/download/@types/node-fetch-2.5.2.tgz#76906dea5b3d6901e50e63e15249c9bcd6e9676e"
+  integrity sha1-dpBt6ls9aQHlDmPhUknJvNbpZ24=
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*":
   version "12.7.5"
   resolved "http://r.cnpmjs.org/@types/node/download/@types/node-12.7.5.tgz#e19436e7f8e9b4601005d73673b6dc4784ffcc2f"
@@ -3048,6 +3055,11 @@ node-environment-flags@1.0.5:
   dependencies:
     object.getownpropertydescriptors "^2.0.3"
     semver "^5.7.0"
+
+node-fetch@^2.6.0:
+  version "2.6.0"
+  resolved "http://r.cnpmjs.org/node-fetch/download/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha1-5jNFY4bUqlWGP2dqerDaqP3ssP0=
 
 node-libs-browser@^2.2.1:
   version "2.2.1"

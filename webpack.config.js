@@ -3,6 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
+const webpack = require('webpack')
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -35,5 +36,11 @@ const config = {
       },
     ],
   },
+
+  plugins: [
+    new webpack.ProvidePlugin({
+      $ext: path.resolve(__dirname, './src/utils'),
+    }),
+  ],
 }
 module.exports = config

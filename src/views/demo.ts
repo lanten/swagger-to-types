@@ -3,11 +3,10 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
-  private _onDidChangeTreeData: vscode.EventEmitter<
+  private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined> = new vscode.EventEmitter<
     Dependency | undefined
-  > = new vscode.EventEmitter<Dependency | undefined>()
-  readonly onDidChangeTreeData: vscode.Event<Dependency | undefined> = this._onDidChangeTreeData
-    .event
+  >()
+  readonly onDidChangeTreeData: vscode.Event<Dependency | undefined> = this._onDidChangeTreeData.event
 
   constructor(private workspaceRoot: string) {}
 
@@ -63,14 +62,10 @@ export class DepNodeProvider implements vscode.TreeDataProvider<Dependency> {
       }
 
       const deps = packageJson.dependencies
-        ? Object.keys(packageJson.dependencies).map(dep =>
-            toDep(dep, packageJson.dependencies[dep])
-          )
+        ? Object.keys(packageJson.dependencies).map(dep => toDep(dep, packageJson.dependencies[dep]))
         : []
       const devDeps = packageJson.devDependencies
-        ? Object.keys(packageJson.devDependencies).map(dep =>
-            toDep(dep, packageJson.devDependencies[dep])
-          )
+        ? Object.keys(packageJson.devDependencies).map(dep => toDep(dep, packageJson.devDependencies[dep]))
         : []
       console.log(devDeps)
       return deps.concat(devDeps)

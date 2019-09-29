@@ -1,6 +1,10 @@
 {
-  "app.title": "接口生成",
+  "app.title": "Swagger 接口同步",
 
   "view.list.title": "接口列表",
-  "view.detail.title": "详情"
+  "view.group.title": "项目列表",
+
+  "command.add": "添加",
+  "command.setting": "设置",
+  "command.refresh": "刷新"
 }

@@ -19,11 +19,35 @@
   "contributes": {
     "commands": [
       {
-        "command": "api.refreshEntry",
-        "title": "Refresh",
+        "command": "api.list.refresh",
+        "title": "%command.refresh%",
         "icon": {
-          "light": "assets/light/refresh.svg",
-          "dark": "assets/dark/refresh.svg"
+          "light": "assets/icons/refresh.light.svg",
+          "dark": "assets/icons/refresh.dark.svg"
+        }
+      },
+      {
+        "command": "api.group.setting",
+        "title": "%command.setting%",
+        "icon": {
+          "light": "assets/icons/setting.light.svg",
+          "dark": "assets/icons/setting.dark.svg"
+        }
+      },
+      {
+        "command": "api.group.add",
+        "title": "%command.add%",
+        "icon": {
+          "light": "assets/icons/add.light.svg",
+          "dark": "assets/icons/add.dark.svg"
+        }
+      },
+      {
+        "command": "api.group.refresh",
+        "title": "%command.refresh%",
+        "icon": {
+          "light": "assets/icons/refresh.light.svg",
+          "dark": "assets/icons/refresh.dark.svg"
         }
       },
       {
@@ -36,30 +60,59 @@
         {
           "id": "api",
           "title": "%app.title%",
-          "icon": "src/assets/icons/menu.svg"
+          "icon": "assets/icons/tree-view.dark.svg"
         }
       ]
     },
     "views": {
       "api": [
         {
-          "id": "api.list",
-          "name": "%view.list.title%"
+          "id": "api.group",
+          "name": "%view.group.title%"
         },
         {
-          "id": "api.group",
-          "name": "%view.detail.title%",
-          "when": "false"
+          "id": "api.list",
+          "name": "%view.list.title%"
         }
       ]
     },
     "menus": {
       "view/title": [
         {
-          "command": "api.refreshEntry",
-          "group": "navigation"
+          "command": "api.list.refresh",
+          "group": "navigation@09",
+          "when": "view == api.list"
+        },
+        {
+          "command": "api.group.setting",
+          "group": "navigation@12",
+          "when": "view == api.group"
+        },
+        {
+          "command": "api.group.add",
+          "group": "navigation@11",
+          "when": "view == api.group"
+        },
+        {
+          "command": "api.group.refresh",
+          "group": "navigation@19",
+          "when": "view == api.group"
         }
       ]
+    },
+    "configuration": {
+      "title": "swaggerToTypes",
+      "properties": {
+        "swaggerToTypes.swaggerJsonUrl": {
+          "type": "array",
+          "default": [],
+          "description": "swagger json url"
+        },
+        "swaggerToTypes.savePath": {
+          "type": "string",
+          "description": "swagger json url"
+        }
+      }
     }
   },
   "scripts": {
@@ -73,6 +126,7 @@
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
+    "@types/node-fetch": "^2.5.2",
     "@types/vscode": "^1.38.0",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",
@@ -85,9 +139,11 @@
     "prettier": "^1.18.2",
     "standard-version": "^7.0.0",
     "ts-loader": "^6.1.2",
-    "tslint": "^5.12.1",
     "typescript": "^3.3.1",
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
   }
 }

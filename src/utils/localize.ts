@@ -1,5 +1,5 @@
-import * as path from 'path'
-import * as fs from 'fs'
+import path from 'path'
+import fs from 'fs'
 
 class Localize {
   public locale: string
@@ -15,12 +15,14 @@ class Localize {
   public init({ locale }: { locale: string }) {
     this.locale = locale
     const localName = !locale || locale === 'en' ? '' : '.' + locale
-    const localePackagePath = path.resolve(__dirname, `../../package.nls${localName}.json`)
-    if (fs.existsSync(localePackagePath)) {
-      this.localize = require(localePackagePath)
-    } else {
-      this.localize = require(path.resolve(__dirname, '../../package.nls.json'))
-    }
+    const localePackagePath = path.join(__dirname, `package.nls${localName}.json`)
+
+    console.log('asdasdasdsad', $ext.WORKSPACE_PATH, localePackagePath)
+    // if (fs.existsSync(localePackagePath)) {
+    //   this.localize = require(localePackagePath)
+    // } else {
+    //   this.localize = require(path.resolve(__dirname, '../../package.nls.json'))
+    // }
   }
 
   public getLocalize(key: string) {
