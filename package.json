@@ -36,7 +36,7 @@
         {
           "id": "api",
           "title": "%app.title%",
-          "icon": "assets/icon-tree-view.svg"
+          "icon": "src/assets/icons/menu.svg"
         }
       ]
     },
