@@ -11,13 +11,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:api-list",
-    "onView:api-group",
+    "onView:api.list",
+    "onView:api.group",
     "onCommand:extension.helloWorld"
   ],
   "main": "./dist/main.js",
   "contributes": {
     "commands": [
+      {
+        "command": "api.refreshEntry",
+        "title": "Refresh",
+        "icon": {
+          "light": "assets/light/refresh.svg",
+          "dark": "assets/dark/refresh.svg"
+        }
+      },
       {
         "command": "extension.helloWorld",
         "title": "Hello World"
@@ -26,21 +34,30 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "app",
+          "id": "api",
           "title": "%app.title%",
-          "icon": "src/assets/icon-tree-view.svg"
+          "icon": "assets/icon-tree-view.svg"
         }
       ]
     },
     "views": {
-      "app": [
+      "api": [
         {
-          "id": "api-list",
+          "id": "api.list",
           "name": "%view.list.title%"
         },
         {
-          "id": "api-group",
-          "name": "%view.detail.title%"
+          "id": "api.group",
+          "name": "%view.detail.title%",
+          "when": "false"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "api.refreshEntry",
+          "group": "navigation"
         }
       ]
     }

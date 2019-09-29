@@ -1,32 +1,36 @@
 import vscode from 'vscode'
-
+import path from 'path'
 export class BaseTreeItem extends vscode.TreeItem {
   constructor(
     public readonly title: string,
-    private subTitle: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly options: BaseTreeItemOptions,
+    // private subTitle: string,
+    // public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly command?: vscode.Command
   ) {
-    super(title, collapsibleState)
-    console.log(title, collapsibleState)
+    super(title, options.collapsible)
+    // console.log(title, options.collapsible)
   }
 
+  // 鼠标悬停时的 label
   get tooltip(): string {
-    return `${this.label}-${this.subTitle}`
+    return `${this.label}-${this.options.subTitle}`
   }
 
+  // 说明文本
   get description(): string {
-    return this.subTitle
+    return this.options.subTitle
   }
 
   // iconPath = path.resolve(__dirname, '../../assets/icon-tree-view.svg')
 
-  // iconPath = {
-  //   light: path.join(__dirname, '../../assets/light/dependency.svg'),
-  //   dark: path.join(__dirname, '../../assets/dark/dependency.svg'),
-  // }
+  iconPath = {
+    light: global.ctx.asAbsolutePath('assets/light/dependency.svg'),
+    dark: global.ctx.asAbsolutePath('assets/dark/dependency.svg'),
+  }
 
-  contextValue = 'dependency'
+  //
+  contextValue = '???'
 }
 
 // export class BaseTreeProvider implements TreeDataProvider<BaseTreeItem> {

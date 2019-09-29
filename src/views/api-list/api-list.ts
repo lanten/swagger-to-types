@@ -47,13 +47,20 @@ export class ApiList implements TreeDataProvider<BaseTreeItem> {
 
       const toDep = (moduleName: string, version: string): BaseTreeItem => {
         if (this.pathExists(path.join(this.workspaceRoot || '', 'node_modules', moduleName))) {
-          return new BaseTreeItem(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed)
-        } else {
-          return new BaseTreeItem(moduleName, version, vscode.TreeItemCollapsibleState.None, {
-            command: 'extension.openPackageOnNpm',
-            title: 'asdasdsad',
-            arguments: [moduleName],
+          return new BaseTreeItem(moduleName, {
+            subTitle: version,
+            collapsible: 1,
           })
+        } else {
+          return new BaseTreeItem(
+            moduleName,
+            { subTitle: version, collapsible: 0 },
+            {
+              command: 'extension.openPackageOnNpm',
+              title: 'asdasdsad',
+              arguments: [moduleName],
+            }
+          )
         }
       }
 
