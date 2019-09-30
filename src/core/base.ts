@@ -43,7 +43,7 @@ export class BaseTreeItem extends vscode.TreeItem {
 export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
   public _onDidChangeTreeData: vscode.EventEmitter<T | undefined> = new vscode.EventEmitter<T | undefined>()
   public readonly onDidChangeTreeData: vscode.Event<T | undefined> = this._onDidChangeTreeData.event
-  public readonly workspaceRoot = vscode.workspace.rootPath || ''
+  public readonly workspaceRoot = $ext.WORKSPACE_PATH || ''
 
   // constructor() {}
 

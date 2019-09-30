@@ -1,7 +1,14 @@
 import fetch from 'node-fetch'
 
-export function getSwaggerJson(): Promise<SwaggerJson> {
-  return fetch(
-    'http://trade-center-api.c29675d010ae94f3e868d99177da0d9ed.cn-shenzhen.alicontainer.com/v2/api-docs'
-  ).then(res => res.json())
+export function getSwaggerJson(url: string): Promise<SwaggerJson> {
+  return fetch(url)
+    .then(res => {
+      const json = res.json()
+      $ext.log.info(`fetch => ${url} - ${JSON.stringify(json)}`)
+      return json
+    })
+    .catch(err => {
+      $ext.log.error(`fetch => ${url} - ${err}`, true)
+      Promise.reject(err)
+    })
 }

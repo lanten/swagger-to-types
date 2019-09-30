@@ -5,7 +5,7 @@
 const path = require('path')
 const webpack = require('webpack')
 
-/** @type {import('webpack').Configuration} */
+// /** @type {import('webpack').Configuration} */
 const config = {
   target: 'node',
 
@@ -21,6 +21,11 @@ const config = {
     vscode: 'commonjs vscode',
     'ts-node': 'ts-node',
   },
+
+  node: {
+    __dirname: false,
+  },
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

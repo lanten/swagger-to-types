@@ -5,7 +5,7 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"sourceMap": true,
-		"rootDir": "src",
+		"rootDir": ".",
 		"strict": true,
 		"importHelpers": true,
 		"moduleResolution": "node",

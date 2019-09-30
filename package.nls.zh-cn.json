@@ -5,6 +5,14 @@
   "view.group.title": "项目列表",
 
   "command.add": "添加",
-  "command.setting": "设置",
-  "command.refresh": "刷新"
+  "command.setting": "工作区设置",
+  "command.refresh": "刷新",
+
+  "text.swaggerJsonTitle": "项目标题",
+  "text.swaggerJsonUrl": "Swagger Json Url",
+  "text.noWorkspace": "需要工作区",
+  "text.or": "或",
+
+  "temp.input.placeholder": "请输入 ${1}",
+  "temp.input.none": "输入的 ${1} 不能为空"
 }

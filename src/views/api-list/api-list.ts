@@ -10,14 +10,7 @@ import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from
 export class ApiList extends BaseTreeProvider<ApiListItem> {
   public treeList: SwaggerJsonTreeItem[] = []
 
-  constructor() {
-    super()
-    registerApiListCommands(this)
-  }
-
   getChildren(element?: ApiListItem): Thenable<ApiListItem[]> {
-    console.log('getChildren element =>', element)
-
     return this.getListData().then(treeList => {
       if (element) {
         const { index = 0 } = element.options
@@ -29,13 +22,21 @@ export class ApiList extends BaseTreeProvider<ApiListItem> {
   }
 
   getListData(): Promise<SwaggerJsonTreeItem[]> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
+      const { swaggerJsonUrl = [], activeGroupIndex = 0 } = $ext.config.extConfig
+
+      const swaggerJsonConfig = swaggerJsonUrl[activeGroupIndex]
+      if (!swaggerJsonConfig) return []
+
       if (!this.treeList.length) {
-        getSwaggerJson().then(res => {
-          console.log('request')
-          this.treeList = parseSwaggerJson(res)
-          resolve(this.treeList)
-        })
+        getSwaggerJson(swaggerJsonConfig.url)
+          .then(res => {
+            this.treeList = parseSwaggerJson(res)
+            resolve(this.treeList)
+          })
+          .catch(() => {
+            reject([])
+          })
       } else {
         resolve(this.treeList)
       }

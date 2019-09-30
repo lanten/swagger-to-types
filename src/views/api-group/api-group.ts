@@ -1,23 +1,13 @@
 import vscode from 'vscode'
-import path from 'path'
-import fs from 'fs'
+
 import { registerApiGroupCommands } from '@/commands'
-
-import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from '@/core'
-
-// import { localize, REG_KEY } from '@/utils'
-
+import { BaseTreeProvider, BaseTreeItem } from '@/core'
+import { ApiList } from '../api-list'
 export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
-  public treeList: GroupTreeItem[] = []
+  public treeList: SwaggerJsonUrlItem[] = []
 
-  constructor() {
-    super()
-    registerApiGroupCommands(this)
-  }
-
-  getSwaggerSettings(): GroupTreeItem[] {
-    const settings: GroupTreeItem[] = vscode.workspace.getConfiguration().get('swaggerJsonUrl') || []
-    return settings
+  getSwaggerSettings(): SwaggerJsonUrlItem[] {
+    return $ext.config.extConfig.swaggerJsonUrl || []
   }
 
   getChildren(): Thenable<ApiGroupItem[]> {
@@ -26,7 +16,7 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: GroupTreeItem[]): ApiGroupItem[] {
+  renderItem(itemList: SwaggerJsonUrlItem[]): ApiGroupItem[] {
     return itemList.map((item, index) => {
       const title = item.title || item.url
       const options: BaseTreeItemOptions = {
@@ -38,7 +28,7 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
         command: {
           title,
           command: 'api.group.onSelect',
-          arguments: [item],
+          arguments: [{ ...item, index }],
         },
       }
 
