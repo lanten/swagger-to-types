@@ -16,7 +16,6 @@ test/**
 .eslintignore
 package-lock.json
 tsconfig.json
-tslint.json
 webpack.config.js
 renovate.json
 

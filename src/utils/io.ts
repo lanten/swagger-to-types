@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import vscode from 'vscode'
 
 import { WORKSPACE_PATH } from './const'
 
@@ -18,4 +19,30 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
   })
   const p2 = path.join(inputPath, dir2)
   if (!fs.existsSync(p2)) fs.mkdirSync(p2)
+}
+
+/**
+ * 打开一个未保存的文档
+ * @param docStr
+ * @param name
+ */
+export function preSaveDocument(docStr: string, name: string): Thenable<boolean> {
+  const newFile = vscode.Uri.parse('untitled:' + path.join(WORKSPACE_PATH || '', name))
+  // const newFile = vscode.Uri.parse('untitled:' + 'types.d.ts')
+
+  return vscode.workspace.openTextDocument(newFile).then(document => {
+    const edit = new vscode.WorkspaceEdit()
+    const pMin = new vscode.Position(0, 0)
+    const pMan = new vscode.Position(999999999, 999999999)
+    // edit.insert(newFile, pMin, 'Hello world!' + JSON.stringify(e))
+    edit.replace(newFile, new vscode.Range(pMin, pMan), docStr)
+    return vscode.workspace.applyEdit(edit).then(success => {
+      if (success) {
+        vscode.window.showTextDocument(document)
+      } else {
+        vscode.window.showInformationMessage('Error!')
+      }
+      return success
+    })
+  })
 }

@@ -36,9 +36,10 @@ declare global {
           tags?: string[]
           summary: string
           operationId: string
+          description: string
           consumes: string[]
           produces: string[]
-          parameters: {
+          parameters?: {
             name: string
             in: string
             description: string
@@ -56,19 +57,25 @@ declare global {
         }
       }
     }
-    definitions: {
+    definitions: SwaggerJsonDefinitions
+  }
+
+  interface SwaggerJsonDefinitions {
+    [key: string]: SwaggerJsonDefinitionsItem
+  }
+
+  interface SwaggerJsonDefinitionsItem {
+    type: string
+    required?: string[]
+    properties: {
       [key: string]: {
-        type: string
-        required?: string[]
-        properties: {
-          [key: string]: {
-            type: string
-            description: string
-          }
-        }
-        title: string
+        type?: string
+        description?: string
+        originalRef?: string
+        items?: SwaggerJsonSchema
       }
     }
+    title: string
   }
 
   interface SwaggerJsonTagsItem {
@@ -85,9 +92,28 @@ declare global {
     type: string
     title: string
     subTitle: string
-
     method?: string
 
     children?: SwaggerJsonTreeItem[]
+  }
+
+  interface TreeInterfaceParamsItem {
+    name: string
+    in?: string
+    description: string
+    required: boolean
+    type: string
+  }
+
+  interface TreeInterface {
+    type: string
+    method: 'get' | 'post'
+    params: TreeInterfaceParamsItem[]
+    title: string
+    path: string
+    subTitle: string
+    operationId: string
+    produces: string[]
+    deprecated: boolean
   }
 }

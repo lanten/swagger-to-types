@@ -33,6 +33,21 @@ declare namespace $ext {
     /** 错误日志 */
     function error(err: Error | string, prompt?: boolean, intend?: number): void
   }
+
+  /**
+   * 递归创建路径
+   * @param dir
+   * @param inputPath
+   * @param split
+   */
+  function mkdirRecursive(dir: string, inputPath?: string, split?: string): void
+
+  /**
+   * 打开一个未保存的文档
+   * @param docStr
+   * @param name
+   */
+  function preSaveDocument(docStr: string, name: string): Thenable<boolean>
 }
 
 interface WorkspaceConfig {
