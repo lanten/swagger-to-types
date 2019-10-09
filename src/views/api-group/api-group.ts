@@ -1,8 +1,4 @@
-import vscode from 'vscode'
-
-import { registerApiGroupCommands } from '@/commands'
 import { BaseTreeProvider, BaseTreeItem } from '@/core'
-import { ApiList } from '../api-list'
 export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
   public treeList: SwaggerJsonUrlItem[] = []
 

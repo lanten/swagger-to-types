@@ -1,11 +1,4 @@
-import vscode from 'vscode'
-import path from 'path'
-import fs from 'fs'
-import { registerApiListCommands } from '@/commands'
-
 import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from '@/core'
-
-// import { localize, REG_KEY } from '@/utils'
 
 export class ApiList extends BaseTreeProvider<ApiListItem> {
   public treeList: SwaggerJsonTreeItem[] = []

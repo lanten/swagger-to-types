@@ -12,8 +12,7 @@
   ],
   "activationEvents": [
     "onView:api.list",
-    "onView:api.group",
-    "onCommand:extension.helloWorld"
+    "onView:api.group"
   ],
   "main": "./dist/main.js",
   "contributes": {
@@ -49,10 +48,6 @@
           "light": "assets/icons/refresh.light.svg",
           "dark": "assets/icons/refresh.dark.svg"
         }
-      },
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
       }
     ],
     "viewsContainers": {
