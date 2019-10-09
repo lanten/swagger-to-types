@@ -1,5 +1,4 @@
 import vscode from 'vscode'
-import path from 'path'
 
 export class BaseTreeItem extends vscode.TreeItem {
   // 标题
@@ -9,10 +8,6 @@ export class BaseTreeItem extends vscode.TreeItem {
     super(options.title, options.collapsible)
     this.label = options.title
   }
-
-  // get label() {
-  //   return this.options.title
-  // }
 
   get command() {
     return this.options.command
@@ -37,15 +32,13 @@ export class BaseTreeItem extends vscode.TreeItem {
     }
   }
 
-  contextValue = '???'
+  contextValue = ''
 }
 
 export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
   public _onDidChangeTreeData: vscode.EventEmitter<T | undefined> = new vscode.EventEmitter<T | undefined>()
   public readonly onDidChangeTreeData: vscode.Event<T | undefined> = this._onDidChangeTreeData.event
   public readonly workspaceRoot = $ext.WORKSPACE_PATH || ''
-
-  // constructor() {}
 
   getTreeItem(element: T): vscode.TreeItem {
     return element
