@@ -30,7 +30,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
           const val = properties[name]
           const obj = {
             ...val,
-            key: name,
+            name,
           }
           params.push(obj)
         }
@@ -101,27 +101,65 @@ export function getSwaggerJsonRef(
 
 export function parseToInterface(data: TreeInterface): string {
   const name = data.operationId
-  const lines: string[] = [...parseHeaderInfo(data), ...parseNameSpace(name)]
+  const lines: string[] = [
+    ...parseHeaderInfo(data),
+    ...parseNameSpace(name, [...parseParams(data.params, 1), ...parseResponse(data.response, 1)]),
+  ]
 
   return lines.join('\n')
 }
 
-function parseNameSpace(name: string, indentation = 0): string[] {
-  const indentationSpace = new Array(indentation).join(' ')
+/**
+ * 解析命名空间
+ * @param name
+ * @param content
+ * @param indentation
+ */
+function parseNameSpace(name: string, content: string[], indentation = 0): string[] {
+  const indentationSpace = handleIndentation(indentation)
   return [
     `${indentationSpace}declare namespace ${name} {`,
-    `${indentationSpace}`,
-    `${indentationSpace}`,
+    ...content.map(v => `${indentationSpace}${v}`),
     `${indentationSpace}}`,
   ]
 }
 
-function parseParams() {
-  //
+/**
+ * 解析参数接口
+ * @param params
+ * @param indentation
+ */
+function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string[] {
+  const indentationSpace = handleIndentation(indentation)
+  const indentationSpace2 = handleIndentation(indentation + 1)
+  return [
+    `${indentationSpace}interface Params {`,
+    ...params.map(v => {
+      const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
+      return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(v.type)}`
+    }),
+    `${indentationSpace}}`,
+    '',
+  ]
+}
+
+function parseResponse(response: { [key: string]: TreeInterfaceResponseItem }, indentation = 0): string[] {
+  const indentationSpace = handleIndentation(indentation)
+  const indentationSpace2 = handleIndentation(indentation + 1)
+
+  const content = []
+
+  console.log(response)
+  for (const name in response) {
+    const v = response[name]
+    if (v.description) content.push(`${indentationSpace2}/** ${v.description} */`)
+    content.push(`${indentationSpace2}${name}${v.required ? ':' : '?:'} ${handleType(v.type)}`)
+  }
+  return [`${indentationSpace}interface Response {`, ...content, `${indentationSpace}}`, '']
 }
 
 /**
- * 生成头部信息
+ * 解析头部信息
  * @param data
  */
 function parseHeaderInfo(data: TreeInterface): string[] {
@@ -134,4 +172,26 @@ function parseHeaderInfo(data: TreeInterface): string[] {
     ' */',
     '',
   ]
+}
+
+/**
+ * 处理缩进层级
+ * @param indentation
+ */
+function handleIndentation(indentation = 0): string {
+  return new Array(indentation * $ext.BASE_INDENTATION_COUNT + 1).join($ext.BASE_INDENTATION)
+}
+
+/**
+ * 处理数据类型
+ * @param type
+ */
+function handleType(type: string): string {
+  switch (type) {
+    case 'integer':
+      return 'number'
+
+    default:
+      return type
+  }
 }

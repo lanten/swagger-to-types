@@ -105,10 +105,17 @@ declare global {
     type: string
   }
 
+  interface TreeInterfaceResponseItem {
+    description: string
+    required: boolean
+    type: string
+  }
+
   interface TreeInterface {
     type: string
     method: 'get' | 'post'
     params: TreeInterfaceParamsItem[]
+    response: { [key: string]: TreeInterfaceResponseItem }
     title: string
     path: string
     subTitle: string

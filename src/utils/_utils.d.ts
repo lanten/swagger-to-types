@@ -1,7 +1,16 @@
 declare namespace $ext {
+  /** 工作区路径 */
   const WORKSPACE_PATH: string | undefined
+  /** 插件名称 */
   const EXT_NAME: string
+  /** 插件私有配置文件路径 */
+  const LOCAL_CONFIG_PATH: string
+  /** 插件本体路径 */
   const EXT_PATH: string
+  /** 默认缩进单位 */
+  const BASE_INDENTATION: string
+  /** 默认缩进宽度 */
+  const BASE_INDENTATION_COUNT: number
 
   namespace config {
     /** 插件配置 */
