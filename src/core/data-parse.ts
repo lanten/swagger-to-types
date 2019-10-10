@@ -143,6 +143,11 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
   ]
 }
 
+/**
+ * 解析返回结果
+ * @param response
+ * @param indentation
+ */
 function parseResponse(response: { [key: string]: TreeInterfaceResponseItem }, indentation = 0): string[] {
   const indentationSpace = handleIndentation(indentation)
   const indentationSpace2 = handleIndentation(indentation + 1)
