@@ -1,7 +1,11 @@
+import en from '../../package.nls.json'
+import zhCN from '../../package.nls.zh-cn.json'
+
 const langs = {
-  en: require('../../package.nls.json'),
-  'zh-cn': require('../../package.nls.zh-cn.json'),
+  en,
+  'zh-cn': zhCN,
 }
+
 class Localize {
   public locale: string
   public localize: any

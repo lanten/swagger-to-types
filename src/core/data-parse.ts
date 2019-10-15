@@ -16,7 +16,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
   for (const path in paths) {
     const v = paths[path]
     const method = Object.keys(v)[0]
-    const { summary, tags, parameters = [], responses = [], ...item } = v[method]
+    const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
 
     let params: any[] = []
     if (!parameters || !parameters.length) {
@@ -29,8 +29,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
         for (const name in properties) {
           const val = properties[name]
           const obj = {
-            ...val,
             name,
+            ...val,
           }
           params.push(obj)
         }
@@ -41,7 +41,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
 
     let response: any = {}
 
-    if (parameters && parameters.length) {
+    if (responses) {
       const responseBody = responses[200] || {}
       response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
     }
@@ -74,29 +74,34 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
 }
 
 // 递归获取 ref
-export function getSwaggerJsonRef(
-  schema: SwaggerJsonSchema,
-  definitions: SwaggerJsonDefinitions
-): SwaggerJsonDefinitionsItem {
+export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: SwaggerJsonDefinitions): any {
   const { originalRef } = schema
   const ref = definitions[originalRef]
+  const propertiesList: TreeInterfacePropertiesItem[] = []
   const { properties, required = [] } = ref
-  if (!properties) return ref
-  for (const key in properties) {
-    const val = properties[key]
+  if (properties) {
+    for (const key in properties) {
+      const val = properties[key]
+      const obj: TreeInterfacePropertiesItem = {
+        name: val.name || key,
+        type: val.type,
+        required: required && required.length && required.includes(key) ? true : false,
+        description: val.description,
+        titRef: val.title,
+      }
 
-    // @ts-ignore
-    ref.properties[key].required = required && required.length && required.includes(key) ? true : false
+      if (val.originalRef) {
+        obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
+      }
+      if (val.items && val.items.schema) {
+        obj.item = getSwaggerJsonRef(val.items, definitions)
+      }
 
-    if (val.originalRef) {
-      ref.properties[key] = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
-    }
-    if (val.items) {
-      // @ts-ignore
-      ref.properties[key].items = getSwaggerJsonRef(val.items, definitions)
+      propertiesList.push(obj)
     }
   }
-  return ref
+
+  return Object.assign({}, ref, { properties: propertiesList })
 }
 
 export function parseToInterface(data: TreeInterface): string {
@@ -130,17 +135,7 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
  * @param indentation
  */
 function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string[] {
-  const indentationSpace = handleIndentation(indentation)
-  const indentationSpace2 = handleIndentation(indentation + 1)
-  return [
-    `${indentationSpace}interface Params {`,
-    ...params.map(v => {
-      const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
-      return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(v.type)}`
-    }),
-    `${indentationSpace}}`,
-    '',
-  ]
+  return parseParamsDetail('Params', params, indentation)
 }
 
 /**
@@ -148,19 +143,79 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
  * @param response
  * @param indentation
  */
-function parseResponse(response: { [key: string]: TreeInterfaceResponseItem }, indentation = 0): string[] {
+function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): string[] {
+  return parseProperties('Response', response, indentation)
+}
+
+/**
+ * 解析详细参数
+ * @param properties
+ * @param indentation
+ */
+function parseParamsDetail(
+  interfaceName: string,
+  properties: TreeInterfaceParamsItem[],
+  indentation = 0
+): string[] {
+  const interfaceList = []
   const indentationSpace = handleIndentation(indentation)
   const indentationSpace2 = handleIndentation(indentation + 1)
+  const content = properties.map(v => {
+    const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
+    return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(v.type)}`
+  })
+  interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
 
-  const content = []
+  return interfaceList
+}
 
-  console.log(response)
-  for (const name in response) {
-    const v = response[name]
-    if (v.description) content.push(`${indentationSpace2}/** ${v.description} */`)
-    content.push(`${indentationSpace2}${name}${v.required ? ':' : '?:'} ${handleType(v.type)}`)
+/**
+ * 解析详细属性
+ * @param properties
+ * @param indentation
+ */
+function parseProperties(
+  interfaceName: string,
+  properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | undefined,
+  indentation = 0
+): string[] {
+  const indentationSpace = handleIndentation(indentation)
+  const indentationSpace2 = handleIndentation(indentation + 1)
+  const interfaceList = []
+  let content: string[] = []
+
+  if (Array.isArray(properties)) {
+    content = properties.map(v => {
+      let type = handleType(v.type)
+      if (v.item) {
+        type = `${interfaceName}${toUp(v.name)}`
+        if (v.type === 'array') type = `${type}Item`
+        interfaceList.push(...parseProperties(type, v.item, indentation))
+      }
+
+      if (v.type === 'array') type = `${type}[]`
+
+      const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
+      return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
+    })
+  } else if (properties) {
+    if (properties.properties && Array.isArray(properties.properties)) {
+      interfaceList.push(
+        ...parseProperties(`${interfaceName}${toUp(properties.name)}`, properties.properties, indentation)
+      )
+    }
   }
-  return [`${indentationSpace}interface Response {`, ...content, `${indentationSpace}}`, '']
+
+  if (content.length) {
+    interfaceList.push(
+      `${indentationSpace}interface ${interfaceName} {`,
+      ...content,
+      `${indentationSpace}}`,
+      ''
+    )
+  }
+
+  return interfaceList
 }
 
 /**
@@ -185,6 +240,15 @@ function parseHeaderInfo(data: TreeInterface): string[] {
  */
 function handleIndentation(indentation = 0): string {
   return new Array(indentation * $ext.BASE_INDENTATION_COUNT + 1).join($ext.BASE_INDENTATION)
+}
+
+/**
+ * 首字母大写
+ * @param {String} str
+ */
+function toUp(str: string) {
+  if (typeof str !== 'string') return ''
+  return str.slice(0, 1).toUpperCase() + str.slice(1)
 }
 
 /**

@@ -67,14 +67,7 @@ declare global {
   interface SwaggerJsonDefinitionsItem {
     type: string
     required?: string[]
-    properties: {
-      [key: string]: {
-        type?: string
-        description?: string
-        originalRef?: string
-        items?: SwaggerJsonSchema
-      }
-    }
+    properties: any
     title: string
   }
 
@@ -105,17 +98,22 @@ declare global {
     type: string
   }
 
-  interface TreeInterfaceResponseItem {
-    description: string
+  interface TreeInterfacePropertiesItem {
+    name: string
+    description?: string
     required: boolean
     type: string
+    properties?: TreeInterfacePropertiesItem
+    item?: TreeInterfacePropertiesItem[]
+    title?: string
+    titRef?: string
   }
 
   interface TreeInterface {
     type: string
     method: 'get' | 'post'
     params: TreeInterfaceParamsItem[]
-    response: { [key: string]: TreeInterfaceResponseItem }
+    response: TreeInterfacePropertiesItem
     title: string
     path: string
     subTitle: string

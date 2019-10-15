@@ -6,6 +6,10 @@ import { registerApiListCommands, registerApiGroupCommands } from './commands'
 export function activate(ctx: vscode.ExtensionContext) {
   global.ctx = ctx
 
+  if (!$ext.WORKSPACE_PATH) {
+    vscode.window.showWarningMessage($ext.localize.getLocalize('text.noWorkspace'))
+  }
+
   const apiList = new ApiList()
   const apiGroup = new ApiGroup()
 

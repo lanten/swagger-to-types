@@ -101,21 +101,21 @@
         "swaggerToTypes.swaggerJsonUrl": {
           "type": "array",
           "default": [],
-          "description": "swagger json url"
+          "description": "%text.config.swaggerJsonUrl%"
         },
         "swaggerToTypes.savePath": {
           "type": "string",
-          "description": "swagger json url"
+          "description": "%text.config.savePath%",
+          "default": ".vscode/swagger-to-types"
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "yarn run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "yarn run build",
+    "build": "rm -rf ./dist && webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "pretest": "yarn run compile"
+    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",

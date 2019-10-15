@@ -3,6 +3,7 @@ import path from 'path'
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH } from './const'
+import config from './config'
 
 /**
  * 递归创建路径
@@ -27,7 +28,9 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
  * @param name
  */
 export function preSaveDocument(docStr: string, name: string): Thenable<boolean> {
-  const newFile = vscode.Uri.parse('untitled:' + path.join(WORKSPACE_PATH || '', name))
+  const { savePath = '' } = config.extConfig
+  const savePathH = path.join(WORKSPACE_PATH || '', savePath, name)
+  const newFile = vscode.Uri.parse('untitled:' + savePathH)
   // const newFile = vscode.Uri.parse('untitled:' + 'types.d.ts')
 
   return vscode.workspace.openTextDocument(newFile).then(document => {

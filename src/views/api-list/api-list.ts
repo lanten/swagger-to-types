@@ -17,10 +17,8 @@ export class ApiList extends BaseTreeProvider<ApiListItem> {
   getListData(): Promise<SwaggerJsonTreeItem[]> {
     return new Promise((resolve, reject) => {
       const { swaggerJsonUrl = [], activeGroupIndex = 0 } = $ext.config.extConfig
-
       const swaggerJsonConfig = swaggerJsonUrl[activeGroupIndex]
-      if (!swaggerJsonConfig) return []
-
+      if (!swaggerJsonConfig) return resolve([])
       if (!this.treeList.length) {
         getSwaggerJson(swaggerJsonConfig.url)
           .then(res => {

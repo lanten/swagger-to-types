@@ -1,6 +1,20 @@
 {
   "app.title": "swagger to types",
+
+  "view.list.title": "API List",
+  "view.group.title": "Project List",
+
   "command.add": "Add",
   "command.setting": "Setting",
-  "command.refresh": "Refresh"
+  "command.refresh": "Refresh",
+
+  "text.swaggerJsonTitle": "Project Title",
+  "text.swaggerJsonUrl": "Swagger Json Url",
+  "text.noWorkspace": "Must be in the workspace",
+  "text.or": "or",
+  "text.config.swaggerJsonUrl": "An Array, Swagger Json Url Example: { \"title\": \"New Project\", \"url\": \"http://api.xxxx.com/v2/api-docs\"}",
+  "text.config.savePath": "Typescript Interface Save Path",
+
+  "temp.input.placeholder": "Please enter ${1}",
+  "temp.input.none": "The entered ${1} cannot be empty"
 }

@@ -12,6 +12,8 @@
   "text.swaggerJsonUrl": "Swagger Json Url",
   "text.noWorkspace": "需要工作区",
   "text.or": "或",
+  "text.config.swaggerJsonUrl": "一个数组, Swagger Json Url 示例: { \"title\": \"New Project\", \"url\": \"http://api.xxxx.com/v2/api-docs\"}",
+  "text.config.savePath": "Typescript 接口文件保存路径",
 
   "temp.input.placeholder": "请输入 ${1}",
   "temp.input.none": "输入的 ${1} 不能为空"
