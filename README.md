@@ -4,7 +4,7 @@
 
 ## 预览
 
-![](assets/demo.png)
+![](https://raw.githubusercontent.com/lanten/swagger-to-types/master/assets/demo.png)
 
 ## Config
 
