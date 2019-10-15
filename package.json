@@ -3,7 +3,7 @@
   "displayName": "swagger-to-types",
   "description": "获取 swagger json 转换为 typescript interface",
   "publisher": "lanten",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.38.0"
   },
@@ -140,5 +140,6 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.0"
-  }
+  },
+  "repository": "https://github.com/lanten/swagger-to-types"
 }
