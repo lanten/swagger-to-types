@@ -93,8 +93,16 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
       if (val.originalRef) {
         obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
       }
-      if (val.items && val.items.schema) {
-        obj.item = getSwaggerJsonRef(val.items, definitions)
+      if (val.items) {
+        let schema
+        if (val.items.schema) {
+          schema = val.items.schema
+        } else if (val.items.originalRef) {
+          schema = val.items
+        }
+        if (schema) {
+          obj.item = getSwaggerJsonRef(schema, definitions)
+        }
       }
 
       propertiesList.push(obj)
@@ -193,7 +201,9 @@ function parseProperties(
         interfaceList.push(...parseProperties(type, v.item, indentation))
       }
 
-      if (v.type === 'array') type = `${type}[]`
+      if (v.type === 'array') {
+        type = `${type}[]`
+      }
 
       const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
