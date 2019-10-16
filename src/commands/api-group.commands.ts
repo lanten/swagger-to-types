@@ -10,7 +10,6 @@ export function registerApiGroupCommands(apiGroup: ApiGroup, apiList: ApiList) {
 
     // 选择
     onSelect(e: any) {
-      console.log('api.group.onSelect', e)
       $ext.config.setLocalConfig({ activeGroupIndex: e.index })
       apiList.treeList = []
       apiList.refresh()
@@ -18,8 +17,6 @@ export function registerApiGroupCommands(apiGroup: ApiGroup, apiList: ApiList) {
 
     // 添加项目
     async add() {
-      console.log('add')
-
       const titleText = $ext.localize.getLocalize('text.swaggerJsonTitle')
       const urlText = $ext.localize.getLocalize('text.swaggerJsonUrl')
       const orText = $ext.localize.getLocalize('text.or')

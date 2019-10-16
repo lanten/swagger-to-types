@@ -25,7 +25,6 @@ class Localize {
     if (arguments.length > 1) {
       const params = Object.assign([], arguments)
       params.forEach((val, i) => {
-        console.log(val)
         if (i > 0) res = res.replace(`\${${i}}`, val)
       })
     }
