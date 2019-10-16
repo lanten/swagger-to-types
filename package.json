@@ -3,13 +3,31 @@
   "displayName": "swagger-to-types",
   "description": "获取 swagger json 转换为 typescript interface",
   "publisher": "lanten",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "icon": "assets/app-icon.png",
   "engines": {
     "vscode": "^1.38.0"
   },
   "categories": [
     "Other"
+  ],
+  "repository": "https://github.com/lanten/swagger-to-types",
+  "homepage": "https://github.com/lanten/swagger-to-types",
+  "bugs": {
+    "url": "https://github.com/lanten/swagger-to-types/issues",
+    "email": "lanten233@qq.com"
+  },
+  "author": {
+    "name": "Lanten",
+    "url": "https://www.lanten.me/",
+    "email": "lanten233@qq.com"
+  },
+  "keywords": [
+    "swagger",
+    "typescript",
+    "swagger-to-types",
+    "swagger-to-typescript",
+    "swagger-to-interface"
   ],
   "activationEvents": [
     "onView:api.list",
@@ -141,6 +159,5 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.0"
-  },
-  "repository": "https://github.com/lanten/swagger-to-types"
+  }
 }
