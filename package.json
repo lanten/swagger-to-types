@@ -25,9 +25,13 @@
   "keywords": [
     "swagger",
     "typescript",
+    "api",
+    "swagger typescript",
+    "swagger interface",
+    "swagger api",
+    "swagger to types",
     "swagger-to-types",
-    "swagger-to-typescript",
-    "swagger-to-interface"
+    "swagger-to-typescript"
   ],
   "activationEvents": [
     "onView:api.list",
