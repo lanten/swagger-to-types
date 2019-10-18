@@ -21,7 +21,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     let params: any[] = []
     if (!parameters || !parameters.length) {
       params = []
-    } else if (method === 'post') {
+    } else if (parameters[0].in === 'body') {
       const paramsBody = parameters[0]
       const paramsSource = paramsBody.schema && getSwaggerJsonRef(paramsBody.schema, definitions)
       if (paramsSource && paramsSource.properties) {
