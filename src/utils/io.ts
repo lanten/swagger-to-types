@@ -3,7 +3,7 @@ import path from 'path'
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH } from './const'
-import config from './config'
+// import config from './config'
 
 /**
  * 递归创建路径
@@ -27,18 +27,15 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
  * @param docStr
  * @param name
  */
-export function preSaveDocument(docStr: string, name: string): Thenable<boolean> {
-  const { savePath = '' } = config.extConfig
-  const savePathH = path.join(WORKSPACE_PATH || '', savePath, name)
-  const newFile = vscode.Uri.parse('untitled:' + savePathH)
-  // const newFile = vscode.Uri.parse('untitled:' + 'types.d.ts')
+export function preSaveDocument(docStr: string, filePath: string): Thenable<boolean> {
+  const newFile = vscode.Uri.parse((fs.existsSync(filePath) ? 'file' : 'untitled') + ':' + filePath)
 
   return vscode.workspace.openTextDocument(newFile).then(document => {
     const edit = new vscode.WorkspaceEdit()
     const pMin = new vscode.Position(0, 0)
-    const pMan = new vscode.Position(999999999, 999999999)
+    const pMax = new vscode.Position(100000000, 100000000)
     // edit.insert(newFile, pMin, 'Hello world!' + JSON.stringify(e))
-    edit.replace(newFile, new vscode.Range(pMin, pMan), docStr)
+    edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
     return vscode.workspace.applyEdit(edit).then(success => {
       if (success) {
         vscode.window.showTextDocument(document)
