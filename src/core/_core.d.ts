@@ -69,6 +69,7 @@ declare global {
     required?: string[]
     properties: any
     title: string
+    item?: any
   }
 
   interface SwaggerJsonTagsItem {

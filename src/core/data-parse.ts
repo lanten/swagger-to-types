@@ -32,6 +32,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
             name,
             ...val,
           }
+
           params.push(obj)
         }
       }
@@ -79,6 +80,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   const ref = definitions[originalRef]
   const propertiesList: TreeInterfacePropertiesItem[] = []
   const { properties, required = [] } = ref
+
   if (properties) {
     for (const key in properties) {
       const val = properties[key]
@@ -109,7 +111,10 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
     }
   }
 
-  return Object.assign({}, ref, { properties: propertiesList })
+  return Object.assign({}, ref, {
+    properties: propertiesList,
+    item: propertiesList,
+  })
 }
 
 export function parseToInterface(data: TreeInterface): string {
@@ -143,7 +148,7 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
  * @param indentation
  */
 function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string[] {
-  return parseParamsDetail('Params', params, indentation)
+  return parseProperties('Params', params, indentation)
 }
 
 /**
@@ -169,8 +174,13 @@ function parseParamsDetail(
   const indentationSpace = handleIndentation(indentation)
   const indentationSpace2 = handleIndentation(indentation + 1)
   const content = properties.map(v => {
+    let type = handleType(v.type)
+    if (v.type === 'array') {
+      // console.log(interfaceName, v)
+      type = `${type}[]`
+    }
     const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
-    return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(v.type)}`
+    return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(type)}`
   })
   interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
 
@@ -201,18 +211,27 @@ function parseProperties(
         interfaceList.push(...parseProperties(type, v.item, indentation))
       }
 
+      try {
+        // @ts-ignore
+        if (!v.item.properties.length) type = '{}'
+      } catch (error) {}
+
       if (v.type === 'array') {
-        type = `${type}[]`
+        type = `${type === 'array' ? 'any' : type}[]`
       }
+
+      console.log(v.item, type)
 
       const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
     })
   } else if (properties) {
-    if (properties.properties && Array.isArray(properties.properties)) {
-      interfaceList.push(
-        ...parseProperties(`${interfaceName}${toUp(properties.name)}`, properties.properties, indentation)
-      )
+    let arr: TreeInterfacePropertiesItem[] = []
+
+    if (properties.properties && Array.isArray(properties.properties)) arr = properties.properties
+    if (properties.item && Array.isArray(properties.item)) arr = properties.item
+    if (arr.length) {
+      interfaceList.push(...parseProperties(`${interfaceName}${toUp(properties.name)}`, arr, indentation))
     }
   }
 
