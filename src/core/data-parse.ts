@@ -22,25 +22,29 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
 
     let params: any[] = []
-    if (!parameters || !parameters.length || parameters[0].in === 'body') {
+    if (!parameters || !parameters.length) {
       params = []
-    } else if (parameters[0].in === 'body') {
-      const paramsBody = parameters[0]
-      const paramsSource = paramsBody.schema && getSwaggerJsonRef(paramsBody.schema, definitions)
-      if (paramsSource && paramsSource.properties) {
-        const { properties } = paramsSource
-        for (const name in properties) {
-          const val = properties[name]
-          const obj = {
-            name,
-            ...val,
-          }
-
-          params.push(obj)
-        }
-      }
     } else {
-      params = parameters
+      const bodyIndex = parameters.findIndex(x => x.in === 'body')
+
+      if (bodyIndex !== -1) {
+        const paramsBody = parameters[bodyIndex]
+        const paramsSource = paramsBody.schema && getSwaggerJsonRef(paramsBody.schema, definitions)
+        if (paramsSource && paramsSource.properties) {
+          const { properties } = paramsSource
+          for (const name in properties) {
+            const val = properties[name]
+            const obj = {
+              name,
+              ...val,
+            }
+
+            params.push(obj)
+          }
+        }
+      } else {
+        params = parameters
+      }
     }
 
     let response: any = {}
@@ -105,6 +109,10 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         } else if (val.items.originalRef) {
           schema = val.items
         }
+
+        // if (schema.originalRef == originalRef) {
+        //   console.log('debug--3', { originalRef, ref, val, schema })
+        // }
         if (schema && schema.originalRef != originalRef) {
           obj.item = getSwaggerJsonRef(schema, definitions)
         }
