@@ -16,7 +16,22 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: dev"
+			// "stopOnEntry": false,
+			// "sourceMaps": true,
+			"preLaunchTask": "npm: compile"
+		},
+		{
+			"name": "Run Extension TSC",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/dist/*.js"
+			],
+			"preLaunchTask": "npm: watch-ts"
 		},
 		{
 			"name": "Run Extension Pre",

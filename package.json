@@ -3,7 +3,7 @@
   "displayName": "swagger-to-types",
   "description": "获取 swagger json 转换为 typescript interface",
   "publisher": "lanten",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "icon": "assets/app-icon.png",
   "engines": {
     "vscode": "^1.38.0"
@@ -138,7 +138,9 @@
     "vscode:prepublish": "yarn run build",
     "build": "rm -rf ./dist && webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "watch": "tsc -watch -p ./"
+    "compile": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "watch-ts": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",

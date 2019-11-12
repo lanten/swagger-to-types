@@ -1,6 +1,9 @@
 export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
+
+  // console.log(swaggerJson)
+
   const tagsMap = {}
   if (tags && tags.length) {
     res = tags.map((v, i) => {
@@ -19,7 +22,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
 
     let params: any[] = []
-    if (!parameters || !parameters.length) {
+    if (!parameters || !parameters.length || parameters[0].in === 'body') {
       params = []
     } else if (parameters[0].in === 'body') {
       const paramsBody = parameters[0]
@@ -102,7 +105,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         } else if (val.items.originalRef) {
           schema = val.items
         }
-        if (schema) {
+        if (schema && schema.originalRef != originalRef) {
           obj.item = getSwaggerJsonRef(schema, definitions)
         }
       }
@@ -219,8 +222,6 @@ function parseProperties(
       if (v.type === 'array') {
         type = `${type === 'array' ? 'any' : type}[]`
       }
-
-      console.log(v.item, type)
 
       const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
