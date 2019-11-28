@@ -40,7 +40,7 @@ export function preSaveDocument(docStr: string, filePath: string): Thenable<bool
       if (success) {
         vscode.window.showTextDocument(document)
       } else {
-        vscode.window.showInformationMessage('Error!')
+        vscode.window.showInformationMessage('Error!'['document error'])
       }
       return success
     })
