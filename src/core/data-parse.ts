@@ -129,7 +129,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
 }
 
 export function parseToInterface(data: TreeInterface): string {
-  const name = data.operationId
+  const name = data.operationId.replace('_', '')
   const lines: string[] = [
     ...parseHeaderInfo(data),
     ...parseNameSpace(name, [...parseParams(data.params, 1), ...parseResponse(data.response, 1)]),
