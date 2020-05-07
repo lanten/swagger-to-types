@@ -245,6 +245,7 @@ function parseHeaderInfo(data: TreeInterface): string[] {
     '/**',
     ` * name   : ${data.title}`,
     ` * path   : ${data.path}`,
+    ` * optId  : ${data.operationId}`,
     ` * method : ${data.method}`,
     ` * update : ${new Date().toLocaleString()}`,
     ' */',
