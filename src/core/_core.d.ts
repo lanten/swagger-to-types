@@ -86,6 +86,8 @@ declare global {
     type: string
     title: string
     subTitle: string
+    pathName?: string
+    fileName?: string
     method?: string
 
     children?: SwaggerJsonTreeItem[]
@@ -108,6 +110,7 @@ declare global {
     item?: TreeInterfacePropertiesItem[]
     title?: string
     titRef?: string
+    itemsType?: string
   }
 
   interface TreeInterface {
@@ -118,6 +121,8 @@ declare global {
     title: string
     path: string
     subTitle: string
+    pathName: string
+    fileName: string
     operationId: string
     produces: string[]
     deprecated: boolean

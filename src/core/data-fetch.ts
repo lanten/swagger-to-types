@@ -4,7 +4,7 @@ export function getSwaggerJson(url: string): Promise<SwaggerJson> {
   return fetch(url)
     .then(res => {
       const json = res.json()
-      $ext.log.info(`fetch => ${url} - ${JSON.stringify(json)}`)
+      $ext.log.info(`fetch => ${url}`)
       return json
     })
     .catch(err => {

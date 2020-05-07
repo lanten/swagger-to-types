@@ -12,7 +12,8 @@ export function registerApiListCommands(apiList: ApiList) {
   // 选择接口
   vscode.commands.registerCommand('api.list.onSelect', (e: TreeInterface) => {
     const { savePath = '' } = $ext.config.extConfig
-    const filePath = path.join($ext.WORKSPACE_PATH || '', savePath, `${e.operationId}.d.ts`)
+
+    const filePath = path.join($ext.WORKSPACE_PATH || '', savePath, `${e.fileName}.d.ts`)
     $ext.preSaveDocument(parseToInterface(e), filePath)
   })
 }

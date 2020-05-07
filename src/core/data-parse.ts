@@ -20,6 +20,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     const v = paths[path]
     const method = Object.keys(v)[0]
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
+    const pathName = $ext.toCamel(path, false, '/').replace('/', '')
+    const fileName = path.slice(1, path.length).replace(/\//g, '-')
 
     let params: any[] = []
     if (!parameters || !parameters.length) {
@@ -62,6 +64,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       title: summary,
       subTitle: path,
       path,
+      pathName,
+      fileName,
       ...item,
     }
 
@@ -99,6 +103,10 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         titRef: val.title,
       }
 
+      if (val.items) {
+        console.log('items', val.items)
+      }
+
       if (val.originalRef) {
         obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
       }
@@ -108,6 +116,8 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
           schema = val.items.schema
         } else if (val.items.originalRef) {
           schema = val.items
+        } else if (val.items.type) {
+          obj.itemsType = val.items.type
         }
 
         // if (schema.originalRef == originalRef) {
@@ -129,7 +139,8 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
 }
 
 export function parseToInterface(data: TreeInterface): string {
-  const name = data.operationId.replace('_', '')
+  // const name = data.operationId.replace('_', '')
+  const name = data.pathName
   const lines: string[] = [
     ...parseHeaderInfo(data),
     ...parseNameSpace(name, [...parseParams(data.params, 1), ...parseResponse(data.response, 1)]),
@@ -171,32 +182,32 @@ function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): 
   return parseProperties('Response', response, indentation)
 }
 
-/**
- * 解析详细参数
- * @param properties
- * @param indentation
- */
-function parseParamsDetail(
-  interfaceName: string,
-  properties: TreeInterfaceParamsItem[],
-  indentation = 0
-): string[] {
-  const interfaceList = []
-  const indentationSpace = handleIndentation(indentation)
-  const indentationSpace2 = handleIndentation(indentation + 1)
-  const content = properties.map(v => {
-    let type = handleType(v.type)
-    if (v.type === 'array') {
-      // console.log(interfaceName, v)
-      type = `${type}[]`
-    }
-    const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
-    return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(type)}`
-  })
-  interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
+// /**
+//  * 解析详细参数
+//  * @param properties
+//  * @param indentation
+//  */
+// function parseParamsDetail(
+//   interfaceName: string,
+//   properties: TreeInterfaceParamsItem[],
+//   indentation = 0
+// ): string[] {
+//   const interfaceList = []
+//   const indentationSpace = handleIndentation(indentation)
+//   const indentationSpace2 = handleIndentation(indentation + 1)
+//   const content = properties.map(v => {
+//     let type = handleType(v.type)
+//     if (v.type === 'array') {
+//       // console.log(interfaceName, v)
+//       type = `${type}[]`
+//     }
+//     const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
+//     return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(type)}`
+//   })
+//   interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
 
-  return interfaceList
-}
+//   return interfaceList
+// }
 
 /**
  * 解析详细属性
@@ -228,7 +239,8 @@ function parseProperties(
       } catch (error) {}
 
       if (v.type === 'array') {
-        type = `${type === 'array' ? 'any' : type}[]`
+        console.log(v)
+        type = `${type === 'array' ? v.itemsType || 'any' : type}[]`
       }
 
       const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''

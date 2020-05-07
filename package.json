@@ -3,7 +3,7 @@
   "displayName": "swagger-to-types",
   "description": "获取 swagger json 转换为 typescript interface",
   "publisher": "lanten",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "icon": "assets/app-icon.png",
   "engines": {
     "vscode": "^1.38.0"

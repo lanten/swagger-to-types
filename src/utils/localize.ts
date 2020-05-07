@@ -20,7 +20,7 @@ class Localize {
     this.localize = langs[locale]
   }
 
-  getLocalize(key: string): string {
+  getLocalize(key: string, ...params: string[]): string {
     let res = this.localize[key] || key
     if (arguments.length > 1) {
       const params = Object.assign([], arguments)
