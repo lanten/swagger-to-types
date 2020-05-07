@@ -103,10 +103,6 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         titRef: val.title,
       }
 
-      if (val.items) {
-        console.log('items', val.items)
-      }
-
       if (val.originalRef) {
         obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
       }
@@ -182,33 +178,6 @@ function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): 
   return parseProperties('Response', response, indentation)
 }
 
-// /**
-//  * 解析详细参数
-//  * @param properties
-//  * @param indentation
-//  */
-// function parseParamsDetail(
-//   interfaceName: string,
-//   properties: TreeInterfaceParamsItem[],
-//   indentation = 0
-// ): string[] {
-//   const interfaceList = []
-//   const indentationSpace = handleIndentation(indentation)
-//   const indentationSpace2 = handleIndentation(indentation + 1)
-//   const content = properties.map(v => {
-//     let type = handleType(v.type)
-//     if (v.type === 'array') {
-//       // console.log(interfaceName, v)
-//       type = `${type}[]`
-//     }
-//     const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
-//     return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${handleType(type)}`
-//   })
-//   interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
-
-//   return interfaceList
-// }
-
 /**
  * 解析详细属性
  * @param properties
@@ -239,7 +208,6 @@ function parseProperties(
       } catch (error) {}
 
       if (v.type === 'array') {
-        console.log(v)
         type = `${type === 'array' ? v.itemsType || 'any' : type}[]`
       }
 
