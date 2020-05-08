@@ -13,7 +13,7 @@ export function registerApiListCommands(apiList: ApiList) {
   vscode.commands.registerCommand('api.list.onSelect', (e: TreeInterface) => {
     const { savePath = '' } = $ext.config.extConfig
 
-    const filePath = path.join($ext.WORKSPACE_PATH || '', savePath, `${e.fileName}.d.ts`)
+    const filePath = path.join($ext.WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`)
     $ext.preSaveDocument(parseToInterface(e), filePath)
   })
 }
