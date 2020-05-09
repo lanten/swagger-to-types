@@ -33,8 +33,8 @@ export function preSaveDocument(docStr: string, filePath: string): Thenable<bool
   return vscode.workspace.openTextDocument(newFile).then(document => {
     const edit = new vscode.WorkspaceEdit()
     const pMin = new vscode.Position(0, 0)
-    // const pMax = new vscode.Position(100000000, 100000000)
-    const pMax = new vscode.Position(Infinity, Infinity)
+    const pMax = new vscode.Position(100000000, 100000000)
+    // const pMax = new vscode.Position(Infinity, Infinity)
 
     // edit.insert(newFile, pMin, 'Hello world!' + JSON.stringify(e))
     edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
