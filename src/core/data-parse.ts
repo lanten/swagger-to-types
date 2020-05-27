@@ -208,7 +208,7 @@ function parseProperties(
       } catch (error) {}
 
       if (v.type === 'array') {
-        type = `${type === 'array' ? v.itemsType || 'any' : type}[]`
+        type = `${type === 'array' ? handleType(v.itemsType || 'any') : type}[]`
       }
 
       const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
