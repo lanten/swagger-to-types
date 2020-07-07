@@ -32,7 +32,9 @@ export function registerApiGroupCommands(apiGroup: ApiGroup, apiList: ApiList) {
         const swaggerJsonUrl = Object.assign([], $ext.config.extConfig.swaggerJsonUrl || [])
         swaggerJsonUrl.push({ title, url })
         $ext.config.setWorkspaceConfig({ swaggerJsonUrl })
-        apiGroup.refresh()
+        setTimeout(() => {
+          apiGroup.refresh()
+        }, 200)
       } else {
         vscode.window.showErrorMessage(
           $ext.localize.getLocalize('temp.input.none', [titleText, urlText].join(` ${orText} `))

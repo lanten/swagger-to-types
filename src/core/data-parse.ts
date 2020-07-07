@@ -2,7 +2,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
 
-  // console.log(swaggerJson)
+  console.log(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
@@ -53,8 +53,15 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
 
     if (responses) {
       const responseBody = responses[200] || {}
-      response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
+      try {
+        response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
+      } catch (error) {
+        console.error(responseBody.schema)
+        console.error(error)
+      }
     }
+
+    // console.warn(response)
 
     const itemRes = {
       type: 'interface',
@@ -82,6 +89,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     }
   }
 
+  // console.warn(res)
+
   return res
 }
 
@@ -91,6 +100,10 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   const ref = definitions[originalRef]
   const propertiesList: TreeInterfacePropertiesItem[] = []
   const { properties, required = [] } = ref
+
+  if (!ref) {
+    console.warn({ res: definitions[originalRef], originalRef })
+  }
 
   if (properties) {
     for (const key in properties) {
@@ -103,9 +116,10 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         titRef: val.title,
       }
 
-      if (val.originalRef) {
+      if (val.originalRef && val.originalRef != originalRef) {
         obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
       }
+
       if (val.items) {
         let schema
         if (val.items.schema) {
@@ -204,8 +218,10 @@ function parseProperties(
 
       try {
         // @ts-ignore
-        if (!v.item.properties.length) type = '{}'
-      } catch (error) {}
+        if (!v.item.properties.length) type = 'Record<string, unknown>'
+      } catch (error) {
+        console.error(error)
+      }
 
       if (v.type === 'array') {
         type = `${type === 'array' ? handleType(v.itemsType || 'any') : type}[]`
@@ -280,6 +296,6 @@ function handleType(type: string): string {
       return 'number'
 
     default:
-      return type
+      return type || 'unknown'
   }
 }
