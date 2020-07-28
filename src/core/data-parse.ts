@@ -2,7 +2,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
 
-  console.log(swaggerJson)
+  console.warn(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
@@ -45,7 +45,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
           }
         }
       } else {
-        params = parameters
+        // 忽略 headers
+        params = parameters.filter(x => x.in !== 'header')
       }
     }
 
@@ -220,7 +221,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        console.error(error)
+        console.warn('item.properties is undefined')
       }
 
       if (v.type === 'array') {
