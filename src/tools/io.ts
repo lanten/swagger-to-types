@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH, log } from './'
+import { WORKSPACE_PATH, log } from '.'
 
 /**
  * 递归创建路径
@@ -42,13 +42,14 @@ export function requireModule(modulePath: string) {
  * @param docStr
  * @param name
  */
-export function preSaveDocument(docStr: string, filePath: string): Thenable<boolean> {
+export async function preSaveDocument(docStr: string, filePath: string) {
   const newFile = vscode.Uri.parse((fs.existsSync(filePath) ? 'file' : 'untitled') + ':' + filePath)
 
-  return vscode.workspace.openTextDocument(newFile).then((document) => {
+  return vscode.workspace.openTextDocument(newFile).then(async (document) => {
     const edit = new vscode.WorkspaceEdit()
     const pMin = new vscode.Position(0, 0)
-    const pMax = new vscode.Position(Infinity, Infinity)
+    // const pMax = new vscode.Position(Infinity, Infinity)
+    const pMax = new vscode.Position(999999999, 999999999)
     edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
     return vscode.workspace.applyEdit(edit).then((success) => {
       if (success) {

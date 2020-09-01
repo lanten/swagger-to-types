@@ -11,22 +11,25 @@ import {
   localize,
   log,
   CONFIG_GROUP,
-} from './'
-
-/** - interface - start ------------------------------------------------------------------- */
+} from '.'
 
 /** vscode 配置项 */
 export interface CodeConfig {
-  defaultFolderTemplate: string
-  defaultFileTemplate: string
-  rememberLastSelection: boolean
+  /** swagger 项目配置 */
+  swaggerJsonUrl: {
+    /** 项目标题 */
+    title: string
+    /** swagger json url */
+    url: string
+  }[]
+
+  /** `.d.ts` 文件保存路径 */
+  savePath: string
 }
 
 export interface ExtConfig extends CodeConfig, LocalConfig {}
 
 export interface LocalConfig {}
-
-/** - interface - end --------------------------------------------------------------------- */
 
 class Config {
   /**

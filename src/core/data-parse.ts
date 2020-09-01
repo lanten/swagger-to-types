@@ -1,3 +1,4 @@
+import { toCamel, BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
 export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
@@ -20,14 +21,14 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     const v = paths[path]
     const method = Object.keys(v)[0]
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
-    const pathName = $ext.toCamel(path, false, '/').replace('/', '')
+    const pathName = toCamel(path, false, '/').replace('/', '')
     const fileName = path.slice(1, path.length).replace(/\//g, '-')
 
     let params: any[] = []
     if (!parameters || !parameters.length) {
       params = []
     } else {
-      const bodyIndex = parameters.findIndex(x => x.in === 'body')
+      const bodyIndex = parameters.findIndex((x) => x.in === 'body')
 
       if (bodyIndex !== -1) {
         const paramsBody = parameters[bodyIndex]
@@ -46,7 +47,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
         }
       } else {
         // 忽略 headers
-        params = parameters.filter(x => x.in !== 'header')
+        params = parameters.filter((x) => x.in !== 'header')
       }
     }
 
@@ -78,7 +79,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     }
 
     if (tags && tags.length) {
-      tags.forEach(tagStr => {
+      tags.forEach((tagStr) => {
         const resIndex = tagsMap[tagStr]
         if (res[resIndex].children && Array.isArray(res[resIndex].children)) {
           // @ts-ignore
@@ -170,7 +171,7 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
   const indentationSpace = handleIndentation(indentation)
   return [
     `${indentationSpace}declare namespace ${name} {`,
-    ...content.map(v => `${indentationSpace}${v}`),
+    ...content.map((v) => `${indentationSpace}${v}`),
     `${indentationSpace}}`,
   ]
 }
@@ -209,7 +210,7 @@ function parseProperties(
   let content: string[] = []
 
   if (Array.isArray(properties)) {
-    content = properties.map(v => {
+    content = properties.map((v) => {
       let type = handleType(v.type)
       if (v.item) {
         type = `${interfaceName}${toUp(v.name)}`
@@ -275,7 +276,7 @@ function parseHeaderInfo(data: TreeInterface): string[] {
  * @param indentation
  */
 function handleIndentation(indentation = 0): string {
-  return new Array(indentation * $ext.BASE_INDENTATION_COUNT + 1).join($ext.BASE_INDENTATION)
+  return new Array(indentation * BASE_INDENTATION_COUNT + 1).join(BASE_INDENTATION)
 }
 
 /**

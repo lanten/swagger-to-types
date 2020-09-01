@@ -15,7 +15,7 @@
 		"lib": [
 			"esnext",
 			"es6"
-		]
+		],
 	},
 	"include": [
 		"types/**/*.ts",

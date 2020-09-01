@@ -1,9 +1,11 @@
-import { BaseTreeProvider, BaseTreeItem } from '@/core'
+import { BaseTreeProvider, BaseTreeItem } from '../core'
+import { config } from '../tools'
+
 export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
   public treeList: SwaggerJsonUrlItem[] = []
 
   getSwaggerSettings(): SwaggerJsonUrlItem[] {
-    return $ext.config.extConfig.swaggerJsonUrl || []
+    return config.extConfig.swaggerJsonUrl || []
   }
 
   getChildren(): Thenable<ApiGroupItem[]> {
@@ -34,7 +36,7 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
 
   refresh(): void {
     this.treeList = []
-    this._onDidChangeTreeData.fire()
+    this._onDidChangeTreeData.fire(undefined)
   }
 }
 

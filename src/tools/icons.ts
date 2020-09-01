@@ -1,7 +1,7 @@
 import path from 'path'
 import { Uri } from 'vscode'
 
-import { EXT_PATH } from './'
+import { EXT_PATH } from './const'
 
 export const icons = {
   back: {

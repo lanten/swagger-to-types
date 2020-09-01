@@ -1,5 +1,7 @@
 import vscode from 'vscode'
 
+import { WORKSPACE_PATH } from '../tools'
+
 export class BaseTreeItem extends vscode.TreeItem {
   // 标题
   public label: string
@@ -38,17 +40,17 @@ export class BaseTreeItem extends vscode.TreeItem {
 export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
   public _onDidChangeTreeData: vscode.EventEmitter<T | undefined> = new vscode.EventEmitter<T | undefined>()
   public readonly onDidChangeTreeData: vscode.Event<T | undefined> = this._onDidChangeTreeData.event
-  public readonly workspaceRoot = $ext.WORKSPACE_PATH || ''
+  public readonly workspaceRoot = WORKSPACE_PATH || ''
 
   getTreeItem(element: T): vscode.TreeItem {
     return element
   }
 
-  getChildren(element?: T): Thenable<T[]> {
+  getChildren(): Thenable<T[]> {
     return Promise.resolve([])
   }
 
   refresh(): void {
-    this._onDidChangeTreeData.fire()
+    this._onDidChangeTreeData.fire(undefined)
   }
 }

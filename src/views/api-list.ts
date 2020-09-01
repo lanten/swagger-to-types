@@ -1,10 +1,12 @@
-import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from '@/core'
+import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson } from '../core'
+
+import { config } from '../tools'
 
 export class ApiList extends BaseTreeProvider<ApiListItem> {
   public treeList: SwaggerJsonTreeItem[] = []
 
-  getChildren(element?: ApiListItem): Thenable<ApiListItem[]> {
-    return this.getListData().then(treeList => {
+  async getChildren(element?: ApiListItem) {
+    return this.getListData().then((treeList) => {
       if (element) {
         const { index = 0 } = element.options
         return this.renderItem(treeList[index].children || [])
@@ -16,12 +18,12 @@ export class ApiList extends BaseTreeProvider<ApiListItem> {
 
   getListData(): Promise<SwaggerJsonTreeItem[]> {
     return new Promise((resolve, reject) => {
-      const { swaggerJsonUrl = [], activeGroupIndex = 0 } = $ext.config.extConfig
-      const swaggerJsonConfig = swaggerJsonUrl[activeGroupIndex]
+      const { swaggerJsonUrl = [] } = config.extConfig
+      const swaggerJsonConfig = swaggerJsonUrl[0]
       if (!swaggerJsonConfig) return resolve([])
       if (!this.treeList.length) {
         getSwaggerJson(swaggerJsonConfig.url)
-          .then(res => {
+          .then((res) => {
             this.treeList = parseSwaggerJson(res)
             resolve(this.treeList)
           })
@@ -58,7 +60,7 @@ export class ApiList extends BaseTreeProvider<ApiListItem> {
 
   refresh(): void {
     this.treeList = []
-    this._onDidChangeTreeData.fire()
+    this._onDidChangeTreeData.fire(undefined)
   }
 }
 
