@@ -1,8 +1,8 @@
 export * from './const'
 export * from './io'
 export * from './exec'
-export * from './utils'
-
-export { default as localize } from './localize'
-export { default as config } from './config'
-export { default as log } from './log'
+export * from './config'
+export * from './localize'
+export * from './log'
+export * from './icons'
+export * from './reg-exp'

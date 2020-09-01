@@ -6,7 +6,6 @@
 module.exports = {
   root: true,
 
-
   extends: [
     'plugin:@typescript-eslint/recommended',
     // 使用eslint config prettier禁用@typescript eslint/eslint插件中与prettier冲突的eslint规则
@@ -21,7 +20,6 @@ module.exports = {
     browser: true,
     node: true,
     es6: true,
-    mocha: true,
   },
 
   rules: {
@@ -36,13 +34,15 @@ module.exports = {
     'no-param-reassign': 'error', // 禁止对 function 的参数进行重新赋值
     'prettier/prettier': 'error', // prettier
     'prefer-rest-params': 0,
-    'prefer-const': 0,
+    // 'prefer-const': 0,
 
-    '@typescript-eslint/no-unused-vars': 0,
+    // '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-explicit-any': 0, // 禁用 any 类型
     '@typescript-eslint/ban-ts-ignore': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/no-empty-interface': 0,
+    '@typescript-eslint/explicit-module-boundary-types': 0,
   },
 }

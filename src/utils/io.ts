@@ -2,8 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH } from './const'
-// import config from './config'
+import { WORKSPACE_PATH, log } from './'
 
 /**
  * 递归创建路径
@@ -23,6 +22,22 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
 }
 
 /**
+ * 动态导入一个 JS 文件
+ * @param modulePath 要导入的文件路径
+ */
+export function requireModule(modulePath: string) {
+  try {
+    const m = require(modulePath)
+    setTimeout(() => {
+      delete require.cache[require.resolve(modulePath)]
+    }, 200)
+    return m
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+/**
  * 打开一个未保存的文档
  * @param docStr
  * @param name
@@ -30,19 +45,16 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
 export function preSaveDocument(docStr: string, filePath: string): Thenable<boolean> {
   const newFile = vscode.Uri.parse((fs.existsSync(filePath) ? 'file' : 'untitled') + ':' + filePath)
 
-  return vscode.workspace.openTextDocument(newFile).then(document => {
+  return vscode.workspace.openTextDocument(newFile).then((document) => {
     const edit = new vscode.WorkspaceEdit()
     const pMin = new vscode.Position(0, 0)
-    const pMax = new vscode.Position(100000000, 100000000)
-    // const pMax = new vscode.Position(Infinity, Infinity)
-
-    // edit.insert(newFile, pMin, 'Hello world!' + JSON.stringify(e))
+    const pMax = new vscode.Position(Infinity, Infinity)
     edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
-    return vscode.workspace.applyEdit(edit).then(success => {
+    return vscode.workspace.applyEdit(edit).then((success) => {
       if (success) {
         vscode.window.showTextDocument(document)
       } else {
-        vscode.window.showInformationMessage('Error!'['document error'])
+        log.error('Error!'['document error'])
       }
       return success
     })

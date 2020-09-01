@@ -2,9 +2,9 @@
 .vscode/**
 .vscode-test/**
 node_modules
-out/**
-dist/test/**
-dist/**/*.map
+types
+out/test/**
+out/**/*.map
 src/**
 screenshots/**
 examples/**
