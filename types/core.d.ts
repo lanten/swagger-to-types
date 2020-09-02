@@ -7,7 +7,7 @@ declare global {
   interface BaseTreeItemOptions {
     /** 标题 */
     title: string
-    /** 附表图 */
+    /** 副标题 */
     subTitle: string
     /** 可折叠状态 0:不可折叠 1:折叠 2:展开 */
     collapsible?: 0 | 1 | 2

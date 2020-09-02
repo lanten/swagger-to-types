@@ -13,15 +13,17 @@ import {
   CONFIG_GROUP,
 } from '.'
 
+export interface SwaggerJsonUrlItem {
+  /** 项目标题 */
+  title: string
+  /** swagger json url */
+  url: string
+}
+
 /** vscode 配置项 */
 export interface CodeConfig {
   /** swagger 项目配置 */
-  swaggerJsonUrl: {
-    /** 项目标题 */
-    title: string
-    /** swagger json url */
-    url: string
-  }[]
+  swaggerJsonUrl: SwaggerJsonUrlItem[]
 
   /** `.d.ts` 文件保存路径 */
   savePath: string

@@ -1,5 +1,5 @@
 import { BaseTreeProvider, BaseTreeItem } from '../core'
-import { config } from '../tools'
+import { config, SwaggerJsonUrlItem } from '../tools'
 
 export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
   public treeList: SwaggerJsonUrlItem[] = []
