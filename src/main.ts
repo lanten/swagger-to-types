@@ -15,7 +15,7 @@ export function activate(ctx: vscode.ExtensionContext) {
   registerApiListCommands(apiList)
   registerApiGroupCommands(apiGroup, apiList)
   vscode.window.registerTreeDataProvider('api.list', apiList)
-  vscode.window.registerTreeDataProvider('api.group', apiGroup)
+  vscode.window.registerTreeDataProvider('api.local', apiGroup)
 }
 
 export function deactivate() {

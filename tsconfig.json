@@ -14,7 +14,7 @@
 		"suppressImplicitAnyIndexErrors": true,
 		"lib": [
 			"esnext",
-			"es6"
+			"es6",
 		],
 	},
 	"include": [

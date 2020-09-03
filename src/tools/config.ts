@@ -2,16 +2,7 @@ import vscode, { workspace } from 'vscode'
 import fs from 'fs'
 import path from 'path'
 
-import {
-  LOCAL_CONFIG_PATH,
-  CONFIG_LIST,
-  EXT_NAME,
-  PUBLISHER,
-  mkdirRecursive,
-  localize,
-  log,
-  CONFIG_GROUP,
-} from '.'
+import { LOCAL_CONFIG_PATH, CONFIG_LIST, EXT_NAME, PUBLISHER, mkdirRecursive, localize, log, CONFIG_GROUP } from '.'
 
 export interface SwaggerJsonUrlItem {
   /** 项目标题 */

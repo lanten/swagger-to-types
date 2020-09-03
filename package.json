@@ -14,13 +14,13 @@
     "url": "https://www.lanten.me/",
     "email": "lanten233@qq.com"
   },
-  "homepage": "https://github.com/lanten/api-sync",
+  "homepage": "https://github.com/lanten/swagger-to-types",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lanten/api-sync.git"
+    "url": "https://github.com/lanten/swagger-to-types.git"
   },
   "bugs": {
-    "url": "https://github.com/lanten/api-sync/issues",
+    "url": "https://github.com/lanten/swagger-to-types/issues",
     "email": "lanten233@qq.com"
   },
   "keywords": [
@@ -33,8 +33,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:api-sync.list",
-    "onView:api-sync.group"
+    "onView:api.list",
+    "onView:api.local"
   ],
   "contributes": {
     "commands": [
@@ -74,21 +74,21 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "api",
+          "id": "swagger-to-types",
           "title": "%app.title%",
           "icon": "assets/icons/tree-view.dark.svg"
         }
       ]
     },
     "views": {
-      "api": [
-        {
-          "id": "api.group",
-          "name": "%view.group.title%"
-        },
+      "swagger-to-types": [
         {
           "id": "api.list",
           "name": "%view.list.title%"
+        },
+        {
+          "id": "api.local",
+          "name": "%view.local.title%"
         }
       ]
     },
