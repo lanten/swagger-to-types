@@ -102,17 +102,17 @@
         {
           "command": "api.group.setting",
           "group": "navigation@12",
-          "when": "view == api.group"
+          "when": "view == api.local"
         },
         {
           "command": "api.group.add",
           "group": "navigation@11",
-          "when": "view == api.group"
+          "when": "view == api.local"
         },
         {
           "command": "api.group.refresh",
           "group": "navigation@19",
-          "when": "view == api.group"
+          "when": "view == api.local"
         }
       ]
     },
@@ -127,7 +127,7 @@
         "swaggerToTypes.savePath": {
           "type": "string",
           "description": "%text.config.savePath%",
-          "default": ".vscode/swagger-to-types"
+          "default": "types/swagger-to-types"
         }
       }
     }
