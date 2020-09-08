@@ -9,6 +9,9 @@ export class BaseTreeItem extends vscode.TreeItem {
   constructor(public readonly options: BaseTreeItemOptions) {
     super(options.title, options.collapsible)
     this.label = options.title
+    // this.command = options.command
+    // this.tooltip = `${this.label} - ${options.subTitle}`
+    // this.description = options.subTitle
   }
 
   get command() {
