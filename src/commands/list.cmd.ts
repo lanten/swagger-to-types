@@ -3,7 +3,7 @@ import path from 'path'
 
 import { WORKSPACE_PATH, config, localize, preSaveDocument } from '../tools'
 
-import { ApiList } from '../views/list.view'
+import { ApiList, ListItem } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
 
 export function registerListCommands(apiList: ApiList) {
@@ -44,6 +44,11 @@ export function registerListCommands(apiList: ApiList) {
           localize.getLocalize('temp.input.none', [titleText, urlText].join(` ${orText} `))
         )
       }
+    },
+
+    /** 保存接口至本地 (单个/批量) */
+    saveInterface(item: ListItem) {
+      console.log(item)
     },
   }
 

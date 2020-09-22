@@ -3,6 +3,12 @@ import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson, BaseT
 import { config } from '../tools'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
+interface ExtListItemConfig {
+  /** swagger url */
+  url: string
+  /** 在浏览器中打开的链接 */
+  link?: string
+}
 
 export class ApiList extends BaseTreeProvider<ListItem> {
   public swaggerJsonMap: SwaggerJsonMap = new Map()
@@ -46,6 +52,7 @@ export class ApiList extends BaseTreeProvider<ListItem> {
         collapsible: 1,
         contextValue: 'root',
         url: item.url,
+        link: item.link,
       })
     })
   }
@@ -98,10 +105,6 @@ export class ApiList extends BaseTreeProvider<ListItem> {
     this.swaggerJsonMap.clear()
     this._onDidChangeTreeData.fire(undefined)
   }
-}
-
-interface ExtListItemConfig {
-  url: string
 }
 
 export class ListItem extends BaseTreeItem<ExtListItemConfig> {}

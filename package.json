@@ -30,9 +30,29 @@
         "icon": "$(sync)"
       },
       {
+        "command": "cmd.list.add",
+        "title": "%command.add%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "cmd.list.remove",
+        "title": "%command.remove%",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "cmd.list.search",
+        "title": "%command.search%",
+        "icon": "$(search)"
+      },
+      {
         "command": "cmd.list.saveInterface",
         "title": "%command.saveInterface%",
         "icon": "$(cloud-download)"
+      },
+      {
+        "command": "cmd.local.refresh",
+        "title": "%command.refresh%",
+        "icon": "$(sync)"
       },
       {
         "command": "cmd.common.setting",
@@ -40,14 +60,9 @@
         "icon": "$(gear)"
       },
       {
-        "command": "cmd.list.add",
-        "title": "%command.add%",
-        "icon": "$(add)"
-      },
-      {
-        "command": "cmd.local.refresh",
-        "title": "%command.refresh%",
-        "icon": "$(sync)"
+        "command": "cmd.common.openLink",
+        "title": "%command.openLink%",
+        "icon": "$(link-external)"
       }
     ],
     "viewsContainers": {
@@ -73,6 +88,11 @@
     },
     "menus": {
       "view/title": [
+        {
+          "command": "cmd.list.search",
+          "group": "navigation@00",
+          "when": "view == view.list"
+        },
         {
           "command": "cmd.list.add",
           "group": "navigation@01",
@@ -101,14 +121,19 @@
       ],
       "view/item/context": [
         {
-          "command": "cmd.list.refresh",
+          "command": "cmd.list.remove",
           "group": "inline@01",
+          "when": "view == view.list && viewItem == root"
+        },
+        {
+          "command": "cmd.common.openLink",
+          "group": "inline@02",
           "when": "view == view.list && viewItem == root"
         },
         {
           "command": "cmd.list.saveInterface",
           "group": "inline@09",
-          "when": "view == view.list && viewItem == interface"
+          "when": "view == view.list && viewItem == interface || viewItem == group"
         }
       ]
     },

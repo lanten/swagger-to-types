@@ -3,6 +3,8 @@ import path from 'path'
 
 import { config, localize, WORKSPACE_PATH, log } from '../tools'
 
+import { ListItem } from '../views/list.view'
+
 export function registerCommonCommands() {
   const commands = {
     // 设置
@@ -25,6 +27,14 @@ export function registerCommonCommands() {
       } else {
         vscode.window.showWarningMessage(localize.getLocalize('text.noWorkspace'))
       }
+    },
+
+    /** 打开外部链接 */
+    openLink(item: ListItem) {
+      const link = item.options.link || item.options.url
+      console.log(link)
+      // vscode.commands.executeCommand('vscode.open', link)
+      vscode.env.openExternal(vscode.Uri.parse(link))
     },
   }
 

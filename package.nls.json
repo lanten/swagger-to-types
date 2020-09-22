@@ -5,8 +5,11 @@
   "view.group.title": "Project List",
 
   "command.add": "Add",
+  "command.remove": "Remove",
+  "command.search": "Search",
   "command.setting": "Setting",
   "command.refresh": "Refresh",
+  "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
 
   "text.swaggerJsonTitle": "Project Title",

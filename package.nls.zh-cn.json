@@ -5,8 +5,11 @@
   "view.local.title": "本地接口列表",
 
   "command.add": "添加",
+  "command.remove": "删除",
+  "command.search": "搜索",
   "command.setting": "工作区设置",
   "command.refresh": "刷新",
+  "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
 
   "text.swaggerJsonTitle": "项目标题",
