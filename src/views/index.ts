@@ -1,2 +1,2 @@
-export * from './api-local'
-export * from './api-list'
+export * from './local.view'
+export * from './list.view'

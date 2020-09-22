@@ -1,3 +1,3 @@
-export * from './list.commands'
-export * from './local.commands'
-export * from './common.commands'
+export * from './list.cmd'
+export * from './local.cmd'
+export * from './common.cmd'

@@ -12,7 +12,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       return {
         title: v.name,
         subTitle: v.description,
-        type: 'tag',
+        type: 'group',
       }
     })
   }
@@ -63,8 +63,6 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       }
     }
 
-    // console.warn(response)
-
     const itemRes = {
       type: 'interface',
       method,
@@ -82,16 +80,13 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       tags.forEach((tagStr) => {
         const resIndex = tagsMap[tagStr]
         if (res[resIndex].children && Array.isArray(res[resIndex].children)) {
-          // @ts-ignore
-          res[resIndex].children.push(itemRes)
+          res[resIndex].children?.push(itemRes)
         } else {
           res[resIndex].children = [itemRes]
         }
       })
     }
   }
-
-  // console.warn(res)
 
   return res
 }
@@ -243,12 +238,7 @@ function parseProperties(
   }
 
   if (content.length) {
-    interfaceList.push(
-      `${indentationSpace}interface ${interfaceName} {`,
-      ...content,
-      `${indentationSpace}}`,
-      ''
-    )
+    interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
   }
 
   return interfaceList
@@ -296,6 +286,9 @@ function handleType(type: string): string {
   switch (type) {
     case 'integer':
       return 'number'
+
+    case 'ref':
+      return 'unknown // BUG: Type Error'
 
     default:
       return type || 'unknown'

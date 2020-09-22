@@ -1,6 +1,6 @@
 import vscode from 'vscode'
-import { ApiList } from './views/api-list'
-import { ApiLocal } from './views/api-local'
+import { ApiList } from './views/list.view'
+import { ApiLocal } from './views/local.view'
 
 import { WORKSPACE_PATH, localize } from './tools'
 import { registerCommonCommands, registerListCommands, registerLocalCommands } from './commands'

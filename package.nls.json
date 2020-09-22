@@ -7,6 +7,7 @@
   "command.add": "Add",
   "command.setting": "Setting",
   "command.refresh": "Refresh",
+  "command.saveInterface": "保存接口",
 
   "text.swaggerJsonTitle": "Project Title",
   "text.swaggerJsonUrl": "Swagger Json Url",

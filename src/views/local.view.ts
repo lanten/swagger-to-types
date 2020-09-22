@@ -1,4 +1,4 @@
-import { BaseTreeProvider, BaseTreeItem } from '../core'
+import { BaseTreeProvider, BaseTreeItem, BaseTreeItemOptions } from '../core'
 import { config, SwaggerJsonUrlItem } from '../tools'
 
 export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {

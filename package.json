@@ -30,6 +30,11 @@
         "icon": "$(sync)"
       },
       {
+        "command": "cmd.list.saveInterface",
+        "title": "%command.saveInterface%",
+        "icon": "$(cloud-download)"
+      },
+      {
         "command": "cmd.common.setting",
         "title": "%command.setting%",
         "icon": "$(gear)"
@@ -37,7 +42,7 @@
       {
         "command": "cmd.list.add",
         "title": "%command.add%",
-        "icon": "$(new-folder)"
+        "icon": "$(add)"
       },
       {
         "command": "cmd.local.refresh",
@@ -92,6 +97,18 @@
           "command": "cmd.local.refresh",
           "group": "navigation@19",
           "when": "view == view.local"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "cmd.list.refresh",
+          "group": "inline@01",
+          "when": "view == view.list && viewItem == root"
+        },
+        {
+          "command": "cmd.list.saveInterface",
+          "group": "inline@09",
+          "when": "view == view.list && viewItem == interface"
         }
       ]
     },

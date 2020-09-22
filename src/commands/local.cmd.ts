@@ -1,6 +1,6 @@
 import vscode from 'vscode'
 
-import { ApiLocal } from '../views/api-local'
+import { ApiLocal } from '../views/local.view'
 
 export function registerLocalCommands(apiGroup: ApiLocal) {
   const commands = {

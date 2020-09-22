@@ -2,11 +2,33 @@ import vscode from 'vscode'
 
 import { WORKSPACE_PATH } from '../tools'
 
-export class BaseTreeItem extends vscode.TreeItem {
-  // 标题
+export interface BaseTreeItemOptions {
+  /** 标题 */
+  title: string
+  /** 副标题 */
+  subTitle: string
+  /** 可折叠状态 0:不可折叠 1:折叠 2:展开 */
+  collapsible?: 0 | 1 | 2
+  /** 类型 */
+  type: SwaggerJsonTreeItem['type']
+  /** 索引 */
+  index?: number
+  /** 选中事件 */
+  command?: vscode.Command
+  contextValue?: string
+}
+
+export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.TreeItem {
+  /** 标题 */
   public label: string
 
-  constructor(public readonly options: BaseTreeItemOptions) {
+  public readonly ICON_MAP: { [K in SwaggerJsonTreeItem['type']]: vscode.TreeItem['iconPath'] } = {
+    root: new vscode.ThemeIcon('package'),
+    group: vscode.ThemeIcon.Folder,
+    interface: new vscode.ThemeIcon('debug-disconnect'),
+  }
+
+  constructor(public readonly options: BaseTreeItemOptions & ExtOptions) {
     super(options.title, options.collapsible)
     this.label = options.title
     // this.command = options.command
@@ -31,17 +53,9 @@ export class BaseTreeItem extends vscode.TreeItem {
     return this.options.subTitle
   }
 
-  // @ts-ignore
-  get iconPath() {
-    if (this.options.type) {
-      return {
-        light: global.ctx.asAbsolutePath(`assets/icons/${this.options.type}.light.svg`),
-        dark: global.ctx.asAbsolutePath(`assets/icons/${this.options.type}.dark.svg`),
-      }
-    }
-  }
+  iconPath = this.ICON_MAP[this.options.type]
 
-  contextValue = ''
+  contextValue = this.options.contextValue
 }
 
 export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {

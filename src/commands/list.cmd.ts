@@ -3,7 +3,7 @@ import path from 'path'
 
 import { WORKSPACE_PATH, config, localize, preSaveDocument } from '../tools'
 
-import { ApiList } from '../views/api-list'
+import { ApiList } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
 
 export function registerListCommands(apiList: ApiList) {
