@@ -20,4 +20,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [ ] 支持多条件模糊搜索
 - [ ] 添加本地接口列表视图
 - [ ] 一键更新已保存的接口 (支持快捷键)
+- [ ] 状态栏添加一键更新按钮
 - [ ] 删除本地接口

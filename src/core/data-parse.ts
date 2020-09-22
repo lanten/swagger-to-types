@@ -288,7 +288,7 @@ function handleType(type: string): string {
       return 'number'
 
     case 'ref':
-      return 'unknown // BUG: Type Error'
+      return 'unknown // BUG: Type Error (ref)'
 
     default:
       return type || 'unknown'
