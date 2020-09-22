@@ -1,9 +1,9 @@
 import vscode from 'vscode'
 import { ApiList } from './views/api-list'
-import { ApiGroup } from './views/api-group'
+import { ApiLocal } from './views/api-local'
 
 import { WORKSPACE_PATH, localize } from './tools'
-import { registerApiListCommands, registerApiGroupCommands } from './commands'
+import { registerCommonCommands, registerListCommands, registerLocalCommands } from './commands'
 
 export function activate(ctx: vscode.ExtensionContext) {
   global.ctx = ctx
@@ -11,11 +11,12 @@ export function activate(ctx: vscode.ExtensionContext) {
     vscode.window.showWarningMessage(localize.getLocalize('text.noWorkspace'))
   }
   const apiList = new ApiList()
-  const apiGroup = new ApiGroup()
-  registerApiListCommands(apiList)
-  registerApiGroupCommands(apiGroup, apiList)
-  vscode.window.registerTreeDataProvider('api.list', apiList)
-  vscode.window.registerTreeDataProvider('api.local', apiGroup)
+  const apiLocal = new ApiLocal()
+  registerCommonCommands()
+  registerListCommands(apiList)
+  registerLocalCommands(apiLocal)
+  vscode.window.registerTreeDataProvider('view.list', apiList)
+  // vscode.window.registerTreeDataProvider('view.local', apiGroup)
 }
 
 export function deactivate() {

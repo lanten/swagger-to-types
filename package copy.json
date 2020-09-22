@@ -19,30 +19,42 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:view.list",
-    "onView:view.local"
+    "onView:api.list",
+    "onView:api.local"
   ],
   "contributes": {
     "commands": [
       {
-        "command": "cmd.list.refresh",
+        "command": "api.list.refresh",
         "title": "%command.refresh%",
-        "icon": "$(sync)"
+        "icon": {
+          "light": "assets/icons/refresh.light.svg",
+          "dark": "assets/icons/refresh.dark.svg"
+        }
       },
       {
-        "command": "cmd.common.setting",
+        "command": "api.group.setting",
         "title": "%command.setting%",
-        "icon": "$(gear)"
+        "icon": {
+          "light": "assets/icons/setting.light.svg",
+          "dark": "assets/icons/setting.dark.svg"
+        }
       },
       {
-        "command": "cmd.list.add",
+        "command": "api.group.add",
         "title": "%command.add%",
-        "icon": "$(new-folder)"
+        "icon": {
+          "light": "assets/icons/add.light.svg",
+          "dark": "assets/icons/add.dark.svg"
+        }
       },
       {
-        "command": "cmd.local.refresh",
+        "command": "api.group.refresh",
         "title": "%command.refresh%",
-        "icon": "$(sync)"
+        "icon": {
+          "light": "assets/icons/refresh.light.svg",
+          "dark": "assets/icons/refresh.dark.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -57,11 +69,11 @@
     "views": {
       "swagger-to-types": [
         {
-          "id": "view.list",
+          "id": "api.list",
           "name": "%view.list.title%"
         },
         {
-          "id": "view.local",
+          "id": "api.local",
           "name": "%view.local.title%"
         }
       ]
@@ -69,29 +81,24 @@
     "menus": {
       "view/title": [
         {
-          "command": "cmd.list.add",
-          "group": "navigation@01",
-          "when": "view == view.list"
-        },
-        {
-          "command": "cmd.common.setting",
-          "group": "navigation@02",
-          "when": "view == view.list"
-        },
-        {
-          "command": "cmd.list.refresh",
+          "command": "api.list.refresh",
           "group": "navigation@09",
-          "when": "view == view.list"
+          "when": "view == api.list"
         },
         {
-          "command": "cmd.common.setting",
+          "command": "api.group.setting",
           "group": "navigation@12",
-          "when": "view == view.local"
+          "when": "view == api.local"
         },
         {
-          "command": "cmd.local.refresh",
+          "command": "api.group.add",
+          "group": "navigation@11",
+          "when": "view == api.local"
+        },
+        {
+          "command": "api.group.refresh",
           "group": "navigation@19",
-          "when": "view == view.local"
+          "when": "view == api.local"
         }
       ]
     },

@@ -1,20 +1,20 @@
 import { BaseTreeProvider, BaseTreeItem } from '../core'
 import { config, SwaggerJsonUrlItem } from '../tools'
 
-export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
+export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {
   public treeList: SwaggerJsonUrlItem[] = []
 
   getSwaggerSettings(): SwaggerJsonUrlItem[] {
     return config.extConfig.swaggerJsonUrl || []
   }
 
-  getChildren(): Thenable<ApiGroupItem[]> {
+  getChildren(): Thenable<ApiLocalItem[]> {
     const treeItems = this.renderItem(this.getSwaggerSettings())
 
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: SwaggerJsonUrlItem[]): ApiGroupItem[] {
+  renderItem(itemList: SwaggerJsonUrlItem[]): ApiLocalItem[] {
     return itemList.map((item, index) => {
       const title = item.title || item.url
       const options: BaseTreeItemOptions = {
@@ -30,7 +30,7 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
         },
       }
 
-      return new ApiGroupItem(options)
+      return new ApiLocalItem(options)
     })
   }
 
@@ -40,4 +40,4 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
   }
 }
 
-export class ApiGroupItem extends BaseTreeItem {}
+export class ApiLocalItem extends BaseTreeItem {}

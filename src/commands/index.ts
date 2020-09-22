@@ -1,2 +1,3 @@
-export * from './api-list.commands'
-export * from './api-group.commands'
+export * from './list.commands'
+export * from './local.commands'
+export * from './common.commands'

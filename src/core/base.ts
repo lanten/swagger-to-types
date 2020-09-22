@@ -14,20 +14,24 @@ export class BaseTreeItem extends vscode.TreeItem {
     // this.description = options.subTitle
   }
 
+  // @ts-ignore
   get command() {
     return this.options.command
   }
 
   // 鼠标悬停时的 label
+  // @ts-ignore
   get tooltip(): string {
     return `${this.label} - ${this.options.subTitle}`
   }
 
   // 说明文本
+  // @ts-ignore
   get description(): string {
     return this.options.subTitle
   }
 
+  // @ts-ignore
   get iconPath() {
     if (this.options.type) {
       return {
