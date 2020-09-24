@@ -1,5 +1,6 @@
 import { OutputChannel, window } from 'vscode'
 import { EXT_NAME } from './const'
+import { formatDate } from './utils'
 
 /** - interface - start ------------------------------------------------------------------- */
 
@@ -15,15 +16,8 @@ class Log {
     this.outputChannel = window.createOutputChannel(EXT_NAME)
   }
 
-  public getDateStr() {
-    const date = new Date()
-    return `${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}`
-  }
-
   public log(type: LogTypes, message: string, intend = 0) {
-    this.outputChannel.appendLine(`${'\t'.repeat(intend)} [${type}] - [${this.getDateStr()}] => ${message}`)
+    this.outputChannel.appendLine(`${'\t'.repeat(intend)} [${type} - ${formatDate(new Date())}] ${message}`)
     return message
   }
 

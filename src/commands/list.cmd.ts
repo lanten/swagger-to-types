@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import path from 'path'
 
-import { WORKSPACE_PATH, config, localize, preSaveDocument } from '../tools'
+import { WORKSPACE_PATH, config, localize, preSaveDocument, log } from '../tools'
 
 import { ApiList, ListItem } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
@@ -28,6 +28,10 @@ export function registerListCommands(apiList: ApiList) {
         placeHolder: localize.getLocalize('temp.input.placeholder', titleText),
       })
 
+      if (!title) {
+        return
+      }
+
       const url = await vscode.window.showInputBox({
         placeHolder: localize.getLocalize('temp.input.placeholder', urlText),
       })
@@ -36,6 +40,7 @@ export function registerListCommands(apiList: ApiList) {
         const swaggerJsonUrl = Object.assign([], config.extConfig.swaggerJsonUrl || [])
         swaggerJsonUrl.push({ title, url })
         config.setCodeConfig({ swaggerJsonUrl })
+        log.info(`<add> Add Swagger Project: [${title}]`)
         setTimeout(() => {
           apiList.refresh()
         }, 200)
@@ -43,6 +48,7 @@ export function registerListCommands(apiList: ApiList) {
         vscode.window.showErrorMessage(
           localize.getLocalize('temp.input.none', [titleText, urlText].join(` ${orText} `))
         )
+        return
       }
     },
 
