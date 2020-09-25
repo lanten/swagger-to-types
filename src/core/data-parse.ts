@@ -216,7 +216,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        log.warn(`<${interfaceName}> [${v.name}] [${v.description}]: item.properties is undefined`)
+        // log.warn(`<${interfaceName}> [${v.name}] [${v.description}]: item.properties is undefined`)
       }
 
       if (v.type === 'array') {
