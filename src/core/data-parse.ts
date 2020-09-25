@@ -1,9 +1,8 @@
-import { toCamel, BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
+import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
+
 export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
-
-  console.warn(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
@@ -99,7 +98,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   const { properties, required = [] } = ref
 
   if (!ref) {
-    console.warn({ res: definitions[originalRef], originalRef })
+    log.error(JSON.stringify({ res: definitions[originalRef], originalRef }, undefined, 2))
   }
 
   if (properties) {
@@ -217,7 +216,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        console.warn('item.properties is undefined')
+        log.warn(`<${interfaceName}> [${v.name}] [${v.description}]: item.properties is undefined`)
       }
 
       if (v.type === 'array') {
