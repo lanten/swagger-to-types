@@ -27,7 +27,7 @@
       {
         "command": "cmd.list.refresh",
         "title": "%command.refresh%",
-        "icon": "$(sync)"
+        "icon": "$(refresh)"
       },
       {
         "command": "cmd.list.add",
@@ -52,7 +52,7 @@
       {
         "command": "cmd.local.refresh",
         "title": "%command.refresh%",
-        "icon": "$(sync)"
+        "icon": "$(refresh)"
       },
       {
         "command": "cmd.common.setting",
