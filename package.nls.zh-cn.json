@@ -1,5 +1,5 @@
 {
-  "app.title": "API 接口同步",
+  "app.title": "Swagger 接口同步",
 
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
@@ -7,6 +7,7 @@
   "command.add": "添加",
   "command.remove": "删除",
   "command.search": "搜索",
+  "command.search.placeholder": "请输入关键字",
   "command.setting": "工作区设置",
   "command.refresh": "刷新",
   "command.openLink": "在浏览器中打开",

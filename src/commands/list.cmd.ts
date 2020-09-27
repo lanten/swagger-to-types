@@ -1,15 +1,18 @@
 import vscode from 'vscode'
 import path from 'path'
 
-import { WORKSPACE_PATH, config, localize, preSaveDocument, log } from '../tools'
+import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
+import { openListPicker } from '../core'
 
 import { ApiList, ListItem } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
 
-export function registerListCommands(apiList: ApiList) {
+export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.TreeView<ListItem>) {
   const commands = {
     /** 刷新 API 列表 */
-    refresh: () => apiList.refresh(),
+    refresh: () => {
+      apiList.refresh()
+    },
 
     /** 选择接口 */
     onSelect: (e: TreeInterface) => {
@@ -50,6 +53,21 @@ export function registerListCommands(apiList: ApiList) {
         )
         return
       }
+    },
+
+    search() {
+      openListPicker({
+        title: `${EXT_NAME} + ${localize.getLocalize('command.search')}`,
+        placeholder: localize.getLocalize('command.search.placeholder'),
+        before: () => apiList.getSearchList(),
+        items: [
+          { label: '1asdasd', description: '11111', detail: '1111asdasdasdasdasdasdasdasdasdasdasdasdasdasdsa' },
+          { label: '2', description: '2222' },
+          { label: '3', description: '3333' },
+        ],
+      }).then((res) => {
+        console.log(res)
+      })
     },
 
     /** 保存接口至本地 (单个/批量) */

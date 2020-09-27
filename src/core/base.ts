@@ -75,3 +75,53 @@ export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
     this._onDidChangeTreeData.fire(undefined)
   }
 }
+
+/**
+ * 打开一个列表选择框 (单选)
+ * @param conf
+ */
+export function openListPicker(conf: ListPickerConfig): Promise<ListPickerItem> {
+  return new Promise((resolve) => {
+    const listPicker = vscode.window.createQuickPick()
+    listPicker.placeholder = conf.placeholder
+    listPicker.matchOnDescription = true
+    listPicker.matchOnDetail = true
+    listPicker.show()
+    listPicker.title = conf.title
+
+    if (conf.before) {
+      listPicker.busy = true
+      conf
+        .before()
+        .then((items) => {
+          listPicker.items = items
+        })
+        .finally(() => {
+          listPicker.busy = false
+        })
+    } else if (conf.items) {
+      listPicker.items = conf.items
+      listPicker.busy = false
+    }
+
+    listPicker.onDidAccept(() => {
+      listPicker.hide()
+      resolve(listPicker.selectedItems[0])
+    })
+  })
+}
+
+export interface ListPickerConfig {
+  placeholder?: string
+  /** 标题 */
+  title?: string
+  /** 列表数据 */
+  items?: ListPickerItem[]
+  /** 异步数据预处理钩子 */
+  before?: () => Promise<ListPickerItem[]>
+}
+
+export interface ListPickerItem extends vscode.QuickPickItem {
+  /** 子节点元数据 */
+  source?: SwaggerJsonTreeItem
+}
