@@ -1,7 +1,7 @@
-// import vscode from 'vscode'
+import { ProviderResult } from 'vscode'
 import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson, BaseTreeItemOptions } from '../core'
 
-import { config } from '../tools'
+import { config, formatDate, log } from '../tools'
 import { ListPickerItem } from '../core'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
@@ -10,30 +10,34 @@ interface ExtListItemConfig {
   url: string
   /** 在浏览器中打开的链接 */
   link?: string
+  /** 父级节点 */
+  parent?: SwaggerJsonTreeItem
 }
 
 export class ApiList extends BaseTreeProvider<ListItem> {
+  /** Swagger JSON */
   public swaggerJsonMap: SwaggerJsonMap = new Map()
+  /** 接口更新时间 */
+  public updateDate: string = formatDate(new Date(), 'H:I:S')
 
   async getChildren(element?: ListItem) {
     if (!element) {
       return this.renderRootItem()
     }
 
-    // return this.renderRootItem()
-    const rootUrl = element.options.url || ''
+    const apiUrl = element.options.url || ''
 
-    return this.getListData(rootUrl).then((swaggerJsonMap) => {
+    return this.getListData(apiUrl).then((swaggerJsonMap) => {
       let listData = []
       switch (element.options.type) {
         case 'root':
-          listData = swaggerJsonMap.get(rootUrl) || []
-          return this.renderItem(listData, rootUrl)
+          listData = swaggerJsonMap.get(apiUrl) || []
+          return this.renderItem(listData, apiUrl)
 
         case 'group':
-          listData = swaggerJsonMap.get(rootUrl) || []
+          listData = swaggerJsonMap.get(apiUrl) || []
           const itemChildren = listData[element.options.index || 0]
-          return this.renderItem(itemChildren?.children || [], rootUrl)
+          return this.renderItem(itemChildren?.children || [], apiUrl, itemChildren)
 
         default:
           return Promise.resolve([])
@@ -59,49 +63,57 @@ export class ApiList extends BaseTreeProvider<ListItem> {
     })
   }
 
-  /** 获取远程数据 */
-  getListData(url?: string): Promise<SwaggerJsonMap> {
+  /**
+   * 获取远程数据
+   * @param url
+   * @param update 每次都刷新覆盖
+   */
+  getListData(url?: string, update?: boolean): Promise<SwaggerJsonMap> {
     return new Promise((resolve, reject) => {
       if (!url) return reject([])
 
-      if (!this.swaggerJsonMap.has(url)) {
-        getSwaggerJson(url)
-          .then((res) => {
-            this.swaggerJsonMap.set(url, parseSwaggerJson(res))
-            resolve(this.swaggerJsonMap)
-          })
-          .catch(() => {
-            reject([])
-          })
-      } else {
-        resolve(this.swaggerJsonMap)
-      }
+      if (this.swaggerJsonMap.has(url) && !update) return resolve(this.swaggerJsonMap)
+
+      getSwaggerJson(url)
+        .then((res) => {
+          this.updateDate = formatDate(new Date(), 'H:I:S')
+          this.swaggerJsonMap.set(url, parseSwaggerJson(res))
+          resolve(this.swaggerJsonMap)
+        })
+        .catch(() => {
+          reject([])
+        })
     })
   }
 
   /** 渲染树视图节点 */
-  renderItem(itemList: SwaggerJsonTreeItem[], rootUrl: string): ListItem[] {
-    return itemList.map((item, index) => {
-      const hasChildren = item.children && item.children.length
-      const options: BaseTreeItemOptions & ExtListItemConfig = {
-        index,
-        title: item.title,
-        type: item.type,
-        subTitle: item.subTitle,
-        collapsible: hasChildren ? 1 : 0,
-        url: rootUrl,
-        contextValue: item.type,
-      }
+  renderItem(itemList: SwaggerJsonTreeItem[], apiUrl: string, parent?: SwaggerJsonTreeItem): ListItem[] {
+    return itemList.map((item) => this.transformToListItem(item, apiUrl, parent))
+  }
 
-      if (!hasChildren) {
-        options.command = {
-          command: 'cmd.list.onSelect',
-          title: item.title,
-          arguments: [item],
-        }
+  /** 转换为树视图节点 */
+  transformToListItem(item: SwaggerJsonTreeItem, apiUrl: string, parent?: SwaggerJsonTreeItem): ListItem {
+    const hasChildren = item.children && item.children.length
+    const options: BaseTreeItemOptions & ExtListItemConfig = {
+      title: item.title,
+      type: item.type,
+      subTitle: item.subTitle,
+      collapsible: hasChildren ? 1 : 0,
+      url: apiUrl,
+      contextValue: item.type,
+      parent,
+    }
+
+    console.log(parent)
+
+    if (!hasChildren) {
+      options.command = {
+        command: 'cmd.list.onSelect',
+        title: item.title,
+        arguments: [item],
       }
-      return new ListItem(options)
-    })
+    }
+    return new ListItem(options)
   }
 
   /** 获取可供搜索选择器使用的列表 */
@@ -112,12 +124,10 @@ export class ApiList extends BaseTreeProvider<ListItem> {
 
       await this.refreshSwaggerJsonMap(true)
 
-      // console.log(this.swaggerJsonMap.keys(), JSON.stringify(this.swaggerJsonMap))
-
       this.swaggerJsonMap.forEach((list, key) => {
-        console.log(list)
         const conf = swaggerJsonUrl.find((x) => x.url === key)
-        arr = arr.concat(this.mergeSwaggerJsonMap(list, conf?.title))
+        if (!conf) return log.error(`swaggerJsonUrl config not found <${key}>`)
+        arr = arr.concat(this.mergeSwaggerJsonMap(list, conf.url, conf.title))
       })
 
       resolve(arr)
@@ -125,7 +135,12 @@ export class ApiList extends BaseTreeProvider<ListItem> {
   }
 
   /** 合并所有接口列表 - getSearchList */
-  private mergeSwaggerJsonMap(data: SwaggerJsonTreeItem[], dir?: string): ListPickerItem[] {
+  private mergeSwaggerJsonMap(
+    data: SwaggerJsonTreeItem[],
+    apiUrl: string,
+    dir: string,
+    parent?: SwaggerJsonTreeItem
+  ): ListPickerItem[] {
     let arr: ListPickerItem[] = []
 
     data.forEach((v) => {
@@ -135,26 +150,17 @@ export class ApiList extends BaseTreeProvider<ListItem> {
           description: `<${v.method}> [${dir}] ${v.pathName} `,
           detail: v.subTitle,
           source: v,
+          apiUrl,
+          parent,
         })
       } else if (v.children) {
         let dirH = v.title
         if (dir) {
           dirH = `${dir} - ${dirH}`
         }
-        arr = arr.concat(this.mergeSwaggerJsonMap(v.children, dirH))
+        arr = arr.concat(this.mergeSwaggerJsonMap(v.children, apiUrl, dirH, v))
       }
     })
-
-    // this.swaggerJsonMap.forEach((list) => {
-    //   console.log(list)
-    //   arr = arr.concat(
-    //     list.map((v) => ({
-    //       label: v.title,
-    //       description: v.subTitle,
-    //       detail: v.pathName,
-    //     }))
-    //   )
-    // })
 
     return arr
   }
@@ -174,6 +180,17 @@ export class ApiList extends BaseTreeProvider<ListItem> {
     return Promise.all(queryList)
   }
 
+  /** 获取父级元素 */
+  getParent(item: ListItem): ProviderResult<ListItem> {
+    console.log(item)
+
+    if (item.parent) {
+      return this.transformToListItem(item.parent, item.options.url)
+    }
+    return undefined
+    // return item.parentNode
+  }
+
   // command(node: ListItem) {
   //   console.log(node)
   // }
@@ -185,4 +202,12 @@ export class ApiList extends BaseTreeProvider<ListItem> {
   }
 }
 
-export class ListItem extends BaseTreeItem<ExtListItemConfig> {}
+export class ListItem extends BaseTreeItem<ExtListItemConfig> {
+  /** 父级节点 */
+  parent?: SwaggerJsonTreeItem
+
+  constructor(props: BaseTreeItemOptions & ExtListItemConfig) {
+    super(props)
+    this.parent = props.parent
+  }
+}

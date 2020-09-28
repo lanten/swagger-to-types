@@ -30,3 +30,15 @@ export function formatDate(date: Date = new Date(), format = 'YYYY-MM-DD H:I:S.M
     return obj[$1]
   })
 }
+
+/**
+ * 生成一组随机 ID
+ * @param {String} 格式, x 为随机字符
+ */
+export function randomId(t = 'id-xxxxx'): string {
+  return t.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c == 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}

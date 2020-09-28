@@ -57,16 +57,14 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
 
     search() {
       openListPicker({
-        title: `${EXT_NAME} + ${localize.getLocalize('command.search')}`,
+        title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${apiList.updateDate})`,
         placeholder: localize.getLocalize('command.search.placeholder'),
         before: () => apiList.getSearchList(),
-        items: [
-          { label: '1asdasd', description: '11111', detail: '1111asdasdasdasdasdasdasdasdasdasdasdasdasdasdsa' },
-          { label: '2', description: '2222' },
-          { label: '3', description: '3333' },
-        ],
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
+        if (!res.source) return log.error('Picker.res.source in undefined', true)
+        if (!res.apiUrl) return log.error('Picker.res.apiUrl in undefined', true)
+        apiListTreeView.reveal(apiList.transformToListItem(res.source, res.apiUrl, res.parent))
       })
     },
 

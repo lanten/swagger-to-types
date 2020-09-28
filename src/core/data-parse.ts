@@ -1,4 +1,4 @@
-import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
+import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId } from '../tools'
 
 export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
@@ -9,6 +9,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     res = tags.map((v, i) => {
       tagsMap[v.name] = i
       return {
+        key: randomId(`${v.name}-xxxxxx`),
         title: v.name,
         subTitle: v.description,
         type: 'group',
@@ -64,6 +65,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
 
     const itemRes = {
       type: 'interface',
+      key: randomId(`${summary}-xxxxxx`),
       method,
       params,
       response,

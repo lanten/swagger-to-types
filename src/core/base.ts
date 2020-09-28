@@ -31,27 +31,27 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
   constructor(public readonly options: BaseTreeItemOptions & ExtOptions) {
     super(options.title, options.collapsible)
     this.label = options.title
-    // this.command = options.command
-    // this.tooltip = `${this.label} - ${options.subTitle}`
-    // this.description = options.subTitle
+    this.command = options.command
+    this.tooltip = `${this.label} - ${options.subTitle}`
+    this.description = options.subTitle
   }
 
-  // @ts-ignore
-  get command() {
-    return this.options.command
-  }
+  // // @ts-ignore
+  // get command() {
+  //   return this.options.command
+  // }
 
-  // 鼠标悬停时的 label
-  // @ts-ignore
-  get tooltip(): string {
-    return `${this.label} - ${this.options.subTitle}`
-  }
+  // // 鼠标悬停时的 label
+  // // @ts-ignore
+  // get tooltip(): string {
+  //   return `${this.label} - ${this.options.subTitle}`
+  // }
 
-  // 说明文本
-  // @ts-ignore
-  get description(): string {
-    return this.options.subTitle
-  }
+  // // 说明文本
+  // // @ts-ignore
+  // get description(): string {
+  //   return this.options.subTitle
+  // }
 
   iconPath = this.ICON_MAP[this.options.type]
 
@@ -124,4 +124,8 @@ export interface ListPickerConfig {
 export interface ListPickerItem extends vscode.QuickPickItem {
   /** 子节点元数据 */
   source?: SwaggerJsonTreeItem
+  /** 父节点元数据 */
+  parent?: SwaggerJsonTreeItem
+  /** 接口请求地址 */
+  apiUrl?: string
 }
