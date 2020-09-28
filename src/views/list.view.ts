@@ -184,7 +184,7 @@ export class ApiList extends BaseTreeProvider<ListItem> {
       } else if (v.children) {
         let dirH = v.title
         if (dir) {
-          dirH = `${dir} - ${dirH}`
+          dirH = `${dir} / ${dirH}`
         }
         arr = arr.concat(this.mergeSwaggerJsonMap(v.children, apiUrl, dirH, v))
       }
