@@ -56,6 +56,11 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
       }
     },
 
+    /** 移除项目 */
+    remove() {
+      vscode.window.showInformationMessage('开发中...')
+    },
+
     search() {
       openListPicker({
         title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${apiList.updateDate})`,
@@ -78,6 +83,7 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
 
     /** 保存接口至本地 (单个/批量) */
     saveInterface(item: ListItem) {
+      vscode.window.showInformationMessage('开发中...')
       console.log(item)
     },
   }
