@@ -1,7 +1,7 @@
 .github/**
 .vscode/**
 .vscode-test/**
-node_modules
+# node_modules
 types
 out/test/**
 out/**/*.map
