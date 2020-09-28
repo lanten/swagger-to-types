@@ -6,7 +6,7 @@
   "icon": "assets/app-icon.png",
   "publisher": "lanten",
   "engines": {
-    "vscode": "^1.41.0"
+    "vscode": "^1.49.0"
   },
   "main": "./out/src/main.js",
   "keywords": [
@@ -174,8 +174,8 @@
     "@types/vscode": "^1.49.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
-    "eslint": "^7.9.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
     "eslint-loader": "^4.0.2",
     "eslint-plugin-prettier": "^3.1.4",
     "glob": "^7.1.6",
