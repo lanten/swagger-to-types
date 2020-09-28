@@ -1,6 +1,6 @@
 import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId } from '../tools'
 
-export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
+export function parseSwaggerJson(swaggerJson: SwaggerJson, rootKey: string): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
 
@@ -10,6 +10,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       tagsMap[v.name] = i
       return {
         key: randomId(`${v.name}-xxxxxx`),
+        parentKey: rootKey,
         title: v.name,
         subTitle: v.description,
         type: 'group',
@@ -63,9 +64,10 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       }
     }
 
-    const itemRes = {
+    const itemRes: SwaggerJsonTreeItem & AnyObj = {
       type: 'interface',
       key: randomId(`${summary}-xxxxxx`),
+      parentKey: '',
       method,
       params,
       response,
@@ -79,11 +81,14 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
 
     if (tags && tags.length) {
       tags.forEach((tagStr) => {
-        const resIndex = tagsMap[tagStr]
-        if (res[resIndex].children && Array.isArray(res[resIndex].children)) {
-          res[resIndex].children?.push(itemRes)
+        const tagIndex = tagsMap[tagStr]
+        const tagVal = res[tagIndex]
+        itemRes.parentKey = tagVal.key
+
+        if (res[tagIndex].children && Array.isArray(tagVal.children)) {
+          tagVal.children?.push(itemRes)
         } else {
-          res[resIndex].children = [itemRes]
+          tagVal.children = [itemRes]
         }
       })
     }

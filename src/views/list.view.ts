@@ -1,8 +1,14 @@
 import { ProviderResult } from 'vscode'
-import { BaseTreeProvider, BaseTreeItem, getSwaggerJson, parseSwaggerJson, BaseTreeItemOptions } from '../core'
 
-import { config, formatDate, log } from '../tools'
-import { ListPickerItem } from '../core'
+import {
+  BaseTreeProvider,
+  BaseTreeItem,
+  getSwaggerJson,
+  parseSwaggerJson,
+  BaseTreeItemOptions,
+  ListPickerItem,
+} from '../core'
+import { config, formatDate, log, SwaggerJsonUrlItem } from '../tools'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
 interface ExtListItemConfig {
@@ -10,8 +16,10 @@ interface ExtListItemConfig {
   url: string
   /** 在浏览器中打开的链接 */
   link?: string
-  /** 父级节点 */
-  parent?: SwaggerJsonTreeItem
+
+  key: string
+  /** 父级节点 key */
+  parentKey?: string
 }
 
 export class ApiList extends BaseTreeProvider<ListItem> {
@@ -22,13 +30,14 @@ export class ApiList extends BaseTreeProvider<ListItem> {
 
   async getChildren(element?: ListItem) {
     if (!element) {
-      return this.renderRootItem()
+      const { swaggerJsonUrl = [] } = config.extConfig
+      return swaggerJsonUrl.map((item) => this.renderRootItem(item))
     }
 
     const apiUrl = element.options.url || ''
 
     return this.getListData(apiUrl).then((swaggerJsonMap) => {
-      let listData = []
+      let listData: SwaggerJsonTreeItem[] = []
       switch (element.options.type) {
         case 'root':
           listData = swaggerJsonMap.get(apiUrl) || []
@@ -36,8 +45,8 @@ export class ApiList extends BaseTreeProvider<ListItem> {
 
         case 'group':
           listData = swaggerJsonMap.get(apiUrl) || []
-          const itemChildren = listData[element.options.index || 0]
-          return this.renderItem(itemChildren?.children || [], apiUrl, itemChildren)
+          const itemChildren = listData.find((x) => x.key === element.options.key)
+          return this.renderItem(itemChildren?.children || [], apiUrl)
 
         default:
           return Promise.resolve([])
@@ -46,27 +55,24 @@ export class ApiList extends BaseTreeProvider<ListItem> {
   }
 
   /** 渲染根节点 */
-  renderRootItem() {
-    const { swaggerJsonUrl = [] } = config.extConfig
-
-    return swaggerJsonUrl.map((item, index) => {
-      return new ListItem({
-        index,
-        title: item.title || item.url,
-        type: 'root',
-        subTitle: item.url || '',
-        collapsible: 1,
-        contextValue: 'root',
-        url: item.url,
-        link: item.link,
-      })
+  renderRootItem(item: SwaggerJsonUrlItem, collapsible?: BaseTreeItemOptions['collapsible']) {
+    const rootNode = new ListItem({
+      key: item.url,
+      title: item.title || item.url,
+      type: 'root',
+      subTitle: item.url || '',
+      collapsible: collapsible || 1,
+      contextValue: 'root',
+      url: item.url,
+      link: item.link,
     })
+    return rootNode
   }
 
   /**
    * 获取远程数据
    * @param url
-   * @param update 每次都刷新覆盖
+   * @param update 更新覆盖
    */
   getListData(url?: string, update?: boolean): Promise<SwaggerJsonMap> {
     return new Promise((resolve, reject) => {
@@ -77,7 +83,7 @@ export class ApiList extends BaseTreeProvider<ListItem> {
       getSwaggerJson(url)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
-          this.swaggerJsonMap.set(url, parseSwaggerJson(res))
+          this.swaggerJsonMap.set(url, parseSwaggerJson(res, url))
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
@@ -86,25 +92,41 @@ export class ApiList extends BaseTreeProvider<ListItem> {
     })
   }
 
-  /** 渲染树视图节点 */
-  renderItem(itemList: SwaggerJsonTreeItem[], apiUrl: string, parent?: SwaggerJsonTreeItem): ListItem[] {
-    return itemList.map((item) => this.transformToListItem(item, apiUrl, parent))
+  /**
+   * 渲染树视图节点
+   *
+   * @param itemList
+   * @param apiUrl
+   * @param parent
+   */
+  renderItem(itemList: SwaggerJsonTreeItem[], apiUrl: string): ListItem[] {
+    return itemList.map((item) => this.transformToListItem(item, apiUrl))
   }
 
-  /** 转换为树视图节点 */
-  transformToListItem(item: SwaggerJsonTreeItem, apiUrl: string, parent?: SwaggerJsonTreeItem): ListItem {
+  /**
+   * 转换为树视图节点
+   *
+   * @param item
+   * @param apiUrl
+   * @param parent
+   */
+  transformToListItem(
+    item: SwaggerJsonTreeItem,
+    apiUrl: string,
+    collapsible?: BaseTreeItemOptions['collapsible']
+  ): ListItem {
     const hasChildren = item.children && item.children.length
+    const collapsibleH = collapsible || (hasChildren ? 1 : 0)
     const options: BaseTreeItemOptions & ExtListItemConfig = {
       title: item.title,
       type: item.type,
       subTitle: item.subTitle,
-      collapsible: hasChildren ? 1 : 0,
+      collapsible: collapsibleH,
       url: apiUrl,
       contextValue: item.type,
-      parent,
+      key: item.key,
+      parentKey: item.parentKey,
     }
-
-    console.log(parent)
 
     if (!hasChildren) {
       options.command = {
@@ -134,7 +156,13 @@ export class ApiList extends BaseTreeProvider<ListItem> {
     })
   }
 
-  /** 合并所有接口列表 - getSearchList */
+  /**
+   * 合并所有接口列表 - getSearchList
+   * @param data
+   * @param apiUrl
+   * @param dir
+   * @param parent
+   */
   private mergeSwaggerJsonMap(
     data: SwaggerJsonTreeItem[],
     apiUrl: string,
@@ -182,18 +210,32 @@ export class ApiList extends BaseTreeProvider<ListItem> {
 
   /** 获取父级元素 */
   getParent(item: ListItem): ProviderResult<ListItem> {
-    console.log(item)
+    const { parentKey, type, url } = item.options
 
-    if (item.parent) {
-      return this.transformToListItem(item.parent, item.options.url)
+    let parentNode: ProviderResult<ListItem> = void 0
+
+    switch (type) {
+      case 'interface':
+        const groupNode = this.swaggerJsonMap.get(url)?.find((x) => x.key === parentKey)
+        if (groupNode) {
+          parentNode = this.transformToListItem(groupNode, item.options.url)
+        } else {
+          log.error(`<getParent> [${parentKey}] groupNode not found`)
+        }
+        break
+
+      case 'group':
+        const rootNode = config.extConfig.swaggerJsonUrl.find((x) => x.url === parentKey)
+        if (rootNode) {
+          parentNode = this.renderRootItem(rootNode)
+        } else {
+          log.error(`<getParent> [${parentKey}] rootNode not found`)
+        }
+        break
     }
-    return undefined
-    // return item.parentNode
-  }
 
-  // command(node: ListItem) {
-  //   console.log(node)
-  // }
+    return parentNode
+  }
 
   /** 刷新 */
   public refresh(): void {
@@ -202,12 +244,4 @@ export class ApiList extends BaseTreeProvider<ListItem> {
   }
 }
 
-export class ListItem extends BaseTreeItem<ExtListItemConfig> {
-  /** 父级节点 */
-  parent?: SwaggerJsonTreeItem
-
-  constructor(props: BaseTreeItemOptions & ExtListItemConfig) {
-    super(props)
-    this.parent = props.parent
-  }
-}
+export class ListItem extends BaseTreeItem<ExtListItemConfig> {}

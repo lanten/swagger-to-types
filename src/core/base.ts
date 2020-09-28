@@ -11,8 +11,6 @@ export interface BaseTreeItemOptions {
   collapsible?: 0 | 1 | 2
   /** 类型 */
   type: SwaggerJsonTreeItem['type']
-  /** 索引 */
-  index?: number
   /** 选中事件 */
   command?: vscode.Command
   contextValue?: string

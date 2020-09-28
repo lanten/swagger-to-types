@@ -63,6 +63,7 @@ interface SwaggerJsonSchema {
 
 interface SwaggerJsonTreeItem {
   key: string
+  parentKey: string
   type:
     | 'root' // 根节点
     | 'group' // 接口分组

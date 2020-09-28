@@ -17,6 +17,7 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
     /** 选择接口 */
     onSelect: (e: TreeInterface) => {
       const { savePath = '' } = config.extConfig
+      console.log(e)
 
       const filePath = path.join(WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`)
       preSaveDocument(parseToInterface(e), filePath)
@@ -61,10 +62,17 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
         placeholder: localize.getLocalize('command.search.placeholder'),
         before: () => apiList.getSearchList(),
       }).then((res) => {
-        // console.log(res)
+        console.log(res)
         if (!res.source) return log.error('Picker.res.source in undefined', true)
         if (!res.apiUrl) return log.error('Picker.res.apiUrl in undefined', true)
-        apiListTreeView.reveal(apiList.transformToListItem(res.source, res.apiUrl, res.parent))
+        apiListTreeView
+          .reveal(apiList.transformToListItem(res.source, res.apiUrl), {
+            expand: true,
+            select: true,
+          })
+          .then(() => {
+            commands.onSelect((res.source as unknown) as TreeInterface)
+          })
       })
     },
 

@@ -15,10 +15,9 @@ export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {
   }
 
   renderItem(itemList: SwaggerJsonUrlItem[]): ApiLocalItem[] {
-    return itemList.map((item, index) => {
+    return itemList.map((item) => {
       const title = item.title || item.url
       const options: BaseTreeItemOptions = {
-        index,
         title,
         type: 'group',
         subTitle: item.title ? item.url : '',
@@ -26,7 +25,6 @@ export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {
         command: {
           title,
           command: 'api.group.onSelect',
-          arguments: [{ ...item, index }],
         },
       }
 
