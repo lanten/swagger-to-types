@@ -1,12 +1,17 @@
 {
   "app.title": "Swagger 接口同步",
 
-  "view.list.title": "接口列表",
-  "view.group.title": "项目列表",
+  "view.list.title": "Swagger 接口列表",
+  "view.local.title": "本地接口列表",
 
   "command.add": "添加",
+  "command.remove": "删除",
+  "command.search": "搜索",
+  "command.search.placeholder": "请输入关键字",
   "command.setting": "工作区设置",
   "command.refresh": "刷新",
+  "command.openLink": "在浏览器中打开",
+  "command.saveInterface": "保存接口",
 
   "text.swaggerJsonTitle": "项目标题",
   "text.swaggerJsonUrl": "Swagger Json Url",

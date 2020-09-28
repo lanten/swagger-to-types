@@ -1,120 +1,145 @@
 {
   "name": "swagger-to-types",
-  "displayName": "swagger-to-types",
-  "description": "获取 swagger json 转换为 typescript interface",
-  "publisher": "lanten",
-  "version": "0.2.1",
+  "displayName": "Swagger To Types",
+  "description": "VSCode Extension: Transform swagger-api to typescript interface.",
+  "version": "0.3.3",
   "icon": "assets/app-icon.png",
+  "publisher": "lanten",
   "engines": {
-    "vscode": "^1.38.0"
+    "vscode": "^1.41.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "repository": "https://github.com/lanten/swagger-to-types",
-  "homepage": "https://github.com/lanten/swagger-to-types",
-  "bugs": {
-    "url": "https://github.com/lanten/swagger-to-types/issues",
-    "email": "lanten233@qq.com"
-  },
-  "author": {
-    "name": "Lanten",
-    "url": "https://www.lanten.me/",
-    "email": "lanten233@qq.com"
-  },
+  "main": "./out/src/main.js",
   "keywords": [
     "swagger",
     "typescript",
     "api",
-    "swagger typescript",
-    "swagger interface",
-    "swagger api",
-    "swagger to types",
-    "swagger-to-types",
-    "swagger-to-typescript"
+    "interface"
+  ],
+  "categories": [
+    "Other"
   ],
   "activationEvents": [
-    "onView:api.list",
-    "onView:api.group"
+    "onView:view.list",
+    "onView:view.local"
   ],
-  "main": "./dist/main.js",
   "contributes": {
     "commands": [
       {
-        "command": "api.list.refresh",
+        "command": "cmd.list.refresh",
         "title": "%command.refresh%",
-        "icon": {
-          "light": "assets/icons/refresh.light.svg",
-          "dark": "assets/icons/refresh.dark.svg"
-        }
+        "icon": "$(refresh)"
       },
       {
-        "command": "api.group.setting",
-        "title": "%command.setting%",
-        "icon": {
-          "light": "assets/icons/setting.light.svg",
-          "dark": "assets/icons/setting.dark.svg"
-        }
-      },
-      {
-        "command": "api.group.add",
+        "command": "cmd.list.add",
         "title": "%command.add%",
-        "icon": {
-          "light": "assets/icons/add.light.svg",
-          "dark": "assets/icons/add.dark.svg"
-        }
+        "icon": "$(add)"
       },
       {
-        "command": "api.group.refresh",
+        "command": "cmd.list.remove",
+        "title": "%command.remove%",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "cmd.list.search",
+        "title": "%command.search%",
+        "icon": "$(search)"
+      },
+      {
+        "command": "cmd.list.saveInterface",
+        "title": "%command.saveInterface%",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "cmd.local.refresh",
         "title": "%command.refresh%",
-        "icon": {
-          "light": "assets/icons/refresh.light.svg",
-          "dark": "assets/icons/refresh.dark.svg"
-        }
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "cmd.common.setting",
+        "title": "%command.setting%",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "cmd.common.openLink",
+        "title": "%command.openLink%",
+        "icon": "$(link-external)"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "api",
+          "id": "swagger-to-types",
           "title": "%app.title%",
           "icon": "assets/icons/tree-view.dark.svg"
         }
       ]
     },
     "views": {
-      "api": [
+      "swagger-to-types": [
         {
-          "id": "api.group",
-          "name": "%view.group.title%"
+          "id": "view.list",
+          "name": "%view.list.title%"
         },
         {
-          "id": "api.list",
-          "name": "%view.list.title%"
+          "id": "view.local",
+          "name": "%view.local.title%"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "view.local",
+        "contents": "开发中..."
+      }
+    ],
     "menus": {
       "view/title": [
         {
-          "command": "api.list.refresh",
+          "command": "cmd.list.search",
+          "group": "navigation@00",
+          "when": "view == view.list"
+        },
+        {
+          "command": "cmd.list.add",
+          "group": "navigation@01",
+          "when": "view == view.list"
+        },
+        {
+          "command": "cmd.common.setting",
+          "group": "navigation@02",
+          "when": "view == view.list"
+        },
+        {
+          "command": "cmd.list.refresh",
           "group": "navigation@09",
-          "when": "view == api.list"
+          "when": "view == view.list"
         },
         {
-          "command": "api.group.setting",
+          "command": "cmd.common.setting",
           "group": "navigation@12",
-          "when": "view == api.group"
+          "when": "view == view.local"
         },
         {
-          "command": "api.group.add",
-          "group": "navigation@11",
-          "when": "view == api.group"
-        },
-        {
-          "command": "api.group.refresh",
+          "command": "cmd.local.refresh",
           "group": "navigation@19",
-          "when": "view == api.group"
+          "when": "view == view.local"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "cmd.list.remove",
+          "group": "inline@01",
+          "when": "view == view.list && viewItem == root"
+        },
+        {
+          "command": "cmd.common.openLink",
+          "group": "inline@02",
+          "when": "view == view.list && viewItem == root"
+        },
+        {
+          "command": "cmd.list.saveInterface",
+          "group": "inline@09",
+          "when": "view == view.list && viewItem == interface || viewItem == group"
         }
       ]
     },
@@ -129,40 +154,51 @@
         "swaggerToTypes.savePath": {
           "type": "string",
           "description": "%text.config.savePath%",
-          "default": ".vscode/swagger-to-types"
+          "default": "types/swagger-to-types"
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "yarn run build",
-    "build": "rm -rf ./dist && webpack --mode production",
-    "dev": "webpack --mode development --watch",
-    "compile": "webpack --mode development",
-    "watch": "webpack --mode development --watch",
-    "watch-ts": "tsc -watch -p ./"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.1",
-    "@types/mocha": "^5.2.6",
-    "@types/node": "^10.12.21",
-    "@types/node-fetch": "^2.5.2",
-    "@types/vscode": "^1.38.0",
-    "@typescript-eslint/eslint-plugin": "^2.3.1",
-    "@typescript-eslint/parser": "^2.3.1",
-    "eslint": "^6.4.0",
-    "eslint-config-prettier": "^6.3.0",
-    "eslint-loader": "^3.0.1",
-    "eslint-plugin-prettier": "^3.1.1",
-    "glob": "^7.1.4",
-    "mocha": "^6.1.4",
-    "prettier": "^1.18.2",
-    "standard-version": "^7.0.0",
-    "ts-loader": "^6.1.2",
-    "typescript": "^3.3.1",
-    "webpack": "^4.41.0",
-    "webpack-cli": "^3.3.9",
-    "node-fetch": "^2.6.0"
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.11.2",
+    "@types/node-fetch": "^2.5.7",
+    "@types/vscode": "^1.41.0",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3",
+    "vscode-test": "^1.4.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "author": {
+    "name": "Lanten",
+    "url": "https://www.lanten.me/",
+    "email": "lanten233@qq.com"
+  },
+  "homepage": "https://github.com/lanten/swagger-to-types",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lanten/swagger-to-types.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lanten/swagger-to-types/issues",
+    "email": "lanten233@qq.com"
+  }
 }

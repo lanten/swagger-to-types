@@ -20,20 +20,23 @@ class Localize {
     this.localize = langs[locale]
   }
 
+  /**
+   * 转换换多语言文本
+   * @param key
+   * @param params
+   */
   getLocalize(key: string, ...params: string[]): string {
     let res = this.localize[key] || key
-    if (arguments.length > 1) {
-      const params = Object.assign([], arguments)
+    if (params.length) {
       params.forEach((val, i) => {
-        if (i > 0) res = res.replace(`\${${i}}`, val)
+        res = res.replace(`\${${i + 1}}`, val)
       })
     }
     return res
   }
 }
 
-const localize = new Localize()
+/** 多语言 */
+export const localize = new Localize()
 
 localize.init(JSON.parse(process.env.VSCODE_NLS_CONFIG || ''))
-
-export default localize

@@ -1,17 +1,19 @@
-export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[] {
+import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId } from '../tools'
+
+export function parseSwaggerJson(swaggerJson: SwaggerJson, rootKey: string): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
-
-  console.warn(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
     res = tags.map((v, i) => {
       tagsMap[v.name] = i
       return {
+        key: randomId(`${v.name}-xxxxxx`),
+        parentKey: rootKey,
         title: v.name,
         subTitle: v.description,
-        type: 'tag',
+        type: 'group',
       }
     })
   }
@@ -20,14 +22,14 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     const v = paths[path]
     const method = Object.keys(v)[0]
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
-    const pathName = $ext.toCamel(path, false, '/').replace('/', '')
+    const pathName = toCamel(path, false, '/').replace('/', '')
     const fileName = path.slice(1, path.length).replace(/\//g, '-')
 
     let params: any[] = []
     if (!parameters || !parameters.length) {
       params = []
     } else {
-      const bodyIndex = parameters.findIndex(x => x.in === 'body')
+      const bodyIndex = parameters.findIndex((x) => x.in === 'body')
 
       if (bodyIndex !== -1) {
         const paramsBody = parameters[bodyIndex]
@@ -46,7 +48,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
         }
       } else {
         // 忽略 headers
-        params = parameters.filter(x => x.in !== 'header')
+        params = parameters.filter((x) => x.in !== 'header')
       }
     }
 
@@ -62,10 +64,10 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
       }
     }
 
-    // console.warn(response)
-
-    const itemRes = {
+    const itemRes: SwaggerJsonTreeItem & AnyObj = {
       type: 'interface',
+      key: randomId(`${summary}-xxxxxx`),
+      parentKey: '',
       method,
       params,
       response,
@@ -78,19 +80,19 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson): SwaggerJsonTreeItem[
     }
 
     if (tags && tags.length) {
-      tags.forEach(tagStr => {
-        const resIndex = tagsMap[tagStr]
-        if (res[resIndex].children && Array.isArray(res[resIndex].children)) {
-          // @ts-ignore
-          res[resIndex].children.push(itemRes)
+      tags.forEach((tagStr) => {
+        const tagIndex = tagsMap[tagStr]
+        const tagVal = res[tagIndex]
+        itemRes.parentKey = tagVal.key
+
+        if (res[tagIndex].children && Array.isArray(tagVal.children)) {
+          tagVal.children?.push(itemRes)
         } else {
-          res[resIndex].children = [itemRes]
+          tagVal.children = [itemRes]
         }
       })
     }
   }
-
-  // console.warn(res)
 
   return res
 }
@@ -103,7 +105,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   const { properties, required = [] } = ref
 
   if (!ref) {
-    console.warn({ res: definitions[originalRef], originalRef })
+    log.error(JSON.stringify({ res: definitions[originalRef], originalRef }, undefined, 2))
   }
 
   if (properties) {
@@ -170,7 +172,7 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
   const indentationSpace = handleIndentation(indentation)
   return [
     `${indentationSpace}declare namespace ${name} {`,
-    ...content.map(v => `${indentationSpace}${v}`),
+    ...content.map((v) => `${indentationSpace}${v}`),
     `${indentationSpace}}`,
   ]
 }
@@ -209,7 +211,7 @@ function parseProperties(
   let content: string[] = []
 
   if (Array.isArray(properties)) {
-    content = properties.map(v => {
+    content = properties.map((v) => {
       let type = handleType(v.type)
       if (v.item) {
         type = `${interfaceName}${toUp(v.name)}`
@@ -221,7 +223,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        console.warn('item.properties is undefined')
+        // log.warn(`<${interfaceName}> [${v.name}] [${v.description}]: item.properties is undefined`)
       }
 
       if (v.type === 'array') {
@@ -242,12 +244,7 @@ function parseProperties(
   }
 
   if (content.length) {
-    interfaceList.push(
-      `${indentationSpace}interface ${interfaceName} {`,
-      ...content,
-      `${indentationSpace}}`,
-      ''
-    )
+    interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
   }
 
   return interfaceList
@@ -275,7 +272,7 @@ function parseHeaderInfo(data: TreeInterface): string[] {
  * @param indentation
  */
 function handleIndentation(indentation = 0): string {
-  return new Array(indentation * $ext.BASE_INDENTATION_COUNT + 1).join($ext.BASE_INDENTATION)
+  return new Array(indentation * BASE_INDENTATION_COUNT + 1).join(BASE_INDENTATION)
 }
 
 /**
@@ -295,6 +292,9 @@ function handleType(type: string): string {
   switch (type) {
     case 'integer':
       return 'number'
+
+    case 'ref':
+      return 'unknown // BUG: Type Error (ref)'
 
     default:
       return type || 'unknown'

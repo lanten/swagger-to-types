@@ -6,4 +6,10 @@ declare global {
       ctx: vscode.ExtensionContext
     }
   }
+
+  interface AnyObj {
+    [key: string]: any
+  }
+
+  type ItemTypes = 'files' | 'folders'
 }

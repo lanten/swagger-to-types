@@ -1,22 +1,23 @@
-import { BaseTreeProvider, BaseTreeItem } from '@/core'
-export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
+import { BaseTreeProvider, BaseTreeItem, BaseTreeItemOptions } from '../core'
+import { config, SwaggerJsonUrlItem } from '../tools'
+
+export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {
   public treeList: SwaggerJsonUrlItem[] = []
 
   getSwaggerSettings(): SwaggerJsonUrlItem[] {
-    return $ext.config.extConfig.swaggerJsonUrl || []
+    return config.extConfig.swaggerJsonUrl || []
   }
 
-  getChildren(): Thenable<ApiGroupItem[]> {
+  getChildren(): Thenable<ApiLocalItem[]> {
     const treeItems = this.renderItem(this.getSwaggerSettings())
 
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: SwaggerJsonUrlItem[]): ApiGroupItem[] {
-    return itemList.map((item, index) => {
+  renderItem(itemList: SwaggerJsonUrlItem[]): ApiLocalItem[] {
+    return itemList.map((item) => {
       const title = item.title || item.url
       const options: BaseTreeItemOptions = {
-        index,
         title,
         type: 'group',
         subTitle: item.title ? item.url : '',
@@ -24,18 +25,17 @@ export class ApiGroup extends BaseTreeProvider<ApiGroupItem> {
         command: {
           title,
           command: 'api.group.onSelect',
-          arguments: [{ ...item, index }],
         },
       }
 
-      return new ApiGroupItem(options)
+      return new ApiLocalItem(options)
     })
   }
 
   refresh(): void {
     this.treeList = []
-    this._onDidChangeTreeData.fire()
+    this._onDidChangeTreeData.fire(undefined)
   }
 }
 
-export class ApiGroupItem extends BaseTreeItem {}
+export class ApiLocalItem extends BaseTreeItem {}

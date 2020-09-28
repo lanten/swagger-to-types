@@ -1,9 +1,10 @@
 {
   "tabWidth": 2,
-  "printWidth": 112,
+  "printWidth": 120,
   "proseWrap": "never",
   "eslintIntegration": true,
   "singleQuote": true,
   "semi": false,
-  "trailingComma": "es5"
+  "trailingComma": "es5",
+  "endOfLine": "auto"
 }
