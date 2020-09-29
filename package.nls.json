@@ -1,14 +1,16 @@
 {
-  "app.title": "API SYNC",
+  "app.title": "Swagger API",
+  "app.category": "Swagger API",
 
-  "view.list.title": "API List",
-  "view.group.title": "Project List",
+  "view.list.title": "Swagger API List",
+  "view.local.title": "Local API List",
 
   "command.add": "Add",
   "command.remove": "Remove",
   "command.search": "Search",
   "command.setting": "Setting",
-  "command.refresh": "Refresh",
+  "command.list.refresh": "刷新远程接口列表",
+  "command.local.refresh": "刷新本地接口列表",
   "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
 

@@ -1,18 +1,20 @@
 {
-  "app.title": "Swagger 接口同步",
+  "app.title": "Swagger API",
+  "app.category": "Swagger API",
 
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
 
-  "command.add": "添加",
-  "command.remove": "删除",
+  "command.add": "添加项目",
+  "command.setting": "打开工作区设置",
+  "command.list.refresh": "刷新远程接口列表",
+  "command.local.refresh": "刷新本地接口列表",
   "command.search": "搜索",
-  "command.search.placeholder": "请输入关键字",
-  "command.setting": "工作区设置",
-  "command.refresh": "刷新",
+  "command.remove": "删除项目",
   "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
 
+  "text.search.placeholder": "请输入关键字",
   "text.swaggerJsonTitle": "项目标题",
   "text.swaggerJsonUrl": "Swagger Json Url",
   "text.noWorkspace": "需要工作区",
