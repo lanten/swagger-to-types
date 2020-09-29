@@ -19,19 +19,26 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:view.list",
-    "onView:view.local"
+    "*"
   ],
   "contributes": {
+    "keybindings": [
+      {
+        "command": "cmd.list.search",
+        "key": "alt+shift+f"
+      }
+    ],
     "commands": [
       {
         "command": "cmd.list.refresh",
-        "title": "%command.refresh%",
+        "title": "%command.list.refresh%",
+        "category": "%app.category%",
         "icon": "$(refresh)"
       },
       {
         "command": "cmd.list.add",
         "title": "%command.add%",
+        "category": "%app.category%",
         "icon": "$(add)"
       },
       {
@@ -42,6 +49,7 @@
       {
         "command": "cmd.list.search",
         "title": "%command.search%",
+        "category": "%app.category%",
         "icon": "$(search)"
       },
       {
@@ -51,12 +59,14 @@
       },
       {
         "command": "cmd.local.refresh",
-        "title": "%command.refresh%",
+        "title": "%command.local.refresh%",
+        "category": "%app.category%",
         "icon": "$(refresh)"
       },
       {
         "command": "cmd.common.setting",
         "title": "%command.setting%",
+        "category": "%app.category%",
         "icon": "$(gear)"
       },
       {

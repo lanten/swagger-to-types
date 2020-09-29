@@ -64,7 +64,7 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
     search() {
       openListPicker({
         title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${apiList.updateDate})`,
-        placeholder: localize.getLocalize('command.search.placeholder'),
+        placeholder: localize.getLocalize('text.search.placeholder'),
         before: () => apiList.getSearchList(),
       }).then((res) => {
         console.log(res)

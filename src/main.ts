@@ -22,9 +22,9 @@ export function activate(ctx: vscode.ExtensionContext) {
   // vscode.window.registerTreeDataProvider('view.local', apiGroup)
 
   // DEBUG
-  setTimeout(() => {
-    log.outputChannel.show()
-  }, 500)
+  // setTimeout(() => {
+  //   log.outputChannel.show()
+  // }, 500)
 }
 
 export function deactivate() {
