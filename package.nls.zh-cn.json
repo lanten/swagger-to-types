@@ -5,10 +5,10 @@
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
 
-  "command.add": "添加项目",
-  "command.setting": "打开工作区设置",
   "command.list.refresh": "刷新远程接口列表",
   "command.local.refresh": "刷新本地接口列表",
+  "command.add": "添加项目",
+  "command.setting": "打开工作区设置",
   "command.search": "搜索",
   "command.remove": "删除项目",
   "command.openLink": "在浏览器中打开",
