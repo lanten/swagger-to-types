@@ -25,7 +25,7 @@ export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.T
 
     /** 添加 swagger 项目 */
     async add() {
-      const titleText = localize.getLocalize('text.swaggerJsonTitle')
+      const titleText = localize.getLocalize('text.title')
       const urlText = localize.getLocalize('text.swaggerJsonUrl')
       const orText = localize.getLocalize('text.or')
       const title = await vscode.window.showInputBox({
