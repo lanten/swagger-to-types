@@ -1,8 +1,8 @@
 import vscode from 'vscode'
 
-import { ApiLocal } from '../views/local.view'
+import { ViewLocal } from '../views/local.view'
 
-export function registerLocalCommands(apiGroup: ApiLocal) {
+export function registerLocalCommands(apiGroup: ViewLocal) {
   const commands = {
     /** 刷新本地接口列表 */
     refresh: () => apiGroup.refresh(),

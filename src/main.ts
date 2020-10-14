@@ -1,12 +1,12 @@
 import vscode from 'vscode'
-import { ApiList } from './views/list.view'
-import { ApiLocal } from './views/local.view'
+import { ViewList } from './views/list.view'
+import { ViewLocal } from './views/local.view'
 
 import { log } from './tools'
 import { registerCommonCommands, registerListCommands, registerLocalCommands } from './commands'
 
-const apiList = new ApiList()
-const apiLocal = new ApiLocal()
+const apiList = new ViewList()
+const apiLocal = new ViewLocal()
 
 export function activate(ctx: vscode.ExtensionContext) {
   global.ctx = ctx
@@ -18,6 +18,12 @@ export function activate(ctx: vscode.ExtensionContext) {
   registerCommonCommands()
   registerListCommands(apiList, apiListTreeView)
   registerLocalCommands(apiLocal)
+
+  // 监听 settings.json 文件变更
+  vscode.workspace.onDidChangeConfiguration(() => {
+    apiList.refresh()
+    apiLocal.refresh()
+  })
 
   log.info('Extension activated.')
 }

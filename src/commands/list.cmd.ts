@@ -4,10 +4,10 @@ import path from 'path'
 import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
 import { openListPicker } from '../core'
 
-import { ApiList, ListItem } from '../views/list.view'
+import { ViewList, ListItem } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
 
-export function registerListCommands(apiList: ApiList, apiListTreeView: vscode.TreeView<ListItem>) {
+export function registerListCommands(apiList: ViewList, apiListTreeView: vscode.TreeView<ListItem>) {
   const commands = {
     /** 刷新 API 列表 */
     refresh: () => {
