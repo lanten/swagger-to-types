@@ -141,11 +141,6 @@
           "when": "view == view.list"
         },
         {
-          "command": "cmd.common.setting",
-          "group": "navigation@12",
-          "when": "view == view.local"
-        },
-        {
           "command": "cmd.local.refresh",
           "group": "navigation@19",
           "when": "view == view.local"
@@ -211,6 +206,7 @@
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
+    "chokidar": "^3.4.3",
     "node-fetch": "^2.6.1"
   },
   "author": {

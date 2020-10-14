@@ -22,7 +22,7 @@ interface ExtListItemConfig {
   parentKey?: string
 }
 
-export class ApiList extends BaseTreeProvider<ListItem> {
+export class ViewList extends BaseTreeProvider<ListItem> {
   /** Swagger JSON */
   public swaggerJsonMap: SwaggerJsonMap = new Map()
   /** 接口更新时间 */
@@ -241,6 +241,7 @@ export class ApiList extends BaseTreeProvider<ListItem> {
   public refresh(): void {
     this.swaggerJsonMap.clear()
     this._onDidChangeTreeData.fire(undefined)
+    log.info('refresh: view.list')
   }
 }
 
