@@ -5,9 +5,12 @@
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
 
+  "viewsWelcome.emptyList": "[添加 Swagger API](command:cmd.list.add)\n[打开工作设置](command:cmd.common.setting)\n",
+  "viewsWelcome.emptyLocal": "本地接口列表为空",
+
   "command.list.refresh": "刷新远程接口列表",
   "command.local.refresh": "刷新本地接口列表",
-  "command.add": "添加项目",
+  "command.add": "添加 API",
   "command.setting": "打开工作区设置",
   "command.search": "搜索",
   "command.remove": "删除项目",
@@ -15,11 +18,11 @@
   "command.saveInterface": "保存接口",
 
   "text.search.placeholder": "请输入关键字",
-  "text.swaggerJsonTitle": "项目标题",
+  "text.title": "标题",
   "text.swaggerJsonUrl": "Swagger Json Url",
   "text.noWorkspace": "需要工作区",
   "text.or": "或",
-  "text.config.swaggerJsonUrl": "一个数组, Swagger Json Url 示例: { \"title\": \"New Project\", \"url\": \"http://api.xxxx.com/v2/api-docs\"}",
+  "text.config.swaggerJsonUrl": "Swagger API 列表",
   "text.config.savePath": "Typescript 接口文件保存路径",
 
   "temp.input.placeholder": "请输入 ${1}",

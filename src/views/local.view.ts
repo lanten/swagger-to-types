@@ -36,6 +36,9 @@ export class ApiLocal extends BaseTreeProvider<ApiLocalItem> {
     this.treeList = []
     this._onDidChangeTreeData.fire(undefined)
   }
+
+  /** 销毁时释放资源 */
+  destroy(): void {}
 }
 
 export class ApiLocalItem extends BaseTreeItem {}

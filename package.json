@@ -98,8 +98,24 @@
     },
     "viewsWelcome": [
       {
+        "view": "view.list",
+        "contents": "%text.noWorkspace%",
+        "when": "workbenchState == empty"
+      },
+      {
+        "view": "view.list",
+        "contents": "%viewsWelcome.emptyList%",
+        "when": "workbenchState != empty"
+      },
+      {
         "view": "view.local",
-        "contents": "开发中..."
+        "contents": "%text.noWorkspace%",
+        "when": "workbenchState == empty"
+      },
+      {
+        "view": "view.local",
+        "contents": "%viewsWelcome.emptyLocal%",
+        "when": "workbenchState != empty"
       }
     ],
     "menus": {
