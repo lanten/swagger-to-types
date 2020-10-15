@@ -68,7 +68,8 @@ interface SwaggerJsonTreeItem {
     | 'root' // 根节点
     | 'group' // 接口分组
     | 'interface' // 接口节点
-    | 'file' // 本地文件
+    | 'file-sync' // 本地文件
+    | 'file-ignore' // 本地文件
   title: string
   subTitle: string
   pathName?: string

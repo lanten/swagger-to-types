@@ -20,11 +20,16 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
   /** 标题 */
   public label: string
 
+  /**
+   * 小图标配置
+   * [codeIcon](https://microsoft.github.io/vscode-codicons/dist/codicon.html)
+   */
   public readonly ICON_MAP: { [K in SwaggerJsonTreeItem['type']]: vscode.TreeItem['iconPath'] } = {
     root: new vscode.ThemeIcon('package'),
     group: vscode.ThemeIcon.Folder,
     interface: new vscode.ThemeIcon('debug-disconnect'),
-    file: new vscode.ThemeIcon('file'),
+    'file-ignore': new vscode.ThemeIcon('sync-ignored'),
+    'file-sync': new vscode.ThemeIcon('sync'),
   }
 
   constructor(public readonly options: BaseTreeItemOptions & ExtOptions) {
