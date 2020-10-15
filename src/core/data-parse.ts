@@ -257,11 +257,11 @@ function parseProperties(
 function parseHeaderInfo(data: TreeInterface): string[] {
   return [
     '/**',
-    ` * name   : ${data.title}`,
-    ` * path   : ${data.path}`,
-    ` * optId  : ${data.operationId}`,
-    ` * method : ${data.method}`,
-    ` * update : ${new Date().toLocaleString()}`,
+    ` * @name   ${data.title}`,
+    ` * @path   ${data.path}`,
+    ` * @optId  ${data.operationId}`,
+    ` * @method ${data.method.toUpperCase()}`,
+    ` * @update ${new Date().toLocaleString()}`,
     ' */',
     '',
   ]
@@ -294,9 +294,9 @@ function handleType(type: string): string {
       return 'number'
 
     case 'ref':
-      return 'unknown // BUG: Type Error (ref)'
+      return 'any // BUG: Type Error (ref)'
 
     default:
-      return type || 'unknown'
+      return type || 'any'
   }
 }

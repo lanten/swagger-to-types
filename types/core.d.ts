@@ -68,6 +68,7 @@ interface SwaggerJsonTreeItem {
     | 'root' // 根节点
     | 'group' // 接口分组
     | 'interface' // 接口节点
+    | 'file' // 本地文件
   title: string
   subTitle: string
   pathName?: string
@@ -109,4 +110,21 @@ interface TreeInterface {
   operationId: string
   produces: string[]
   deprecated: boolean
+}
+
+interface FileHeaderInfo {
+  /** 文件名 */
+  fileName: string
+  /** 文件路径 */
+  filePath: string
+  /** 接口名称 */
+  name?: string
+  /** 接口地址 */
+  path?: string
+  /** 请求方法 */
+  method?: string
+  /** 更新时间 */
+  update?: string
+  /** 忽略自动更新 */
+  ignore?: boolean
 }

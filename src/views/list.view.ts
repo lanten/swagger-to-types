@@ -243,6 +243,11 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     this._onDidChangeTreeData.fire(undefined)
     log.info('refresh: view.list')
   }
+
+  /** settings.json 文件变更时触发 */
+  public onConfigurationRefresh() {
+    this.refresh()
+  }
 }
 
 export class ListItem extends BaseTreeItem<ExtListItemConfig> {}
