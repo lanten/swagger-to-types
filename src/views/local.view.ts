@@ -86,7 +86,7 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
 
       const options: BaseTreeItemOptions = {
         title,
-        type: 'file',
+        type: item.ignore ? 'file-ignore' : 'file-sync',
         subTitle: `[${item.update || 'No Update Date'}] ${item.path}`,
         collapsible: 0,
         command: {
