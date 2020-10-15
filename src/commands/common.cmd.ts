@@ -36,6 +36,11 @@ export function registerCommonCommands() {
       // vscode.commands.executeCommand('vscode.open', link)
       vscode.env.openExternal(vscode.Uri.parse(link))
     },
+
+    /** 打开本地文件 */
+    openLocalFile(item: FileHeaderInfo) {
+      console.log(item)
+    },
   }
 
   for (const command in commands) {

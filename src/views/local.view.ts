@@ -1,60 +1,98 @@
 import fs from 'fs'
 import path from 'path'
-import chokidar from 'chokidar'
+import vscode from 'vscode'
 
 import { BaseTreeProvider, BaseTreeItem, BaseTreeItemOptions } from '../core'
-import { config, SwaggerJsonUrlItem, log, WORKSPACE_PATH } from '../tools'
+import { config, log, WORKSPACE_PATH } from '../tools'
 
 export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
-  public treeList: SwaggerJsonUrlItem[] = []
-  private localFileWatcher?: chokidar.FSWatcher
+  public localFilesList: FileHeaderInfo[] = []
+  public localFilesMap = new Map<string, FileHeaderInfo>()
+
+  private localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
 
   constructor() {
     super()
-    this.watchLocalFile()
+
+    this.initLocalFiles()
+
+    /** 监听文件保存 */
+    vscode.workspace.onDidSaveTextDocument(({ languageId, fileName }) => {
+      // 过滤非 TS 语言文件
+      if (languageId !== 'typescript') return
+      // 过滤非接口目录文件
+      if (!fileName.includes(this.localPath)) return
+
+      const fileInfo = this.readLocalFile(fileName)
+
+      if (fileInfo) {
+        this.localFilesMap.set(fileInfo.fileName, fileInfo)
+        this.refactorLocalFilesList()
+      }
+    })
   }
 
-  /** 监听本地文件变更 */
-  watchLocalFile() {
-    if (!WORKSPACE_PATH) return
+  /** 初始化本地文件 */
+  initLocalFiles() {
+    this.localFilesMap.clear()
 
-    const { savePath } = config.extConfig
+    if (fs.existsSync(this.localPath)) {
+      fs.readdirSync(this.localPath).forEach((file) => {
+        const filePath = path.join(this.localPath, file)
+        const fileInfo = this.readLocalFile(filePath)
 
-    const absPath = path.resolve(WORKSPACE_PATH, savePath)
-    console.log(absPath)
+        if (fileInfo) {
+          this.localFilesMap.set(fileInfo.fileName, fileInfo)
+        }
+      })
 
-    if (!fs.existsSync(absPath)) {
-      fs.mkdirSync(absPath, { recursive: true })
+      this.refactorLocalFilesList()
+    } else {
+      fs.mkdirSync(this.localPath)
     }
-
-    this.localFileWatcher = chokidar.watch(path.join(absPath, '*.d.ts'))
-    this.localFileWatcher
-      .on('add', (path, state) => console.log(`File ${path} has been added`, state))
-      .on('change', (path, state) => console.log(`File ${path} has been changed`, state))
-      .on('unlink', (path) => console.log(`File ${path} has been removed`))
   }
 
-  getSwaggerSettings(): SwaggerJsonUrlItem[] {
-    return config.extConfig.swaggerJsonUrl || []
+  /** 读取本地文件 */
+  readLocalFile(fileName: string): FileHeaderInfo | undefined {
+    try {
+      const fileStr = fs.readFileSync(fileName, 'utf-8')
+      const headerStr = fileStr.replace(/^[\s]*\/\*\*(.*?)\*\/(.+)$/s, '$1')
+
+      const headerInfo: FileHeaderInfo = {
+        fileName: fileName.replace(/^.+\/(.+?)(\.d)?\.ts$/, '$1'),
+        filePath: fileName,
+      }
+
+      headerStr.replace(/\*\s*@([^\s]+)[^\S\n]*([^\n]*?)\n/g, (_, key, value) => {
+        headerInfo[key] = value || true
+        return ''
+      })
+
+      return headerInfo
+    } catch (error) {
+      log.error(`Read File Error - ${fileName}`)
+    }
   }
 
   getChildren(): Thenable<ViewLocalItem[]> {
-    const treeItems = this.renderItem(this.getSwaggerSettings())
+    const treeItems = this.renderItem(this.localFilesList)
 
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: SwaggerJsonUrlItem[]): ViewLocalItem[] {
+  renderItem(itemList: FileHeaderInfo[]): ViewLocalItem[] {
     return itemList.map((item) => {
-      const title = item.title || item.url
+      const title = item.name || item.fileName
+
       const options: BaseTreeItemOptions = {
         title,
-        type: 'group',
-        subTitle: item.title ? item.url : '',
+        type: 'file',
+        subTitle: `[${item.update || 'No Update Date'}] ${item.path}`,
         collapsible: 0,
         command: {
           title,
-          command: 'api.group.onSelect',
+          command: 'cmd.common.openLocalFile',
+          arguments: [item],
         },
       }
 
@@ -62,16 +100,29 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
     })
   }
 
-  refresh(): void {
-    this.treeList = []
+  /** 重新生成本地文件列表 */
+  public refactorLocalFilesList() {
+    this.localFilesList = []
+    this.localFilesMap.forEach((val) => {
+      this.localFilesList.push(val)
+    })
     this._onDidChangeTreeData.fire(undefined)
+  }
+
+  /** 完全刷新本地文件列表 */
+  public refresh(): void {
+    this.initLocalFiles()
     log.info('refresh: view.local')
   }
 
-  /** 销毁时释放资源 */
-  destroy(): void {
-    this.localFileWatcher?.close()
+  /** settings.json 文件变更时触发 */
+  public onConfigurationRefresh() {
+    const { savePath } = config.extConfig
+    this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
   }
+
+  /** 销毁时释放资源 */
+  destroy(): void {}
 }
 
 export class ViewLocalItem extends BaseTreeItem {}

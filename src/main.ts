@@ -21,8 +21,8 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   // 监听 settings.json 文件变更
   vscode.workspace.onDidChangeConfiguration(() => {
-    apiList.refresh()
-    apiLocal.refresh()
+    apiList.onConfigurationRefresh()
+    apiLocal.onConfigurationRefresh()
   })
 
   log.info('Extension activated.')

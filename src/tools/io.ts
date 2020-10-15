@@ -48,14 +48,14 @@ export async function preSaveDocument(docStr: string, filePath: string) {
   return vscode.workspace.openTextDocument(newFile).then(async (document) => {
     const edit = new vscode.WorkspaceEdit()
     const pMin = new vscode.Position(0, 0)
-    // const pMax = new vscode.Position(Infinity, Infinity)
-    const pMax = new vscode.Position(999999999, 999999999)
+    const pMax = new vscode.Position(999999999, 999999999) // TODO 主要目的是替换文本, 暂未找到替代方案
     edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
+
     return vscode.workspace.applyEdit(edit).then((success) => {
       if (success) {
         vscode.window.showTextDocument(document)
       } else {
-        log.error('Error!'['document error'])
+        log.error('Error!'['document error'], true)
       }
       return success
     })

@@ -206,7 +206,6 @@
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
-    "chokidar": "^3.4.3",
     "node-fetch": "^2.6.1"
   },
   "author": {

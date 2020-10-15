@@ -24,6 +24,7 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
     root: new vscode.ThemeIcon('package'),
     group: vscode.ThemeIcon.Folder,
     interface: new vscode.ThemeIcon('debug-disconnect'),
+    file: new vscode.ThemeIcon('file'),
   }
 
   constructor(public readonly options: BaseTreeItemOptions & ExtOptions) {
