@@ -18,8 +18,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [ ] 支持一键保存接口 (分组批量保存)
 - [x] 支持多条件模糊搜索
 - [x] 添加本地接口列表树视图
+- [ ] 本地接口单个文件更新
 - [ ] 一键更新已保存的接口 (支持快捷键)
 - [ ] 状态栏添加一键更新按钮
-- [ ] 删除本地接口
+- [x] 删除本地接口文件
 - [x] 未打开工作区时展示引导
 - [x] 为配置 SwaggerJSON 时展示引导
+- [ ] 获取数据支持 token

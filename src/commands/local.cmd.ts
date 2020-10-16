@@ -2,10 +2,10 @@ import vscode from 'vscode'
 
 import { ViewLocal } from '../views/local.view'
 
-export function registerLocalCommands(apiGroup: ViewLocal) {
+export function registerLocalCommands(viewLocal: ViewLocal) {
   const commands = {
     /** 刷新本地接口列表 */
-    refresh: () => apiGroup.refresh(),
+    refresh: () => viewLocal.refresh(),
 
     /** 本地接口列表选中 */
     onSelect(e: any) {

@@ -7,11 +7,11 @@ import { openListPicker } from '../core'
 import { ViewList, ListItem } from '../views/list.view'
 import { parseToInterface } from '../core/data-parse'
 
-export function registerListCommands(apiList: ViewList, apiListTreeView: vscode.TreeView<ListItem>) {
+export function registerListCommands(viewList: ViewList, listTreeView: vscode.TreeView<ListItem>) {
   const commands = {
     /** 刷新 API 列表 */
     refresh: () => {
-      apiList.refresh()
+      viewList.refresh()
     },
 
     /** 选择接口 */
@@ -45,7 +45,7 @@ export function registerListCommands(apiList: ViewList, apiListTreeView: vscode.
         config.setCodeConfig({ swaggerJsonUrl })
         log.info(`<add> Add Swagger Project: [${title}]`)
         setTimeout(() => {
-          apiList.refresh()
+          viewList.refresh()
         }, 200)
       } else {
         vscode.window.showErrorMessage(
@@ -55,16 +55,17 @@ export function registerListCommands(apiList: ViewList, apiListTreeView: vscode.
       }
     },
 
+    /** 搜索接口列表 (远程) */
     search() {
       openListPicker({
-        title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${apiList.updateDate})`,
+        title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${viewList.updateDate})`,
         placeholder: localize.getLocalize('text.search.placeholder'),
-        before: () => apiList.getSearchList(),
+        before: () => viewList.getSearchList(),
       }).then((res) => {
         if (!res.source) return log.error('Picker.res.source in undefined', true)
         if (!res.apiUrl) return log.error('Picker.res.apiUrl in undefined', true)
-        apiListTreeView
-          .reveal(apiList.transformToListItem(res.source, res.apiUrl), {
+        listTreeView
+          .reveal(viewList.transformToListItem(res.source, res.apiUrl), {
             expand: true,
             select: true,
           })

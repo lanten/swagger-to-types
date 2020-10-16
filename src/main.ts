@@ -5,24 +5,24 @@ import { ViewLocal } from './views/local.view'
 import { log } from './tools'
 import { registerCommonCommands, registerListCommands, registerLocalCommands } from './commands'
 
-const apiList = new ViewList()
-const apiLocal = new ViewLocal()
+const viewList = new ViewList()
+const viewLocal = new ViewLocal()
 
 export function activate(ctx: vscode.ExtensionContext) {
   global.ctx = ctx
 
-  const apiListTreeView = vscode.window.createTreeView('view.list', { treeDataProvider: apiList })
+  const listTreeView = vscode.window.createTreeView('view.list', { treeDataProvider: viewList })
   // const apiLocalTreeView = vscode.window.createTreeView('view.local', { treeDataProvider: apiLocal })
-  vscode.window.createTreeView('view.local', { treeDataProvider: apiLocal })
+  vscode.window.createTreeView('view.local', { treeDataProvider: viewLocal })
 
-  registerCommonCommands()
-  registerListCommands(apiList, apiListTreeView)
-  registerLocalCommands(apiLocal)
+  registerCommonCommands(viewLocal)
+  registerListCommands(viewList, listTreeView)
+  registerLocalCommands(viewLocal)
 
   // 监听 settings.json 文件变更
   vscode.workspace.onDidChangeConfiguration(() => {
-    apiList.onConfigurationRefresh()
-    apiLocal.onConfigurationRefresh()
+    viewList.onConfigurationRefresh()
+    viewLocal.onConfigurationRefresh()
   })
 
   log.info('Extension activated.')
@@ -30,7 +30,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-  apiLocal.destroy()
+  viewLocal.destroy()
 
   log.info('Extension deactivated.')
 }
