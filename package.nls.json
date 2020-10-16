@@ -16,6 +16,7 @@
   "command.remove": "Remove",
   "command.openLink": "Open in browser",
   "command.saveInterface": "Save interface",
+  "command.local.updateInterface": "Update interface",
 
   "text.search.placeholder": "Please enter keywords",
   "text.title": "Title",

@@ -120,6 +120,8 @@ interface FileHeaderInfo {
   filePath: string
   /** 接口名称 */
   name?: string
+  /** namespace */
+  namespace?: string
   /** 接口地址 */
   path?: string
   /** 请求方法 */

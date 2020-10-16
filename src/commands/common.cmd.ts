@@ -39,7 +39,9 @@ export function registerCommonCommands() {
 
     /** 打开本地文件 */
     openLocalFile(item: FileHeaderInfo) {
-      console.log(item)
+      vscode.workspace.openTextDocument(item.filePath).then((doc) => {
+        vscode.window.showTextDocument(doc)
+      })
     },
   }
 

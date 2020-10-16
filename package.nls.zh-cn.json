@@ -13,9 +13,10 @@
   "command.add": "添加 API",
   "command.setting": "打开工作区设置",
   "command.search": "搜索",
-  "command.remove": "删除项目",
+  "command.remove": "删除",
   "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
+  "command.local.updateInterface": "更新接口",
 
   "text.search.placeholder": "请输入关键字",
   "text.title": "标题",

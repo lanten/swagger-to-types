@@ -56,7 +56,10 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
   readLocalFile(fileName: string): FileHeaderInfo | undefined {
     try {
       const fileStr = fs.readFileSync(fileName, 'utf-8')
-      const headerStr = fileStr.replace(/^[\s]*\/\*\*(.*?)\*\/(.+)$/s, '$1')
+      const headerStr = fileStr.replace(
+        /^[\s]*\/\*\*(.*?)\*\/.*declare\snamespace\s([^\s\n]+).+$/s,
+        '$1* @namespace $2'
+      )
 
       const headerInfo: FileHeaderInfo = {
         fileName: fileName.replace(/^.+\/(.+?)(\.d)?\.ts$/, '$1'),
@@ -82,7 +85,7 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
 
   renderItem(itemList: FileHeaderInfo[]): ViewLocalItem[] {
     return itemList.map((item) => {
-      const title = item.name || item.fileName
+      const title = item.name || item.namespace || item.fileName
 
       const options: BaseTreeItemOptions = {
         title,
