@@ -3,6 +3,14 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+## [Unreleased]
+### Fixed
+- [ ] 老版本接口文件兼容问题
+- [ ] 单个接口更新本地列表不刷新
+- [ ] 一键更新本地列表不刷新
+
 ## [1.0.0] 2020-10-16
 ### Added
 - [x] 支持打开关联的链接
