@@ -2,13 +2,14 @@ import vscode from 'vscode'
 import { ViewList } from './views/list.view'
 import { ViewLocal } from './views/local.view'
 
-import { log } from './tools'
+import { log, config } from './tools'
 import { registerCommonCommands, registerListCommands, registerLocalCommands } from './commands'
 
 const viewList = new ViewList()
-const viewLocal = new ViewLocal()
+const viewLocal = new ViewLocal(viewList)
 
 export function activate(ctx: vscode.ExtensionContext) {
+  const { reloadWhenSettingsChanged } = config.extConfig
   global.ctx = ctx
 
   const listTreeView = vscode.window.createTreeView('view.list', { treeDataProvider: viewList })
@@ -17,13 +18,15 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   registerCommonCommands(viewList, viewLocal)
   registerListCommands(viewList, listTreeView, viewLocal)
-  registerLocalCommands(viewLocal)
+  registerLocalCommands(viewList, viewLocal)
 
   // 监听 settings.json 文件变更
-  vscode.workspace.onDidChangeConfiguration(() => {
-    viewList.onConfigurationRefresh()
-    viewLocal.onConfigurationRefresh()
-  })
+  if (reloadWhenSettingsChanged) {
+    vscode.workspace.onDidChangeConfiguration(() => {
+      viewList.onConfigurationRefresh()
+      viewLocal.onConfigurationRefresh()
+    })
+  }
 
   log.info('Extension activated.')
 }

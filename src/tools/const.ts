@@ -7,7 +7,7 @@ const { workspaceFolders } = vscode.workspace
 export const WORKSPACE_PATH = workspaceFolders ? workspaceFolders[0].uri.fsPath.replace(/\\/g, '/') : undefined
 
 /** 插件设置 */
-export const CONFIG_LIST = <const>['swaggerJsonUrl', 'savePath']
+export const CONFIG_LIST = <const>['swaggerJsonUrl', 'savePath', 'showStatusbarItem', 'reloadWhenSettingsChanged']
 export type ExtConfigItem = typeof CONFIG_LIST[number]
 
 /** 插件名称 */

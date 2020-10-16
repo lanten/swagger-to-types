@@ -68,6 +68,17 @@ export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
   refresh(): void {
     this._onDidChangeTreeData.fire(undefined)
   }
+
+  private TM: number = Date.now()
+  /** 函数防抖 */
+  debounce(callBack: () => void, t: number) {
+    this.TM = Date.now()
+    setTimeout(() => {
+      if (Date.now() - this.TM >= t) {
+        callBack()
+      }
+    }, t)
+  }
 }
 
 /**
