@@ -88,9 +88,9 @@ export function registerListCommands(
             .saveInterfaceGroup(item)
             .then(() => {
               log.info(
-                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize(
-                  'text.group'
-                )}) ${localize.getLocalize('success')}! <${item.label}>`,
+                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize('text.group')}) <${
+                  item.label
+                }> ${localize.getLocalize('success')}`,
                 true
               )
 
@@ -98,9 +98,9 @@ export function registerListCommands(
             })
             .catch((err) => {
               log.error(
-                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize(
-                  'text.group'
-                )}) ${localize.getLocalize('failed')}! <${item.label}> ${err}`,
+                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize('text.group')}) <${
+                  item.label
+                }> ${localize.getLocalize('failed')} ${err}`,
                 true
               )
             })
@@ -118,23 +118,23 @@ export function registerListCommands(
           }
 
           if (!interfaceItem) {
-            return log.error('interfaceItem of undefined', true)
+            return log.error('interfaceItem is undefined.', true)
           }
 
           viewList
             .saveInterface(interfaceItem)
             .then(() => {
               log.info(
-                `${localize.getLocalize('command.saveInterface')} ${localize.getLocalize('success')}! <${item.label}>`,
+                `${localize.getLocalize('command.saveInterface')} <${item.label}> ${localize.getLocalize('success')}`,
                 true
               )
               viewLocal.refresh()
             })
             .catch((err) => {
               log.error(
-                `${localize.getLocalize('command.saveInterface')} ${localize.getLocalize('failed')}! <${
-                  item.label
-                }> ${err}`,
+                `${localize.getLocalize('command.saveInterface')} <${item.label}> ${localize.getLocalize(
+                  'failed'
+                )} ${err}`,
                 true
               )
             })

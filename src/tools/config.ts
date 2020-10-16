@@ -17,9 +17,12 @@ export interface SwaggerJsonUrlItem {
 export interface CodeConfig {
   /** swagger 项目配置 */
   swaggerJsonUrl: SwaggerJsonUrlItem[]
-
   /** `.d.ts` 文件保存路径 */
   savePath: string
+  /** 是否显示状态栏按钮 */
+  showStatusbarItem: boolean
+  /** 用户设置更新时重新加载数据 */
+  reloadWhenSettingsChanged: boolean
 }
 
 export interface ExtConfig extends CodeConfig, LocalConfig {}
