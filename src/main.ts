@@ -15,8 +15,8 @@ export function activate(ctx: vscode.ExtensionContext) {
   // const apiLocalTreeView = vscode.window.createTreeView('view.local', { treeDataProvider: apiLocal })
   vscode.window.createTreeView('view.local', { treeDataProvider: viewLocal })
 
-  registerCommonCommands(viewLocal)
-  registerListCommands(viewList, listTreeView)
+  registerCommonCommands(viewList, viewLocal)
+  registerListCommands(viewList, listTreeView, viewLocal)
   registerLocalCommands(viewLocal)
 
   // 监听 settings.json 文件变更

@@ -28,6 +28,10 @@
   "text.confirmDeleteFile": "Are you sure to delete the file?",
   "text.confirm": "Confirm",
   "text.cancel": "Cancel",
+  "text.group": "Group",
+
+  "success": "Success",
+  "failed": "Failed",
 
   "error.path": "Wrong path",
   "error.action": "Operation failed, please check log for details",

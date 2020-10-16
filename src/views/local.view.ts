@@ -53,7 +53,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
       this.refactorLocalFilesList()
     } else {
-      fs.mkdirSync(this.localPath)
+      fs.mkdirSync(this.localPath, { recursive: true })
     }
   }
 

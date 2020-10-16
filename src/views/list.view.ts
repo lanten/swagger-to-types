@@ -1,3 +1,4 @@
+import path from 'path'
 import { ProviderResult } from 'vscode'
 
 import {
@@ -7,8 +8,9 @@ import {
   parseSwaggerJson,
   BaseTreeItemOptions,
   ListPickerItem,
+  parseToInterface,
 } from '../core'
-import { config, formatDate, log, SwaggerJsonUrlItem } from '../tools'
+import { config, formatDate, log, SwaggerJsonUrlItem, saveDocument, WORKSPACE_PATH } from '../tools'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
 interface ExtListItemConfig {
@@ -25,8 +27,10 @@ interface ExtListItemConfig {
 export class ViewList extends BaseTreeProvider<ListItem> {
   /** Swagger JSON */
   public swaggerJsonMap: SwaggerJsonMap = new Map()
+  public interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
+  private localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
 
   async getChildren(element?: ListItem) {
     if (!element) {
@@ -173,6 +177,9 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
     data.forEach((v) => {
       if (v.type === 'interface') {
+        if (v.pathName) {
+          this.interFacePathNameMap.set(v.pathName, v)
+        }
         arr.push({
           label: v.title,
           description: `<${v.method}> [${dir}] ${v.pathName} `,
@@ -237,15 +244,45 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     return parentNode
   }
 
+  /** 保存接口到本地 */
+
+  public async saveInterface(itemSource: TreeInterface | ListItem, filePath?: string): Promise<any> {
+    const item = itemSource as TreeInterface
+    if (!item.pathName) return Promise.reject('SaveInterface Error')
+
+    const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
+
+    return saveDocument(parseToInterface(item), filePathH)
+  }
+
+  /** 批量保存分组到本地 */
+  public async saveInterfaceGroup(item: ListItem) {
+    return new Promise(async (resolve, reject) => {
+      const listData = this.swaggerJsonMap.get(item.options.url) || []
+      const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
+      if (itemChildren && itemChildren.length) {
+        for (let index = 0; index < itemChildren.length; index++) {
+          await this.saveInterface(itemChildren[index])
+        }
+        resolve()
+      } else {
+        reject('No Children!')
+      }
+    })
+  }
+
   /** 刷新 */
   public refresh(): void {
     this.swaggerJsonMap.clear()
+    this.interFacePathNameMap.clear()
     this._onDidChangeTreeData.fire(undefined)
     log.info('refresh: view.list')
   }
 
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
+    const { savePath } = config.extConfig
+    this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
     this.refresh()
   }
 }

@@ -18,21 +18,21 @@ export interface BaseTreeItemOptions {
   contextValue?: string
 }
 
+/**
+ * 小图标配置
+ * [codeIcon](https://microsoft.github.io/vscode-codicons/dist/codicon.html)
+ */
+const ICON_MAP: { [K in SwaggerJsonTreeItem['type']]: vscode.TreeItem['iconPath'] } = {
+  root: new vscode.ThemeIcon('package'),
+  group: vscode.ThemeIcon.Folder,
+  interface: new vscode.ThemeIcon('debug-disconnect'),
+  'file-ignore': new vscode.ThemeIcon('sync-ignored'),
+  'file-sync': new vscode.ThemeIcon('sync'),
+}
+
 export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.TreeItem {
   /** 标题 */
   public label: string
-
-  /**
-   * 小图标配置
-   * [codeIcon](https://microsoft.github.io/vscode-codicons/dist/codicon.html)
-   */
-  public readonly ICON_MAP: { [K in SwaggerJsonTreeItem['type']]: vscode.TreeItem['iconPath'] } = {
-    root: new vscode.ThemeIcon('package'),
-    group: vscode.ThemeIcon.Folder,
-    interface: new vscode.ThemeIcon('debug-disconnect'),
-    'file-ignore': new vscode.ThemeIcon('sync-ignored'),
-    'file-sync': new vscode.ThemeIcon('sync'),
-  }
 
   constructor(public readonly options: BaseTreeItemOptions & ExtOptions) {
     super(options.title, options.collapsible)
@@ -47,24 +47,7 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
     }
   }
 
-  // // @ts-ignore
-  // get command() {
-  //   return this.options.command
-  // }
-
-  // // 鼠标悬停时的 label
-  // // @ts-ignore
-  // get tooltip(): string {
-  //   return `${this.label} - ${this.options.subTitle}`
-  // }
-
-  // // 说明文本
-  // // @ts-ignore
-  // get description(): string {
-  //   return this.options.subTitle
-  // }
-
-  iconPath = this.ICON_MAP[this.options.type]
+  iconPath = ICON_MAP[this.options.type]
 
   contextValue = this.options.contextValue
 }
