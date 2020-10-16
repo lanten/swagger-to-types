@@ -2,28 +2,25 @@
 
 将 Swagger JSON 导出为 Typescript interface
 
-## 预览
-
-![](https://raw.githubusercontent.com/lanten/swagger-to-types/master/assets/demo.png)
-
 ## Config
 
-```json
-{
-  // 一个数组, Swagger Json Url 示例: { "title": "New Project", "url": "http://api.xxxx.com/v2/api-docs"}
-  "swaggerToTypes.swaggerJsonUrl": [
-    {
-      "title": "测试项目",
-      "url": "http://api.xxxxx.com/v2/api-docs"
-    }
-  ],
-  // Typescript 接口文件保存路径
-  "swaggerToTypes.savePath": ".vscode/swagger-to-types"
-}
-```
+| 名称                                     | 说明                                                               | 类型                                         | 默认                     |
+| ---------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------- | ------------------------ |
+| swaggerToTypes.swaggerJsonUrl            | Swagger API 列表                                                   | [SwaggerJsonUrlItem](##SwaggerJsonUrlItem)[] | []                       |
+| swaggerToTypes.savePath                  | `.d.ts` 接口文件保存路径                                           | string                                       | 'types/swagger-to-types' |
+| swaggerToTypes.showStatusbarItem         | 显示状态栏按钮                                                     | boolean                                      | `true`                   |
+| swaggerToTypes.reloadWhenSettingsChanged | 当用户设置更改时重新加载数据. (在某些频繁刷新设置的情况下需要关闭) | boolean                                      | `true`                   |
+
+## SwaggerJsonUrlItem
+
+| 名称  | 说明                 | 类型   | 必填    |
+| ----- | -------------------- | ------ | ------- |
+| title | 项目标题             | string | `true`  |
+| url   | swagger json url     | string | `true`  |
+| link  | 在浏览器打开外部链接 | string | `false` |
+
+
 
 ## 注意
 
-- 目前仅支持 swagger v2 API
-- 暂不支持自定义解析器
-- 复杂的接口也许会有问题
+- 仅支持 swagger v2 API
