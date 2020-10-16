@@ -55,11 +55,6 @@ export function registerListCommands(apiList: ViewList, apiListTreeView: vscode.
       }
     },
 
-    /** 移除项目 */
-    remove() {
-      vscode.window.showInformationMessage('开发中...')
-    },
-
     search() {
       openListPicker({
         title: `${EXT_NAME} - ${localize.getLocalize('command.search')} (UPDATE:${apiList.updateDate})`,

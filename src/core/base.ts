@@ -7,6 +7,8 @@ export interface BaseTreeItemOptions {
   title: string
   /** 副标题 */
   subTitle: string
+  /** 悬停提示 */
+  tooltip?: string
   /** 可折叠状态 0:不可折叠 1:折叠 2:展开 */
   collapsible?: 0 | 1 | 2
   /** 类型 */
@@ -36,8 +38,13 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
     super(options.title, options.collapsible)
     this.label = options.title
     this.command = options.command
-    this.tooltip = `${this.label} - ${options.subTitle}`
     this.description = options.subTitle
+
+    if (options.tooltip) {
+      this.tooltip = options.tooltip
+    } else {
+      this.tooltip = `${this.label} - ${options.subTitle}`
+    }
   }
 
   // // @ts-ignore
