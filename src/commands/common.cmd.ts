@@ -4,10 +4,10 @@ import vscode from 'vscode'
 
 import { config, localize, WORKSPACE_PATH, log } from '../tools'
 
-import { ListItem } from '../views/list.view'
+import { ListItem, ViewList } from '../views/list.view'
 import { LocalItem, ViewLocal } from '../views/local.view'
 
-export function registerCommonCommands(viewLocal: ViewLocal) {
+export function registerCommonCommands(viewList: ViewList, viewLocal: ViewLocal) {
   const commands = {
     // 设置
     setting() {
@@ -62,7 +62,7 @@ export function registerCommonCommands(viewLocal: ViewLocal) {
           if (res === confirmText) {
             try {
               fs.unlinkSync(pathH)
-              log.info(`Remove local file: ${pathH}`)
+              log.info(`Remove file: ${pathH}`)
               viewLocal.refresh()
             } catch (error) {
               log.error(error)

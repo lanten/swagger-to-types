@@ -29,7 +29,7 @@ class Log {
    */
   public info(message: string, prompt = false, intend = 0) {
     const type: LogTypes = 'INFO'
-    if (prompt) window.showInformationMessage(`${type}: \n ${message}`)
+    if (prompt) window.showInformationMessage(message)
     return this.log(type, message, intend)
   }
 
@@ -41,7 +41,7 @@ class Log {
    */
   public warn(message: string, prompt = false, intend = 0) {
     const type: LogTypes = 'WARN'
-    if (prompt) window.showWarningMessage(`${type}: \n ${message}`)
+    if (prompt) window.showWarningMessage(message)
     return this.log(type, message, intend)
   }
 
@@ -53,7 +53,7 @@ class Log {
    */
   public error(err: Error | string, prompt = true, intend = 0) {
     const type: LogTypes = 'ERROR'
-    if (prompt) window.showErrorMessage(`${type}: \n ${err.toString()}`)
+    if (prompt) window.showErrorMessage(err.toString())
     if (typeof err === 'string') {
       return this.log(type, err, intend)
     } else {

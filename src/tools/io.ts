@@ -61,3 +61,20 @@ export async function preSaveDocument(docStr: string, filePath: string) {
     })
   })
 }
+
+/**
+ * 保存文件
+ * @param docStr
+ * @param filePath
+ */
+export async function saveDocument(docStr: string, filePath: string) {
+  return new Promise((resolve, reject) => {
+    try {
+      fs.writeFileSync(filePath, docStr, 'utf-8')
+      resolve()
+    } catch (error) {
+      log.error(error)
+      reject()
+    }
+  })
+}

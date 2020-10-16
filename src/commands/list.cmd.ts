@@ -5,9 +5,14 @@ import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from
 import { openListPicker } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
+import { ViewLocal } from '../views/local.view'
 import { parseToInterface } from '../core/data-parse'
 
-export function registerListCommands(viewList: ViewList, listTreeView: vscode.TreeView<ListItem>) {
+export function registerListCommands(
+  viewList: ViewList,
+  listTreeView: vscode.TreeView<ListItem>,
+  viewLocal: ViewLocal
+) {
   const commands = {
     /** 刷新 API 列表 */
     refresh: () => {
@@ -43,7 +48,7 @@ export function registerListCommands(viewList: ViewList, listTreeView: vscode.Tr
         const swaggerJsonUrl = Object.assign([], config.extConfig.swaggerJsonUrl || [])
         swaggerJsonUrl.push({ title, url })
         config.setCodeConfig({ swaggerJsonUrl })
-        log.info(`<add> Add Swagger Project: [${title}]`)
+        log.info(`<cmd.list.add> Add Swagger Project: [${title}]`)
         setTimeout(() => {
           viewList.refresh()
         }, 200)
@@ -77,8 +82,69 @@ export function registerListCommands(viewList: ViewList, listTreeView: vscode.Tr
 
     /** 保存接口至本地 (单个/批量) */
     saveInterface(item: ListItem) {
-      vscode.window.showInformationMessage('开发中...')
-      console.log(item)
+      switch (item.options.type) {
+        case 'group':
+          viewList
+            .saveInterfaceGroup(item)
+            .then(() => {
+              log.info(
+                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize(
+                  'text.group'
+                )}) ${localize.getLocalize('success')}! <${item.label}>`,
+                true
+              )
+
+              viewLocal.refresh()
+            })
+            .catch((err) => {
+              log.error(
+                `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize(
+                  'text.group'
+                )}) ${localize.getLocalize('failed')}! <${item.label}> ${err}`,
+                true
+              )
+            })
+          break
+
+        case 'interface':
+          console.log(item)
+
+          let interfaceItem: TreeInterface | undefined
+          try {
+            // @ts-ignore
+            interfaceItem = item.command?.arguments[0]
+          } catch (error) {
+            log.error(error, true)
+          }
+
+          if (!interfaceItem) {
+            return log.error('interfaceItem of undefined', true)
+          }
+
+          viewList
+            .saveInterface(interfaceItem)
+            .then(() => {
+              log.info(
+                `${localize.getLocalize('command.saveInterface')} ${localize.getLocalize('success')}! <${item.label}>`,
+                true
+              )
+              viewLocal.refresh()
+            })
+            .catch((err) => {
+              log.error(
+                `${localize.getLocalize('command.saveInterface')} ${localize.getLocalize('failed')}! <${
+                  item.label
+                }> ${err}`,
+                true
+              )
+            })
+          break
+
+        default:
+          log.warn(localize.getLocalize('error.action'), true)
+          log.warn(JSON.stringify(item))
+          break
+      }
     },
   }
 
