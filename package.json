@@ -64,7 +64,7 @@
         "icon": "$(cloud-download)"
       },
       {
-        "command": "cmd.local.deleteFile",
+        "command": "cmd.common.deleteFile",
         "title": "%command.remove%",
         "icon": "$(trash)"
       },
@@ -178,7 +178,7 @@
           "when": "view == view.local"
         },
         {
-          "command": "cmd.local.deleteFile",
+          "command": "cmd.common.deleteFile",
           "group": "menu2",
           "when": "view == view.local"
         }

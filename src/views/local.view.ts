@@ -5,7 +5,12 @@ import vscode from 'vscode'
 import { BaseTreeProvider, BaseTreeItem, BaseTreeItemOptions } from '../core'
 import { config, log, WORKSPACE_PATH } from '../tools'
 
-export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
+export interface ExtLocalItemOptions {
+  /** 文件路径 */
+  filePath: string
+}
+
+export class ViewLocal extends BaseTreeProvider<LocalItem> {
   public localFilesList: FileHeaderInfo[] = []
   public localFilesMap = new Map<string, FileHeaderInfo>()
 
@@ -77,29 +82,30 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
     }
   }
 
-  getChildren(): Thenable<ViewLocalItem[]> {
+  getChildren(): Thenable<LocalItem[]> {
     const treeItems = this.renderItem(this.localFilesList)
 
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: FileHeaderInfo[]): ViewLocalItem[] {
+  renderItem(itemList: FileHeaderInfo[]): LocalItem[] {
     return itemList.map((item) => {
       const title = item.name || item.namespace || item.fileName
 
-      const options: BaseTreeItemOptions = {
+      const options: BaseTreeItemOptions & ExtLocalItemOptions = {
         title,
         type: item.ignore ? 'file-ignore' : 'file-sync',
         subTitle: `[${item.update || 'No Update Date'}] ${item.path}`,
         collapsible: 0,
+        filePath: item.filePath,
         command: {
           title,
-          command: 'cmd.common.openLocalFile',
-          arguments: [item],
+          command: 'cmd.common.openFile',
+          arguments: [item.filePath],
         },
       }
 
-      return new ViewLocalItem(options)
+      return new LocalItem(options)
     })
   }
 
@@ -128,4 +134,4 @@ export class ViewLocal extends BaseTreeProvider<ViewLocalItem> {
   destroy(): void {}
 }
 
-export class ViewLocalItem extends BaseTreeItem {}
+export class LocalItem extends BaseTreeItem<ExtLocalItemOptions> {}

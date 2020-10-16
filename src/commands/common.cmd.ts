@@ -1,11 +1,13 @@
-import vscode from 'vscode'
+import fs from 'fs'
 import path from 'path'
+import vscode from 'vscode'
 
 import { config, localize, WORKSPACE_PATH, log } from '../tools'
 
 import { ListItem } from '../views/list.view'
+import { LocalItem, ViewLocal } from '../views/local.view'
 
-export function registerCommonCommands() {
+export function registerCommonCommands(viewLocal: ViewLocal) {
   const commands = {
     // 设置
     setting() {
@@ -38,10 +40,35 @@ export function registerCommonCommands() {
     },
 
     /** 打开本地文件 */
-    openLocalFile(item: FileHeaderInfo) {
-      vscode.workspace.openTextDocument(item.filePath).then((doc) => {
+    openFile(path?: string) {
+      if (!path) return log.error(localize.getLocalize('error.path'), true)
+
+      vscode.workspace.openTextDocument(path).then((doc) => {
         vscode.window.showTextDocument(doc)
       })
+    },
+
+    /** 删除本地文件 */
+    deleteFile(path: string | LocalItem) {
+      const pathH = typeof path === 'string' ? path : path.options.filePath
+      if (!pathH) return log.error(localize.getLocalize('error.path'), true)
+
+      const confirmText = localize.getLocalize('text.confirm')
+      const cancelText = localize.getLocalize('text.cancel')
+
+      vscode.window
+        .showWarningMessage(localize.getLocalize('text.confirmDeleteFile'), confirmText, cancelText)
+        .then((res) => {
+          if (res === confirmText) {
+            try {
+              fs.unlinkSync(pathH)
+              log.info(`Remove local file: ${pathH}`)
+              viewLocal.refresh()
+            } catch (error) {
+              log.error(error)
+            }
+          }
+        })
     },
   }
 

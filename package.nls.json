@@ -25,6 +25,13 @@
   "text.or": "or",
   "text.config.swaggerJsonUrl": "Swagger API List",
   "text.config.savePath": "Typescript Interface Save Path",
+  "text.confirmDeleteFile": "Are you sure to delete the file?",
+  "text.confirm": "Confirm",
+  "text.cancel": "Cancel",
+
+  "error.path": "Wrong path",
+  "error.action": "Operation failed, please check log for details",
+  "error.other": "unknown error",
 
   "temp.input.placeholder": "Please enter ${1}",
   "temp.input.none": "The entered ${1} cannot be empty"
