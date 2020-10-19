@@ -157,6 +157,7 @@ export function parseToInterface(data: TreeInterface): string {
   const lines: string[] = [
     ...parseHeaderInfo(data),
     ...parseNameSpace(name, [...parseParams(data.params, 1), ...parseResponse(data.response, 1)]),
+    '',
   ]
 
   return lines.join('\n')
@@ -192,7 +193,9 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
  * @param indentation
  */
 function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): string[] {
-  return parseProperties('Response', response, indentation)
+  const res = parseProperties('Response', response, indentation)
+  res.pop() // 删除多余空行
+  return res
 }
 
 /**

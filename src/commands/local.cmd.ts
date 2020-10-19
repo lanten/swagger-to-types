@@ -34,6 +34,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
       viewList
         .saveInterface(swaggerItem, fileInfo.filePath)
         .then(() => {
+          viewLocal.updateSingle(fileInfo.filePath)
           log.info(
             `${localize.getLocalize('command.local.updateInterface')} <${
               fileInfo.name || fileInfo.title

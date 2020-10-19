@@ -34,12 +34,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
       // 过滤非接口目录文件
       if (!fileName.includes(this.localPath)) return
 
-      const fileInfo = this.readLocalFile(fileName)
-
-      if (fileInfo) {
-        this.localFilesMap.set(fileInfo.fileName, fileInfo)
-        this.refactorLocalFilesList()
-      }
+      this.updateSingle(fileName)
     })
   }
 
@@ -52,7 +47,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
         const filePath = path.join(this.localPath, file)
         const fileInfo = this.readLocalFile(filePath)
 
-        if (fileInfo) {
+        if (fileInfo && fileInfo.ext === 'ts') {
           this.localFilesMap.set(fileInfo.fileName, fileInfo)
         }
       })
@@ -81,8 +76,9 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
       )
 
       const headerInfo: FileHeaderInfo = {
-        fileName: fileName.replace(/^.+\/(.+?)(\.d)?\.ts$/, '$1'),
+        fileName: fileName.replace(/^.+\/(.+?)(\.d)?\.{.+}$/, '$1'),
         filePath: fileName,
+        ext: fileName.replace(/^.+\.(.+)$/, '$1'),
       }
 
       headerStr.replace(/\*\s*@([^\s]+)[^\S\n]*([^\n]*?)\n/g, (_, key, value) => {
@@ -97,19 +93,26 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   }
 
   /** 更新所有本地接口 */
-  updateAll() {
+  public updateAll() {
     this.viewList.getSearchList().then(async () => {
       const statusBarItemText = `$(sync) ${localize.getLocalize('text.updateButton')}`
       this.statusBarItem.text = statusBarItemText + '...'
       this.statusBarItem.command = undefined
       for (const item of this.localFilesMap.values()) {
+        if (item.ignore) {
+          log.info(`<updateAll> ignored. (${item.filePath})`)
+          continue
+        }
+
         if (!item.namespace) {
-          return log.error('<updateAll> namespace is undefined.')
+          log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
+          continue
         }
         const swaggerItem = (this.viewList.interFacePathNameMap.get(item.namespace) as unknown) as TreeInterface
 
         if (!swaggerItem) {
-          return log.error('<updateAll> swaggerItem is undefined.')
+          log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
+          continue
         }
 
         await this.viewList
@@ -132,9 +135,19 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
       this.statusBarItem.text = statusBarItemText
       this.statusBarItem.command = 'cmd.local.updateAll'
-
-      log.info(`${localize.getLocalize('text.updateButton')} ${localize.getLocalize('success')}`, true)
+      this.initLocalFiles()
+      log.info(`${localize.getLocalize('text.updateButton')} <All> ${localize.getLocalize('success')}`, true)
     })
+  }
+
+  /** 刷新单个本地接口 */
+  public updateSingle(filePath: string) {
+    const fileInfo = this.readLocalFile(filePath)
+
+    if (fileInfo && fileInfo.ext === 'ts') {
+      this.localFilesMap.set(fileInfo.fileName, fileInfo)
+      this.refactorLocalFilesList()
+    }
   }
 
   getChildren(): Thenable<LocalItem[]> {
@@ -174,7 +187,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
     this._onDidChangeTreeData.fire(undefined)
   }
 
-  /** 完全刷新本地文件列表 */
+  /** 刷新 */
   public refresh(): void {
     // 0.5 秒防抖, 避免重复刷新占用大量资源
     this.debounce(() => this._refresh(), 500)
