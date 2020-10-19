@@ -2,6 +2,9 @@
 
 将 Swagger JSON 导出为 Typescript interface
 
+## 预览
+![img](./assets/images/preview.png)
+
 ## Config
 
 | 名称                                     | 说明                                                               | 类型                                         | 默认                     |
@@ -13,13 +16,14 @@
 
 ## SwaggerJsonUrlItem
 
-| 名称  | 说明                 | 类型   | 必填    |
+| 属性  | 说明                 | 类型   | 必填    |
 | ----- | -------------------- | ------ | ------- |
 | title | 项目标题             | string | `true`  |
 | url   | swagger json url     | string | `true`  |
 | link  | 在浏览器打开外部链接 | string | `false` |
 
-
+## 快捷键
+- 搜索接口列表: <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>F</kbd>
 
 ## 注意
 
