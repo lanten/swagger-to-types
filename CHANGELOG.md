@@ -5,11 +5,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [Unreleased]
+## [1.0.1]
+### Added
+- [x] 一键更新时, 已忽略(`ignore`)的接口跳过更新
 ### Fixed
-- [ ] 老版本接口文件兼容问题
-- [ ] 单个接口更新本地列表不刷新
-- [ ] 一键更新本地列表不刷新
+- [x] 老版本接口文件兼容问题
+- [x] 单个接口更新本地列表不刷新
+- [x] 一键更新本地列表不刷新
+### Changed
+- [x] 优化解析器
 
 ## [1.0.0] 2020-10-16
 ### Added

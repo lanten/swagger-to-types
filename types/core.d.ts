@@ -116,6 +116,8 @@ interface TreeInterface {
 interface FileHeaderInfo {
   /** 文件名 */
   fileName: string
+  /** 扩展名 */
+  ext: string
   /** 文件路径 */
   filePath: string
   /** 接口名称 */
