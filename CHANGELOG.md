@@ -5,7 +5,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.0.1]
+## [1.0.1] 2020-10-19
 ### Added
 - [x] 一键更新时, 已忽略(`ignore`)的接口跳过更新
 ### Fixed
