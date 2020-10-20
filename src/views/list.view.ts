@@ -173,7 +173,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
       this.swaggerJsonMap.forEach((list, key) => {
         const conf = swaggerJsonUrl.find((x) => x.url === key)
-        if (!conf) return log.error(`swaggerJsonUrl config not found <${key}>`)
+        if (!conf) return log.error(`swaggerJsonUrl config not found (${key})`)
         arr = arr.concat(this.mergeSwaggerJsonMap(list, conf.url, conf.title))
       })
 

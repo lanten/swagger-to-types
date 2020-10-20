@@ -10,7 +10,7 @@ export async function getSwaggerJson(url: string): Promise<SwaggerJson> {
       return json
     })
     .catch((err) => {
-      log.error(`fetch: ${url} - ${err}`, true)
+      log.error(`<fetch>: ${url} - ${err}`, true)
       Promise.reject(err)
     })
 }
