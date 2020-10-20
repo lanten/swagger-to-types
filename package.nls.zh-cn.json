@@ -5,7 +5,7 @@
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
 
-  "viewsWelcome.emptyList": "[添加 Swagger API](command:cmd.list.add)\n[打开工作设置](command:cmd.common.setting)\n",
+  "viewsWelcome.emptyList": "[添加 Swagger API](command:cmd.list.add)\n[打开工作区设置](command:cmd.common.setting)\n",
   "viewsWelcome.emptyLocal": "本地接口列表为空",
 
   "command.list.refresh": "刷新远程接口列表",
