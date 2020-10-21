@@ -2,6 +2,8 @@
 
 将 Swagger JSON 导出为 Typescript interface
 
+每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`,  `Response`, 和一些额外 `interface`.
+
 ## 预览
 ![img](./assets/images/preview.png)
 
@@ -16,14 +18,28 @@
 
 ## SwaggerJsonUrlItem
 
-| 属性  | 说明                 | 类型   | 必填    |
-| ----- | -------------------- | ------ | ------- |
-| title | 项目标题             | string | `true`  |
-| url   | swagger json url     | string | `true`  |
-| link  | 在浏览器打开外部链接 | string | `false` |
+| 属性     | 说明                 | 类型   | 是否必填 |
+| -------- | -------------------- | ------ | -------- |
+| title    | 项目标题             | string | *        |
+| url      | swagger json url     | string | *        |
+| link     | 在浏览器打开外部链接 | string |          |
+| basePath | basePath             | string |          |
 
 ## 快捷键
 - 搜索接口列表: <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>F</kbd>
+
+## 忽略一键更新
+在 `.d.ts` 文件头部注释中添加 `@ignore` 标识, 可以在一键更新本地接口时忽略当前文件.
+
+```ts
+/**
+ * @name   获取员工详情信息
+ * @path   /employee/getEmployeeDetail
+ * @method POST
+ * @update 10/19/2020, 11:22:53 AM
+ * @ignore
+ */
+```
 
 ## 注意
 

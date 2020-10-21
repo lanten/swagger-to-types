@@ -11,6 +11,8 @@ export interface SwaggerJsonUrlItem {
   url: string
   /** 在浏览器打开外部链接 */
   link?: string
+  /** basePath */
+  basePath?: string
 }
 
 /** vscode 配置项 */

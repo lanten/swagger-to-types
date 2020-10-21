@@ -14,10 +14,11 @@ import { config, formatDate, log, SwaggerJsonUrlItem, saveDocument, WORKSPACE_PA
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
 interface ExtListItemConfig {
-  /** swagger url */
-  url: string
-  /** 在浏览器中打开的链接 */
-  link?: string
+  configItem: SwaggerJsonUrlItem
+  // /** swagger url */
+  // url: string
+  // /** 在浏览器中打开的链接 */
+  // link?: string
 
   key: string
   /** 父级节点 key */
@@ -43,19 +44,19 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       return swaggerJsonUrl.map((item) => this.renderRootItem(item))
     }
 
-    const apiUrl = element.options.url || ''
+    const configItem = element.options.configItem
 
-    return this.getListData(apiUrl).then((swaggerJsonMap) => {
+    return this.getListData(configItem).then((swaggerJsonMap) => {
       let listData: SwaggerJsonTreeItem[] = []
       switch (element.options.type) {
         case 'root':
-          listData = swaggerJsonMap.get(apiUrl) || []
-          return this.renderItem(listData, apiUrl)
+          listData = swaggerJsonMap.get(configItem.url) || []
+          return this.renderItem(listData, configItem)
 
         case 'group':
-          listData = swaggerJsonMap.get(apiUrl) || []
+          listData = swaggerJsonMap.get(configItem.url) || []
           const itemChildren = listData.find((x) => x.key === element.options.key)
-          return this.renderItem(itemChildren?.children || [], apiUrl)
+          return this.renderItem(itemChildren?.children || [], configItem)
 
         default:
           return Promise.resolve([])
@@ -72,27 +73,28 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       subTitle: item.url || '',
       collapsible: collapsible || 1,
       contextValue: 'root',
-      url: item.url,
-      link: item.link,
+      // url: item.url,
+      // link: item.link,
+      configItem: item,
     })
     return rootNode
   }
 
   /**
    * 获取远程数据
-   * @param url
+   * @param item
    * @param update 更新覆盖
    */
-  getListData(url?: string, update?: boolean): Promise<SwaggerJsonMap> {
+  getListData(item: SwaggerJsonUrlItem, update?: boolean): Promise<SwaggerJsonMap> {
     return new Promise((resolve, reject) => {
-      if (!url) return reject([])
+      if (!item.url) return reject([])
 
-      if (this.swaggerJsonMap.has(url) && !update) return resolve(this.swaggerJsonMap)
+      if (this.swaggerJsonMap.has(item.url) && !update) return resolve(this.swaggerJsonMap)
 
-      getSwaggerJson(url)
+      getSwaggerJson(item.url)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
-          this.swaggerJsonMap.set(url, parseSwaggerJson(res, url))
+          this.swaggerJsonMap.set(item.url, parseSwaggerJson(res, item))
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
@@ -105,23 +107,23 @@ export class ViewList extends BaseTreeProvider<ListItem> {
    * 渲染树视图节点
    *
    * @param itemList
-   * @param apiUrl
+   * @param configItem
    * @param parent
    */
-  renderItem(itemList: SwaggerJsonTreeItem[], apiUrl: string): ListItem[] {
-    return itemList.map((item) => this.transformToListItem(item, apiUrl))
+  renderItem(itemList: SwaggerJsonTreeItem[], configItem: SwaggerJsonUrlItem): ListItem[] {
+    return itemList.map((item) => this.transformToListItem(item, configItem))
   }
 
   /**
    * 转换为树视图节点
    *
    * @param item
-   * @param apiUrl
+   * @param configItem
    * @param parent
    */
   transformToListItem(
     item: SwaggerJsonTreeItem,
-    apiUrl: string,
+    configItem: SwaggerJsonUrlItem,
     collapsible?: BaseTreeItemOptions['collapsible']
   ): ListItem {
     const hasChildren = item.children && item.children.length
@@ -131,7 +133,8 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       type: item.type,
       subTitle: item.subTitle,
       collapsible: collapsibleH,
-      url: apiUrl,
+      configItem,
+      // url: configItem.url,
       contextValue: item.type,
       key: item.key,
       parentKey: item.parentKey,
@@ -156,7 +159,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     const queryList: Promise<SwaggerJsonMap>[] = []
     swaggerJsonUrl.forEach((v) => {
       if (!this.swaggerJsonMap.has(v.url) && !all) return
-      queryList.push(this.getListData(v.url))
+      queryList.push(this.getListData(v))
     })
 
     return Promise.all(queryList)
@@ -173,8 +176,8 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
       this.swaggerJsonMap.forEach((list, key) => {
         const conf = swaggerJsonUrl.find((x) => x.url === key)
-        if (!conf) return log.error(`swaggerJsonUrl config not found <${key}>`)
-        arr = arr.concat(this.mergeSwaggerJsonMap(list, conf.url, conf.title))
+        if (!conf) return log.error(`swaggerJsonUrl config not found (${key})`)
+        arr = arr.concat(this.mergeSwaggerJsonMap(list, conf, conf.title))
       })
 
       loading.dispose()
@@ -191,7 +194,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
    */
   private mergeSwaggerJsonMap(
     data: SwaggerJsonTreeItem[],
-    apiUrl: string,
+    configItem: SwaggerJsonUrlItem,
     dir: string,
     parent?: SwaggerJsonTreeItem
   ): ListPickerItem[] {
@@ -207,7 +210,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           description: `<${v.method}> [${dir}] ${v.pathName} `,
           detail: v.subTitle,
           source: v,
-          apiUrl,
+          configItem,
           parent,
         })
       } else if (v.children) {
@@ -215,7 +218,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
         if (dir) {
           dirH = `${dir} / ${dirH}`
         }
-        arr = arr.concat(this.mergeSwaggerJsonMap(v.children, apiUrl, dirH, v))
+        arr = arr.concat(this.mergeSwaggerJsonMap(v.children, configItem, dirH, v))
       }
     })
 
@@ -224,15 +227,15 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
   /** 获取父级元素 */
   getParent(item: ListItem): ProviderResult<ListItem> {
-    const { parentKey, type, url } = item.options
+    const { parentKey, type, configItem } = item.options
 
     let parentNode: ProviderResult<ListItem> = void 0
 
     switch (type) {
       case 'interface':
-        const groupNode = this.swaggerJsonMap.get(url)?.find((x) => x.key === parentKey)
+        const groupNode = this.swaggerJsonMap.get(configItem.url)?.find((x) => x.key === parentKey)
         if (groupNode) {
-          parentNode = this.transformToListItem(groupNode, item.options.url)
+          parentNode = this.transformToListItem(groupNode, configItem)
         } else {
           log.error(`<getParent> [${parentKey}] groupNode not found`)
         }
@@ -265,7 +268,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   /** 批量保存分组到本地 */
   public async saveInterfaceGroup(item: ListItem) {
     return new Promise(async (resolve, reject) => {
-      const listData = this.swaggerJsonMap.get(item.options.url) || []
+      const listData = this.swaggerJsonMap.get(item.options.configItem.url) || []
       const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
       if (itemChildren && itemChildren.length) {
         for (let index = 0; index < itemChildren.length; index++) {

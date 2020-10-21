@@ -33,9 +33,9 @@ export function registerCommonCommands(viewList: ViewList, viewLocal: ViewLocal)
 
     /** 打开外部链接 */
     openLink(item: ListItem) {
-      const link = item.options.link || item.options.url
-      console.log(link)
-      // vscode.commands.executeCommand('vscode.open', link)
+      const { configItem } = item.options
+      const link = configItem.link || configItem.url
+
       vscode.env.openExternal(vscode.Uri.parse(link))
     },
 

@@ -2,12 +2,8 @@ import { OutputChannel, window } from 'vscode'
 import { EXT_NAME } from './const'
 import { formatDate } from './utils'
 
-/** - interface - start ------------------------------------------------------------------- */
-
 /** 日志了类型 */
 export type LogTypes = 'INFO' | 'WARN' | 'ERROR'
-
-/** - interface - end --------------------------------------------------------------------- */
 
 class Log {
   public outputChannel: OutputChannel

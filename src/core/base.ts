@@ -1,6 +1,6 @@
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH } from '../tools'
+import { WORKSPACE_PATH, SwaggerJsonUrlItem } from '../tools'
 
 export interface BaseTreeItemOptions {
   /** 标题 */
@@ -131,6 +131,6 @@ export interface ListPickerItem extends vscode.QuickPickItem {
   source?: SwaggerJsonTreeItem
   /** 父节点元数据 */
   parent?: SwaggerJsonTreeItem
-  /** 接口请求地址 */
-  apiUrl?: string
+  /** swagger url 配置 */
+  configItem?: SwaggerJsonUrlItem
 }
