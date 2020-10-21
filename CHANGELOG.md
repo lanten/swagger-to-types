@@ -5,6 +5,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.3] 2020-10-21
+### Added
+- [x] 添加 `baseUrl` 展示
+### Fixed
+- [x] 修复一些 bug
+### Changed
+- [x] 优化解析器
+- [x] 更新自述
+
+## [1.0.2] 2020-10-19
+### Fixed
+- [x] 修复一些 bug
+### Changed
+- [x] 优化解析器
+
 ## [1.0.1] 2020-10-19
 ### Added
 - [x] 一键更新时, 已忽略(`ignore`)的接口跳过更新

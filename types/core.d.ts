@@ -100,7 +100,9 @@ interface TreeInterfacePropertiesItem {
 
 interface TreeInterface {
   type: string
-  method: 'get' | 'post'
+  basePath: string
+  groupName: string
+  method: string
   params: TreeInterfaceParamsItem[]
   response: TreeInterfacePropertiesItem
   title: string

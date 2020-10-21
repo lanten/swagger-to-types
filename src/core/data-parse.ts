@@ -1,6 +1,7 @@
 import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId } from '../tools'
+import { SwaggerJsonUrlItem } from '../tools'
 
-export function parseSwaggerJson(swaggerJson: SwaggerJson, rootKey: string): SwaggerJsonTreeItem[] {
+export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJsonUrlItem): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
 
@@ -10,7 +11,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, rootKey: string): Swa
       tagsMap[v.name] = i
       return {
         key: randomId(`${v.name}-xxxxxx`),
-        parentKey: rootKey,
+        parentKey: configItem.url,
         title: v.name,
         subTitle: v.description,
         type: 'group',
@@ -64,9 +65,11 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, rootKey: string): Swa
       }
     }
 
-    const itemRes: SwaggerJsonTreeItem & AnyObj = {
+    const itemRes: SwaggerJsonTreeItem & TreeInterface = {
+      groupName: configItem.title,
       type: 'interface',
       key: randomId(`${summary}-xxxxxx`),
+      basePath: configItem.basePath || swaggerJson.basePath,
       parentKey: '',
       method,
       params,
@@ -258,9 +261,11 @@ function parseProperties(
  * @param data
  */
 function parseHeaderInfo(data: TreeInterface): string[] {
+  console.log(data)
   return [
     '/**',
-    ` * @name   ${data.title}`,
+    ` * @name   ${data.title} (${data.groupName})`,
+    ` * @base   ${data.basePath}`,
     ` * @path   ${data.path}`,
     ` * @method ${data.method.toUpperCase()}`,
     ` * @update ${new Date().toLocaleString()}`,
@@ -297,6 +302,9 @@ function handleType(type: string): string {
 
     case 'ref':
       return 'any // BUG: Type Error (ref)'
+
+    case 'object':
+      return 'Record<string, unknown>'
 
     default:
       return type || 'any'

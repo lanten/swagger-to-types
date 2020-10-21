@@ -67,10 +67,12 @@ export function registerListCommands(
         placeholder: localize.getLocalize('text.search.placeholder'),
         before: () => viewList.getSearchList(),
       }).then((res) => {
-        if (!res.source) return log.error('Picker.res.source in undefined', true)
-        if (!res.apiUrl) return log.error('Picker.res.apiUrl in undefined', true)
+        if (!res.source) return log.error('Picker.res.source is undefined', true)
+        if (!res.configItem) return log.error('Picker.res.configItem is undefined', true)
+
+        console.log(res)
         listTreeView
-          .reveal(viewList.transformToListItem(res.source, res.apiUrl), {
+          .reveal(viewList.transformToListItem(res.source, res.configItem), {
             expand: true,
             select: true,
           })
