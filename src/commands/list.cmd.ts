@@ -70,7 +70,6 @@ export function registerListCommands(
         if (!res.source) return log.error('Picker.res.source is undefined', true)
         if (!res.configItem) return log.error('Picker.res.configItem is undefined', true)
 
-        console.log(res)
         listTreeView
           .reveal(viewList.transformToListItem(res.source, res.configItem), {
             expand: true,
@@ -109,8 +108,6 @@ export function registerListCommands(
           break
 
         case 'interface':
-          console.log(item)
-
           let interfaceItem: TreeInterface | undefined
           try {
             // @ts-ignore

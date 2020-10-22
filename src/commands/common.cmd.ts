@@ -65,7 +65,7 @@ export function registerCommonCommands(viewList: ViewList, viewLocal: ViewLocal)
               log.info(`Remove file: ${pathH}`)
               viewLocal.refresh()
             } catch (error) {
-              log.error(error)
+              log.error(error, true)
             }
           }
         })

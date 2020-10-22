@@ -128,7 +128,8 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
             log.error(
               `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
                 'failed'
-              )} ${err}`
+              )} ${err}`,
+              true
             )
           })
       }
