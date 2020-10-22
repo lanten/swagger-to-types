@@ -54,7 +54,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
       this.refactorLocalFilesList()
     } else {
-      fs.mkdirSync(this.localPath, { recursive: true })
+      log.warn('<initLocalFiles> localPath does not exist')
     }
   }
 
@@ -137,7 +137,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
       this.statusBarItem.text = statusBarItemText
       this.statusBarItem.command = 'cmd.local.updateAll'
       this.initLocalFiles()
-      log.info(`${localize.getLocalize('text.updateButton')} <All> ${localize.getLocalize('success')}`, true)
+      log.info(`${localize.getLocalize('text.updateButtonTooltips')} ${localize.getLocalize('success')}`, true)
     })
   }
 

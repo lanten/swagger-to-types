@@ -54,11 +54,21 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
 
     /** 更新所有本地接口 */
     updateAll() {
+      if (viewLocal.localFilesMap.size <= 0)
+        return log.info(
+          `${localize.getLocalize('text.updateButtonTooltips')}: ${localize.getLocalize('viewsWelcome.emptyLocal')}`,
+          true
+        )
+
       const confirmText = localize.getLocalize('text.confirm')
       const cancelText = localize.getLocalize('text.cancel')
 
       vscode.window
-        .showWarningMessage(localize.getLocalize('text.confirmUpdateAll'), confirmText, cancelText)
+        .showWarningMessage(
+          `${localize.getLocalize('text.updateButtonTooltips')}: ${localize.getLocalize('text.confirmUpdateAll')}`,
+          confirmText,
+          cancelText
+        )
         .then((res) => {
           if (res === confirmText) {
             viewLocal.updateAll()

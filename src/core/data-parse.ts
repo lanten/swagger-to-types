@@ -229,7 +229,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        log.error(error)
+        console.error(error)
       }
 
       if (v.type === 'array') {
