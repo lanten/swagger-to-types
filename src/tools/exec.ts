@@ -1,6 +1,8 @@
 import { execSync } from 'child_process'
 
 import { WORKSPACE_PATH } from './const'
+import { log } from '../tools'
+
 /**
  * 同步执行命令
  * @param {String} bash
@@ -16,10 +18,10 @@ export function syncExec(paramsSrc: { bash: string; msg?: string; inputPath?: st
     const res = execSync(bash, {
       cwd: inputPath,
     }).toString()
-    if (msg) console.log(`=> ${msg} 成功`)
+    if (msg) log.info(`=> ${msg} 成功`)
     return res
   } catch (ex) {
-    if (msg) console.log(`=> ${msg} 失败\n`, ex)
+    if (msg) log.error(`=> ${msg} 失败\n`, ex)
     return ex.toString()
   }
 }

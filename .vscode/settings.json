@@ -16,4 +16,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "eslint.enable": true,
+  "cSpell.words": [
+    "APPDATA"
+  ],
 }

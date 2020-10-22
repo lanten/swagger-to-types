@@ -1,5 +1,4 @@
-import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId } from '../tools'
-import { SwaggerJsonUrlItem } from '../tools'
+import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId, SwaggerJsonUrlItem } from '../tools'
 
 export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJsonUrlItem): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
@@ -60,6 +59,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
       try {
         response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
       } catch (error) {
+        // DESC 将错误信息输出到 devTools 控制台, 避免记录过多日志.
         console.error(responseBody.schema)
         console.error(error)
       }
@@ -108,7 +108,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   const { properties, required = [] } = ref
 
   if (!ref) {
-    log.error(JSON.stringify({ res: definitions[originalRef], originalRef }, undefined, 2))
+    log.error(JSON.stringify({ res: definitions[originalRef], originalRef }, undefined, 2), true)
   }
 
   if (properties) {
@@ -229,7 +229,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        // log.warn(`<${interfaceName}> [${v.name}] [${v.description}]: item.properties is undefined`)
+        log.error(error)
       }
 
       if (v.type === 'array') {
@@ -261,7 +261,6 @@ function parseProperties(
  * @param data
  */
 function parseHeaderInfo(data: TreeInterface): string[] {
-  console.log(data)
   return [
     '/**',
     ` * @name   ${data.title} (${data.groupName})`,

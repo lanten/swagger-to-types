@@ -2,7 +2,7 @@ import { OutputChannel, window } from 'vscode'
 import { EXT_NAME } from './const'
 import { formatDate } from './utils'
 
-/** 日志了类型 */
+/** 日志类型 */
 export type LogTypes = 'INFO' | 'WARN' | 'ERROR'
 
 class Log {
@@ -47,7 +47,7 @@ class Log {
    * @param prompt 是否弹窗提示
    * @param intend 缩进
    */
-  public error(err: Error | string, prompt = true, intend = 0) {
+  public error(err: Error | string, prompt = false, intend = 0) {
     const type: LogTypes = 'ERROR'
     if (prompt) window.showErrorMessage(err.toString())
     if (typeof err === 'string') {

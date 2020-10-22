@@ -55,7 +55,7 @@ export async function preSaveDocument(docStr: string, filePath: string) {
       if (success) {
         vscode.window.showTextDocument(document)
       } else {
-        log.error('Error!'['document error'], true)
+        log.error('open document error error!', true)
       }
       return success
     })
@@ -73,7 +73,7 @@ export async function saveDocument(docStr: string, filePath: string) {
       fs.writeFileSync(filePath, docStr, 'utf-8')
       resolve()
     } catch (error) {
-      log.error(error)
+      log.error(error, true)
       reject()
     }
   })
