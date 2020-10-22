@@ -206,7 +206,7 @@
         "swaggerToTypes.savePath": {
           "type": "string",
           "description": "%text.config.savePath%",
-          "default": "types/swagger-to-types"
+          "default": "types/swagger-interfaces"
         },
         "swaggerToTypes.showStatusbarItem": {
           "type": "boolean",

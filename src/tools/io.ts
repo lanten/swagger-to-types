@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH, log } from '.'
+import { WORKSPACE_PATH, log, config } from '.'
 
 /**
  * 递归创建路径
@@ -69,6 +69,11 @@ export async function preSaveDocument(docStr: string, filePath: string) {
  */
 export async function saveDocument(docStr: string, filePath: string) {
   return new Promise((resolve, reject) => {
+    const localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+    if (!fs.existsSync(localPath)) {
+      fs.mkdirSync(localPath, { recursive: true })
+    }
+
     try {
       fs.writeFileSync(filePath, docStr, 'utf-8')
       resolve()
