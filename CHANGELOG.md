@@ -4,6 +4,12 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+### Fixed
+- [ ] 更新接口时数据不刷新问题
+- [ ] 更新成功后激活日志面板
+
+### Changed
+- [ ] 优化解析器空行
 
 ---
 ## [1.0.4] 2020-10-22
