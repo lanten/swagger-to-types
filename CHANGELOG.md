@@ -10,6 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 - [ ] 优化解析器空行
+- [ ] 工作区无配置时隐藏状态栏按钮
 
 ---
 ## [1.0.4] 2020-10-22
