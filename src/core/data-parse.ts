@@ -60,8 +60,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
         response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
       } catch (error) {
         // DESC 将错误信息输出到 devTools 控制台, 避免记录过多日志.
-        console.error(responseBody.schema)
-        console.error(error)
+        console.warn(responseBody.schema)
+        // console.error(error)
       }
     }
 
@@ -154,14 +154,26 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   })
 }
 
+/** 删除结尾空行 */
+function removeEmptyEndLines(arr: string[]): string[] {
+  if (arr[arr.length - 1] === '') {
+    arr.pop()
+    if (arr[arr.length - 1] === '') return removeEmptyEndLines(arr)
+  }
+  return arr
+}
+
 export function parseToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
   const name = data.pathName
-  const lines: string[] = [
-    ...parseHeaderInfo(data),
-    ...parseNameSpace(name, [...parseParams(data.params, 1), ...parseResponse(data.response, 1)]),
+
+  const content = [
+    ...removeEmptyEndLines(parseParams(data.params, 1)),
     '',
+    ...removeEmptyEndLines(parseResponse(data.response, 1)),
   ]
+
+  const lines: string[] = [...parseHeaderInfo(data), ...parseNameSpace(name, content), '']
 
   return lines.join('\n')
 }
@@ -187,7 +199,9 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
  * @param indentation
  */
 function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string[] {
-  return parseProperties('Params', params, indentation)
+  const res = parseProperties('Params', params, indentation)
+  // res.pop() // 删除多余空行
+  return res
 }
 
 /**
@@ -197,7 +211,7 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
  */
 function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): string[] {
   const res = parseProperties('Response', response, indentation)
-  res.pop() // 删除多余空行
+  // res.pop() // 删除多余空行
   return res
 }
 
@@ -229,7 +243,7 @@ function parseProperties(
         // @ts-ignore
         if (!v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
-        console.error(error)
+        // console.warn(error)
       }
 
       if (v.type === 'array') {

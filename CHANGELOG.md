@@ -4,13 +4,16 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 ## [Unreleased]
+
+
+## [1.0.5] 2020-11-04
 ### Fixed
-- [ ] 更新接口时数据不刷新问题
-- [ ] 更新成功后激活日志面板
+- [x] 更新接口时数据不刷新问题
+- [x] 更新成功后激活日志面板
 
 ### Changed
-- [ ] 优化解析器空行
-- [ ] 工作区无配置时隐藏状态栏按钮
+- [x] 优化解析器空行
+- [x] 工作区无配置时隐藏状态栏按钮
 
 ---
 ## [1.0.4] 2020-10-22

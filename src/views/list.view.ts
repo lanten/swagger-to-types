@@ -287,10 +287,10 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     this.debounce(() => this._refresh(), 500)
   }
 
-  private _refresh(): void {
+  public async _refresh() {
     this.swaggerJsonMap.clear()
     this.interFacePathNameMap.clear()
-    this.getSearchList()
+    await this.getSearchList()
     this._onDidChangeTreeData.fire(undefined)
     log.info('refresh: view.list')
   }
