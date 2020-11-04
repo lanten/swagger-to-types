@@ -60,10 +60,14 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** 初始化状态栏按钮 */
   initStatusBarItem() {
-    const { showStatusbarItem } = config.extConfig
+    const { showStatusbarItem, swaggerJsonUrl } = config.extConfig
     this.statusBarItem.text = `$(sync) ${localize.getLocalize('text.updateButton')}`
     this.statusBarItem.command = 'cmd.local.updateAll'
-    if (showStatusbarItem) this.statusBarItem.show()
+    if (showStatusbarItem && swaggerJsonUrl.length) {
+      this.statusBarItem.show()
+    } else {
+      this.statusBarItem.hide()
+    }
   }
 
   /** 读取本地文件 */
@@ -94,7 +98,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** 更新所有本地接口 */
   public updateAll() {
-    this.viewList.getSearchList().then(async () => {
+    this.viewList._refresh().then(async () => {
       const statusBarItemText = `$(sync) ${localize.getLocalize('text.updateButton')}`
       this.statusBarItem.text = statusBarItemText + '...'
       this.statusBarItem.command = undefined
@@ -137,7 +141,8 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
       this.statusBarItem.text = statusBarItemText
       this.statusBarItem.command = 'cmd.local.updateAll'
       this.initLocalFiles()
-      log.info(`${localize.getLocalize('text.updateButtonTooltips')} ${localize.getLocalize('success')}`, true)
+      log.info(`${localize.getLocalize('text.updateButtonTooltips')} ${localize.getLocalize('success')}`)
+      log.outputChannel.show()
     })
   }
 
@@ -201,14 +206,10 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
-    const { savePath, showStatusbarItem } = config.extConfig
+    const { savePath } = config.extConfig
     this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
 
-    if (showStatusbarItem) {
-      this.initStatusBarItem()
-    } else {
-      this.statusBarItem?.dispose()
-    }
+    this.initStatusBarItem()
 
     this.refresh()
   }
