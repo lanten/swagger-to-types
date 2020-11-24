@@ -154,12 +154,18 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
   })
 }
 
-/** 删除结尾空行 */
-function removeEmptyEndLines(arr: string[]): string[] {
+/** 删除多余空行 */
+function removeEmptyLines(arr: string[]): string[] {
+  if (arr[0] === '') {
+    arr.shift()
+    if (arr[0] === '') return removeEmptyLines(arr)
+  }
+
   if (arr[arr.length - 1] === '') {
     arr.pop()
-    if (arr[arr.length - 1] === '') return removeEmptyEndLines(arr)
+    if (arr[arr.length - 1] === '') return removeEmptyLines(arr)
   }
+
   return arr
 }
 
@@ -167,11 +173,12 @@ export function parseToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
   const name = data.pathName
 
-  const content = [
-    ...removeEmptyEndLines(parseParams(data.params, 1)),
-    '',
-    ...removeEmptyEndLines(parseResponse(data.response, 1)),
-  ]
+  const paramsArr = removeEmptyLines(parseParams(data.params, 1))
+  const resArr = removeEmptyLines(parseResponse(data.response, 1))
+
+  let content = paramsArr
+  if (content.length) content.push('')
+  content = content.concat(resArr)
 
   const lines: string[] = [...parseHeaderInfo(data), ...parseNameSpace(name, content), '']
 
