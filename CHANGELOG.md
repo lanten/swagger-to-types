@@ -5,6 +5,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.6] 2020-11-24
+### Fixed
+- [x] 修复在缺少参数的情况下多余空行的问题
 
 ## [1.0.5] 2020-11-04
 ### Fixed
