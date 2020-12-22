@@ -76,7 +76,7 @@ export async function saveDocument(docStr: string, filePath: string) {
 
     try {
       fs.writeFileSync(filePath, docStr, 'utf-8')
-      resolve()
+      resolve(void 0)
     } catch (error) {
       log.error(error, true)
       reject()
