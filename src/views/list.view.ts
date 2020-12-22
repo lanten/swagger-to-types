@@ -274,7 +274,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
         for (let index = 0; index < itemChildren.length; index++) {
           await this.saveInterface(itemChildren[index])
         }
-        resolve()
+        resolve(void 0)
       } else {
         reject('No Children!')
       }
