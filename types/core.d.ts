@@ -25,11 +25,13 @@ interface SwaggerJson {
           required: boolean
           type?: string
           schema?: SwaggerJsonSchema
+          items?: ParametersItems
         }[]
         responses: {
           [key: string]: {
             description: string
             schema?: SwaggerJsonSchema
+            items?: ParametersItems
           }
         }
         deprecated: boolean
@@ -56,9 +58,16 @@ interface SwaggerJsonTagsItem {
   description: string
 }
 
+interface ParametersItems {
+  default: string
+  enum: string[]
+  type: string
+}
+
 interface SwaggerJsonSchema {
-  originalRef: string
-  $ref: string
+  originalRef?: string
+  $ref?: string
+  items?: SwaggerJsonSchema & ParametersItems
 }
 
 interface SwaggerJsonTreeItem {
@@ -96,6 +105,7 @@ interface TreeInterfacePropertiesItem {
   title?: string
   titRef?: string
   itemsType?: string
+  items?: ParametersItems
 }
 
 interface TreeInterface {

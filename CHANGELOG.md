@@ -5,9 +5,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.0.7] 2020-11-24
+### Fixed
+- [x] 修复ref解析错误问题
+
 ## [1.0.6] 2020-11-24
 ### Fixed
 - [x] 修复在缺少参数的情况下多余空行的问题
+### Added
+- [x] 添加枚举类型支持
+- [x] 添加默认值注释
 
 ## [1.0.5] 2020-11-04
 ### Fixed

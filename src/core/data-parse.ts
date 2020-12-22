@@ -1,8 +1,18 @@
-import { toCamel, log, BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId, SwaggerJsonUrlItem } from '../tools'
+import {
+  toCamel,
+  log,
+  BASE_INDENTATION,
+  BASE_INDENTATION_COUNT,
+  randomId,
+  SwaggerJsonUrlItem,
+  getValueByPath,
+} from '../tools'
 
 export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJsonUrlItem): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
+
+  console.log(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
@@ -22,7 +32,9 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     const v = paths[path]
     const method = Object.keys(v)[0]
     const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
-    const pathName = toCamel(path, false, '/').replace('/', '')
+    const pathName = toCamel(path, false, '/')
+      .replace('/', '')
+      .replace(/[\[\]<>(){|}]/g, '$')
     const fileName = path.slice(1, path.length).replace(/\//g, '-')
 
     let params: any[] = []
@@ -57,7 +69,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     if (responses) {
       const responseBody = responses[200] || {}
       try {
-        response = responseBody.schema && getSwaggerJsonRef(responseBody.schema, definitions)
+        response = getSwaggerJsonRef(responseBody.schema, definitions)
       } catch (error) {
         // DESC 将错误信息输出到 devTools 控制台, 避免记录过多日志.
         console.warn(responseBody.schema)
@@ -97,19 +109,37 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     }
   }
 
+  console.log(res)
+
   return res
 }
 
 // 递归获取 ref
-export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: SwaggerJsonDefinitions): any {
-  const { originalRef } = schema
-  const ref = definitions[originalRef]
-  const propertiesList: TreeInterfacePropertiesItem[] = []
-  const { properties, required = [] } = ref
+export function getSwaggerJsonRef(schema?: SwaggerJsonSchema, definitions?: SwaggerJsonDefinitions): any {
+  const { items } = schema || {}
+  let { originalRef, $ref } = schema || {}
+  let refData: any = {}
 
-  if (!ref) {
-    log.error(JSON.stringify({ res: definitions[originalRef], originalRef }, undefined, 2), true)
+  if (items) {
+    const { originalRef: itemOriginalRef, $ref: item$ref } = items
+
+    if (itemOriginalRef) originalRef = itemOriginalRef
+    if (item$ref) $ref = item$ref
   }
+
+  if (originalRef && definitions) {
+    refData = definitions[originalRef]
+  } else if ($ref) {
+    const refPath = $ref.replace('#/definitions/', '').replace('/', '.')
+    refData = getValueByPath(definitions, refPath)
+  }
+
+  if (!refData) {
+    log.error(JSON.stringify({ res: refData, originalRef }, undefined, 2), true)
+  }
+
+  const propertiesList: TreeInterfacePropertiesItem[] = []
+  const { properties, required = [] } = refData
 
   if (properties) {
     for (const key in properties) {
@@ -122,7 +152,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         titRef: val.title,
       }
 
-      if (val.originalRef && val.originalRef != originalRef) {
+      if ((val.originalRef && val.originalRef != originalRef) || (val.$ref && val.$ref != $ref)) {
         obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
       }
 
@@ -130,16 +160,15 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
         let schema
         if (val.items.schema) {
           schema = val.items.schema
-        } else if (val.items.originalRef) {
+        } else if (val.items.originalRef || val.items.$ref) {
           schema = val.items
         } else if (val.items.type) {
           obj.itemsType = val.items.type
+        } else if (val.originalRef || val.$ref) {
+          schema = val
         }
 
-        // if (schema.originalRef == originalRef) {
-        //   console.log('debug--3', { originalRef, ref, val, schema })
-        // }
-        if (schema && schema.originalRef != originalRef) {
+        if (schema && (schema.originalRef != originalRef || schema.$ref != $ref)) {
           obj.item = getSwaggerJsonRef(schema, definitions)
         }
       }
@@ -148,7 +177,7 @@ export function getSwaggerJsonRef(schema: SwaggerJsonSchema, definitions: Swagge
     }
   }
 
-  return Object.assign({}, ref, {
+  return Object.assign({}, refData, {
     properties: propertiesList,
     item: propertiesList,
   })
@@ -254,10 +283,12 @@ function parseProperties(
       }
 
       if (v.type === 'array') {
-        type = `${type === 'array' ? handleType(v.itemsType || 'any') : type}[]`
+        type = `${type === 'array' ? (v.items ? handleEnumType(v.items) : handleType(v.itemsType || 'any')) : type}[]`
       }
 
-      const description = v.description ? `${indentationSpace2}/** ${v.description} */\n` : ''
+      const defaultValDesc = v.items?.default ? ` [default:${v.items.default}]` : ''
+
+      const description = v.description ? `${indentationSpace2}/** ${v.description}${defaultValDesc} */\n` : ''
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
     })
   } else if (properties) {
@@ -320,6 +351,9 @@ function handleType(type: string): string {
     case 'integer':
       return 'number'
 
+    case 'file':
+      return 'File'
+
     case 'ref':
       return 'any // BUG: Type Error (ref)'
 
@@ -329,4 +363,14 @@ function handleType(type: string): string {
     default:
       return type || 'any'
   }
+}
+
+/**
+ * 处理枚举类型
+ */
+function handleEnumType(items?: ParametersItems): string {
+  if (!items || !items.enum) return 'any'
+
+  const enumH = items.type === 'string' ? items.enum.map((v) => `'${v}'`) : items.enum
+  return `(${enumH.join(' | ')})`
 }

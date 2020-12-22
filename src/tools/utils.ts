@@ -42,3 +42,52 @@ export function randomId(t = 'id-xxxxx'): string {
     return v.toString(16)
   })
 }
+
+/**
+ * 通过路径查找值
+ * @param obj
+ * @param path
+ * @param strict
+ */
+export function getValueByPath<T = any>(obj: any, path: string, strict?: boolean): T | undefined {
+  let tempObj = obj
+  let pathH = path.replace(/\[(\w+)\]/g, '.$1')
+  pathH = pathH.replace(/^\./, '')
+  const keyArr = pathH.split('.')
+  let i = 0
+  for (let len = keyArr.length; i < len - 1; ++i) {
+    if (!tempObj && !strict) break
+    const key = keyArr[i]
+    if (key in tempObj) {
+      tempObj = tempObj[key]
+    } else {
+      if (strict) {
+        throw new Error('please transfer a valid prop path to form item!')
+      }
+      break
+    }
+  }
+  return tempObj ? tempObj[keyArr[i]] : undefined
+}
+
+/**
+ * 通过路径写入值
+ * @param obj
+ * @param path
+ * @param strict
+ */
+export function setValueByPath<T = any>(obj: any, path: string, value: any): void {
+  let tempObj = obj
+  let pathH = path.replace(/\[(\w+)\]/g, '.$1')
+  pathH = pathH.replace(/^\./, '')
+  const keyArr = pathH.split('.')
+
+  for (let i = 1; i <= keyArr.length; i++) {
+    const key = keyArr[i - 1]
+    if (i >= keyArr.length) {
+      tempObj[key] = value
+    } else {
+      tempObj = tempObj[key]
+    }
+  }
+}
