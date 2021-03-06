@@ -154,25 +154,22 @@ export class ViewList extends BaseTreeProvider<ListItem> {
    * 刷新 SwaggerJsonMap
    * @param all 是否刷新全部接口, 默认只刷新已拉取的列表
    */
-  refreshSwaggerJsonMap(all?: boolean): Promise<SwaggerJsonMap[]> {
+  refreshSwaggerJsonMap(all?: boolean) {
     const { swaggerJsonUrl = [] } = config.extConfig
-    const queryList: Promise<SwaggerJsonMap>[] = []
     swaggerJsonUrl.forEach((v) => {
       if (!this.swaggerJsonMap.has(v.url) && !all) return
-      queryList.push(this.getListData(v))
+      this.getListData(v)
     })
-
-    return Promise.all(queryList)
   }
 
   /** 获取可供搜索选择器使用的列表 */
   public getSearchList(): Promise<ListPickerItem[]> {
     const loading = window.setStatusBarMessage(localize.getLocalize('text.querySwaggerData'))
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       let arr: ListPickerItem[] = []
       const { swaggerJsonUrl = [] } = config.extConfig
 
-      await this.refreshSwaggerJsonMap(true)
+      this.refreshSwaggerJsonMap(true)
 
       this.swaggerJsonMap.forEach((list, key) => {
         const conf = swaggerJsonUrl.find((x) => x.url === key)

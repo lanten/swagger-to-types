@@ -12,7 +12,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
   const { tags, paths, definitions } = swaggerJson
   let res: SwaggerJsonTreeItem[] = []
 
-  console.log(swaggerJson)
+  // console.log(swaggerJson)
 
   const tagsMap = {}
   if (tags && tags.length) {
@@ -109,7 +109,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     }
   }
 
-  console.log(res)
+  // console.log(res)
 
   return res
 }
