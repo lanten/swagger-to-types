@@ -86,8 +86,8 @@ export class ViewList extends BaseTreeProvider<ListItem> {
    * @param update 更新覆盖
    */
   getListData(item: SwaggerJsonUrlItem, update?: boolean): Promise<SwaggerJsonMap> {
-    return new Promise((resolve, reject) => {
-      if (!item.url) return reject([])
+    return new Promise((resolve) => {
+      if (!item.url) return resolve(this.swaggerJsonMap) // reject map
 
       if (this.swaggerJsonMap.has(item.url) && !update) return resolve(this.swaggerJsonMap)
 
@@ -98,7 +98,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
-          reject([])
+          resolve(this.swaggerJsonMap) // reject map
         })
     })
   }
@@ -154,22 +154,25 @@ export class ViewList extends BaseTreeProvider<ListItem> {
    * 刷新 SwaggerJsonMap
    * @param all 是否刷新全部接口, 默认只刷新已拉取的列表
    */
-  refreshSwaggerJsonMap(all?: boolean) {
+  refreshSwaggerJsonMap(all?: boolean): Promise<SwaggerJsonMap[]> {
     const { swaggerJsonUrl = [] } = config.extConfig
+    const queryList: Promise<SwaggerJsonMap>[] = []
     swaggerJsonUrl.forEach((v) => {
       if (!this.swaggerJsonMap.has(v.url) && !all) return
-      this.getListData(v)
+      queryList.push(this.getListData(v))
     })
+
+    return Promise.all(queryList)
   }
 
   /** 获取可供搜索选择器使用的列表 */
   public getSearchList(): Promise<ListPickerItem[]> {
     const loading = window.setStatusBarMessage(localize.getLocalize('text.querySwaggerData'))
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       let arr: ListPickerItem[] = []
       const { swaggerJsonUrl = [] } = config.extConfig
 
-      this.refreshSwaggerJsonMap(true)
+      await this.refreshSwaggerJsonMap(true)
 
       this.swaggerJsonMap.forEach((list, key) => {
         const conf = swaggerJsonUrl.find((x) => x.url === key)

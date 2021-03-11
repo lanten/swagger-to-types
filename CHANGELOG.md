@@ -7,6 +7,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Changed
 - [ ] 打开接口详情不重复创建新tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 
+
+## [1.0.9] 2021-03-11
+#### Fixed
+- [x] 修复已知 BUG
+
 ## [1.0.8] 2021-03-06
 #### Fixed
 - [x] 修复错误 url 阻塞进程的问题 [#16](https://github.com/lanten/swagger-to-types/issues/16)
