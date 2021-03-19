@@ -76,7 +76,9 @@ export function registerListCommands(
             select: true,
           })
           .then(() => {
-            commands.onSelect((res.source as unknown) as TreeInterface)
+            setTimeout(() => {
+              commands.onSelect((res.source as unknown) as TreeInterface)
+            }, 100)
           })
       })
     },
