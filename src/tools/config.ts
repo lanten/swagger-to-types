@@ -2,7 +2,17 @@ import vscode, { workspace } from 'vscode'
 import fs from 'fs'
 import path from 'path'
 
-import { LOCAL_CONFIG_PATH, CONFIG_LIST, EXT_NAME, PUBLISHER, mkdirRecursive, localize, log, CONFIG_GROUP } from '.'
+import {
+  LOCAL_CONFIG_PATH,
+  CONFIG_LIST,
+  EXT_NAME,
+  PUBLISHER,
+  mkdirRecursive,
+  localize,
+  log,
+  CONFIG_GROUP,
+  // WORKSPACE_PATH,
+} from '.'
 
 export interface SwaggerJsonUrlItem {
   /** 项目标题 */
@@ -23,6 +33,8 @@ export interface CodeConfig {
   savePath: string
   /** 是否显示状态栏按钮 */
   showStatusbarItem: boolean
+  /** 是否在更新接口时比对更改 (无更改不更新) */
+  compareChanges: boolean
   /** 用户设置更新时重新加载数据 */
   reloadWhenSettingsChanged: boolean
 }
@@ -32,11 +44,22 @@ export interface ExtConfig extends CodeConfig, LocalConfig {}
 export interface LocalConfig {}
 
 class Config {
+  constructor() {
+    this.initContext()
+  }
+
   /**
    * 获取全部配置
    */
   get extConfig(): ExtConfig {
     return { ...this.getCodeConfig(), ...this.getLocalConfig() }
+  }
+
+  initContext() {
+    for (const key in this.extConfig) {
+      const val = this.extConfig[key]
+      vscode.commands.executeCommand('setContext', `config.${CONFIG_GROUP}.${key}`, val)
+    }
   }
 
   /**

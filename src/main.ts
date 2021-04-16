@@ -13,11 +13,10 @@ export function activate(ctx: vscode.ExtensionContext) {
   global.ctx = ctx
 
   const listTreeView = vscode.window.createTreeView('view.list', { treeDataProvider: viewList })
-  // const apiLocalTreeView = vscode.window.createTreeView('view.local', { treeDataProvider: apiLocal })
-  vscode.window.createTreeView('view.local', { treeDataProvider: viewLocal })
+  const localTreeView = vscode.window.createTreeView('view.local', { treeDataProvider: viewLocal })
 
   registerCommonCommands(viewList, viewLocal)
-  registerListCommands(viewList, listTreeView, viewLocal)
+  registerListCommands({ viewList, viewLocal, listTreeView, localTreeView })
   registerLocalCommands(viewList, viewLocal)
 
   // 监听 settings.json 文件变更

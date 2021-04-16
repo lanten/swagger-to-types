@@ -3,9 +3,14 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
-### Changed
+## [TODO]
 - [ ] 打开接口详情不重复创建新tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
+
+## [1.1.0] 2021-04-16
+### Changed
+- [x] 搜索接口后高亮本地列表
+- [x] 标题栏添加更新接口按钮
+- [x] 一键更新时比对内容, 只更新有变化的接口
 
 
 ## [1.0.9] 2021-03-11

@@ -130,6 +130,13 @@
       }
     ],
     "menus": {
+      "editor/title": [
+        {
+          "command": "cmd.local.updateInterface",
+          "group": "navigation@01",
+          "when": "editorLangId == typescript && resourcePath in swaggerToTypes.localFiles"
+        }
+      ],
       "view/title": [
         {
           "command": "cmd.list.search",
@@ -211,6 +218,11 @@
         "swaggerToTypes.showStatusbarItem": {
           "type": "boolean",
           "description": "%text.config.showStatusbarItem%",
+          "default": true
+        },
+        "swaggerToTypes.compareChanges": {
+          "type": "boolean",
+          "description": "%text.config.compareChanges%",
           "default": true
         },
         "swaggerToTypes.reloadWhenSettingsChanged": {

@@ -4,7 +4,7 @@ import vscode, { StatusBarItem } from 'vscode'
 
 import { ViewList } from '../views/list.view'
 import { BaseTreeProvider, BaseTreeItem, BaseTreeItemOptions } from '../core'
-import { config, log, localize, WORKSPACE_PATH } from '../tools'
+import { config, log, localize, WORKSPACE_PATH, CONFIG_GROUP } from '../tools'
 
 export interface ExtLocalItemOptions {
   /** 文件路径 */
@@ -43,15 +43,19 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
     this.localFilesMap.clear()
 
     if (fs.existsSync(this.localPath)) {
+      const localFiles: string[] = []
+
       fs.readdirSync(this.localPath).forEach((file) => {
         const filePath = path.join(this.localPath, file)
         const fileInfo = this.readLocalFile(filePath)
 
         if (fileInfo && fileInfo.ext === 'ts') {
+          localFiles.push(filePath)
           this.localFilesMap.set(fileInfo.fileName, fileInfo)
         }
       })
 
+      vscode.commands.executeCommand('setContext', `${CONFIG_GROUP}.localFiles`, localFiles)
       this.refactorLocalFilesList()
     } else {
       log.warn('<initLocalFiles> localPath does not exist')
@@ -98,46 +102,71 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** 更新所有本地接口 */
   public updateAll() {
-    this.viewList._refresh().then(async () => {
-      const statusBarItemText = `$(sync) ${localize.getLocalize('text.updateButton')}`
-      this.statusBarItem.text = statusBarItemText + '...'
-      this.statusBarItem.command = undefined
-      for (const item of this.localFilesMap.values()) {
-        if (item.ignore) {
-          log.info(`<updateAll> ignored. (${item.filePath})`)
-          continue
-        }
+    const statusBarItemText = `$(sync) ${localize.getLocalize('text.updateButton')}`
+    this.statusBarItem.text = statusBarItemText + '...'
+    this.statusBarItem.command = undefined
+    const progressPanel = vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: localize.getLocalize('text.updateButtonTooltips'),
+        cancellable: false,
+      },
+      async (progress) => {
+        return new Promise(async (resolve) => {
+          progress.report({ increment: -1 })
 
-        if (!item.namespace) {
-          log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
-          continue
-        }
-        const swaggerItem = (this.viewList.interFacePathNameMap.get(item.namespace) as unknown) as TreeInterface
+          await this.viewList._refresh()
 
-        if (!swaggerItem) {
-          log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
-          continue
-        }
+          const unit = 100 / this.localFilesMap.size
+          let increment = 0
+          progress.report({ increment })
 
-        await this.viewList
-          .saveInterface(swaggerItem, item.filePath)
-          .then(() => {
-            log.info(
-              `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
-                'success'
-              )}`
-            )
-          })
-          .catch((err) => {
-            log.error(
-              `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
-                'failed'
-              )} ${err}`,
-              true
-            )
-          })
+          for (const [key, item] of this.localFilesMap) {
+            if (item.ignore) {
+              log.info(`<updateAll> ignored. (${item.filePath})`)
+              continue
+            }
+            if (!item.namespace) {
+              log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
+              continue
+            }
+            const swaggerItem = (this.viewList.interFacePathNameMap.get(item.namespace) as unknown) as TreeInterface
+            if (!swaggerItem) {
+              log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
+              continue
+            }
+
+            await this.viewList
+              .saveInterface(swaggerItem, item.filePath)
+              .then((res) => {
+                if (res === 'no-change') {
+                  return log.info(`${localize.getLocalize('text.noChange')} <${item.name}> `)
+                }
+                log.info(
+                  `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
+                    'success'
+                  )}`
+                )
+              })
+              .catch((err) => {
+                log.error(
+                  `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
+                    'failed'
+                  )} ${err}`,
+                  true
+                )
+              })
+
+            progress.report({ increment, message: key })
+            increment += unit
+          }
+
+          resolve(void 0)
+        })
       }
+    )
 
+    progressPanel.then(() => {
       this.statusBarItem.text = statusBarItemText
       this.statusBarItem.command = 'cmd.local.updateAll'
       this.initLocalFiles()

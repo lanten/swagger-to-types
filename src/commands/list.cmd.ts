@@ -5,14 +5,20 @@ import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from
 import { openListPicker } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
-import { ViewLocal } from '../views/local.view'
+import { ViewLocal, LocalItem } from '../views/local.view'
 import { parseToInterface } from '../core/data-parse'
 
-export function registerListCommands(
-  viewList: ViewList,
-  listTreeView: vscode.TreeView<ListItem>,
+export function registerListCommands({
+  viewList,
+  viewLocal,
+  listTreeView,
+  localTreeView,
+}: {
+  viewList: ViewList
   viewLocal: ViewLocal
-) {
+  listTreeView: vscode.TreeView<ListItem>
+  localTreeView: vscode.TreeView<LocalItem>
+}) {
   const commands = {
     /** 刷新 API 列表 */
     refresh: () => {
@@ -70,8 +76,10 @@ export function registerListCommands(
         if (!res.source) return log.error('Picker.res.source is undefined', true)
         if (!res.configItem) return log.error('Picker.res.configItem is undefined', true)
 
+        const listItem = viewList.transformToListItem(res.source, res.configItem)
+
         listTreeView
-          .reveal(viewList.transformToListItem(res.source, res.configItem), {
+          .reveal(listItem, {
             expand: true,
             select: true,
           })
@@ -80,11 +88,15 @@ export function registerListCommands(
               commands.onSelect((res.source as unknown) as TreeInterface)
             }, 100)
           })
+
+        // console.log(res.source)
+
+        // localTreeView.reveal(viewLocal)
       })
     },
 
     /** 保存接口至本地 (单个/批量) */
-    saveInterface(item: ListItem) {
+    async saveInterface(item: ListItem) {
       switch (item.options.type) {
         case 'group':
           viewList
@@ -94,7 +106,7 @@ export function registerListCommands(
                 `${localize.getLocalize('command.saveInterface')}(${localize.getLocalize('text.group')}) <${
                   item.label
                 }> ${localize.getLocalize('success')}`,
-                true
+                false
               )
 
               viewLocal.refresh()

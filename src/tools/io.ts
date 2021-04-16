@@ -53,7 +53,7 @@ export async function preSaveDocument(docStr: string, filePath: string) {
 
     return vscode.workspace.applyEdit(edit).then((success) => {
       if (success) {
-        vscode.window.showTextDocument(document)
+        vscode.window.showTextDocument(document, { preview: true, viewColumn: vscode.ViewColumn.Active })
       } else {
         log.error('open document error error!', true)
       }
@@ -67,7 +67,7 @@ export async function preSaveDocument(docStr: string, filePath: string) {
  * @param docStr
  * @param filePath
  */
-export async function saveDocument(docStr: string, filePath: string) {
+export async function saveDocument(docStr: string, filePath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
     if (!fs.existsSync(localPath)) {

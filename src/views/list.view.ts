@@ -1,5 +1,6 @@
+import fs from 'fs'
 import path from 'path'
-import { ProviderResult, window } from 'vscode'
+import { ProviderResult, window, ProgressLocation } from 'vscode'
 
 import {
   BaseTreeProvider,
@@ -255,19 +256,30 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   }
 
   /** 保存接口到本地 */
-
-  public async saveInterface(itemSource: TreeInterface | ListItem, filePath?: string): Promise<any> {
+  public async saveInterface(itemSource: TreeInterface | ListItem, filePath?: string): Promise<'no-change' | void> {
     const item = itemSource as TreeInterface
+    const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
     const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
+    const nextStr = parseToInterface(item)
 
-    return saveDocument(parseToInterface(item), filePathH)
+    if (compareChanges && fs.existsSync(filePathH)) {
+      const currentStr = fs.readFileSync(filePathH, 'utf-8')
+
+      const REG_UPDATE_DATE = /@update[^\n]+/
+      if (currentStr.replace(REG_UPDATE_DATE, '') === nextStr.replace(REG_UPDATE_DATE, '')) {
+        return Promise.resolve('no-change')
+      }
+    }
+
+    return saveDocument(nextStr, filePathH)
   }
 
   /** 批量保存分组到本地 */
   public async saveInterfaceGroup(item: ListItem) {
     return new Promise(async (resolve, reject) => {
+      await this._refresh()
       const listData = this.swaggerJsonMap.get(item.options.configItem.url) || []
       const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
       if (itemChildren && itemChildren.length) {

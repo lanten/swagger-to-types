@@ -11,18 +11,38 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
     refresh: () => viewLocal.refresh(),
 
     /** 更新本地接口 */
-    updateInterface(item: LocalItem & FileHeaderInfo) {
+    async updateInterface(item: LocalItem & FileHeaderInfo & { path: string }) {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: localize.getLocalize('text.updateButtonTooltips'),
+          cancellable: false,
+        },
+        (progress) => {
+          progress.report({ increment: -1 })
+          return viewList._refresh()
+        }
+      )
+
       let fileInfo: FileHeaderInfo & { title?: string } = item
       let isMenuAction = false
 
-      if (!item.namespace && item.options) {
+      if (!item.namespace) {
         isMenuAction = true
-        // @ts-ignore
-        fileInfo = item.options
+        if (item.options) {
+          // @ts-ignore
+          fileInfo = item.options
+        }
+
+        // 标题栏按钮
+        if (item.path) {
+          // @ts-ignore
+          fileInfo = viewLocal.readLocalFile(item.path)
+        }
       }
 
-      if (!fileInfo.namespace) {
-        return log.error('<updateInterface> namespace is undefined.', isMenuAction)
+      if (!fileInfo || !fileInfo.namespace) {
+        return log.error('<updateInterface> fileInfo error.', isMenuAction)
       }
 
       const swaggerItem = (viewList.interFacePathNameMap.get(fileInfo.namespace) as unknown) as TreeInterface
@@ -33,7 +53,14 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
 
       viewList
         .saveInterface(swaggerItem, fileInfo.filePath)
-        .then(() => {
+        .then((res) => {
+          if (res === 'no-change') {
+            return log.info(
+              `${localize.getLocalize('text.noChange')} <${fileInfo.name || fileInfo.title}>`,
+              isMenuAction
+            )
+          }
+
           viewLocal.updateSingle(fileInfo.filePath)
           log.info(
             `${localize.getLocalize('command.local.updateInterface')} <${
