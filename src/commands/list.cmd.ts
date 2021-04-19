@@ -85,8 +85,6 @@ export function registerListCommands({
           }, 100)
         })
 
-        console.log(res.source)
-
         const filePath = path.join(viewList.localPath, `${res.source.pathName}.d.ts`)
         if (fs.existsSync(filePath)) {
           const fileInfo = viewLocal.readLocalFile(filePath)
