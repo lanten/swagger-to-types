@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { ProviderResult, window, ProgressLocation } from 'vscode'
+import { ProviderResult, window } from 'vscode'
 
 import {
   BaseTreeProvider,
@@ -32,7 +32,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   public interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
-  private localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  public localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
 
   constructor() {
     super()

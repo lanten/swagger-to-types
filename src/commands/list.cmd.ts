@@ -1,5 +1,6 @@
-import vscode from 'vscode'
+import fs from 'fs'
 import path from 'path'
+import vscode from 'vscode'
 
 import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
 import { openListPicker } from '../core'
@@ -78,20 +79,22 @@ export function registerListCommands({
 
         const listItem = viewList.transformToListItem(res.source, res.configItem)
 
-        listTreeView
-          .reveal(listItem, {
-            expand: true,
-            select: true,
-          })
-          .then(() => {
-            setTimeout(() => {
-              commands.onSelect((res.source as unknown) as TreeInterface)
-            }, 100)
-          })
+        listTreeView.reveal(listItem, { expand: true, select: true }).then(() => {
+          setTimeout(() => {
+            commands.onSelect((res.source as unknown) as TreeInterface)
+          }, 100)
+        })
 
-        // console.log(res.source)
+        console.log(res.source)
 
-        // localTreeView.reveal(viewLocal)
+        const filePath = path.join(viewList.localPath, `${res.source.pathName}.d.ts`)
+        if (fs.existsSync(filePath)) {
+          const fileInfo = viewLocal.readLocalFile(filePath)
+          if (fileInfo) {
+            localTreeView.reveal(viewLocal.renderItem(fileInfo), { expand: true, select: true })
+          }
+        }
+        // const localItem = viewLocal.readLocalFile(res)
       })
     },
 

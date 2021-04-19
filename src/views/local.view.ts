@@ -186,31 +186,37 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   }
 
   getChildren(): Thenable<LocalItem[]> {
-    const treeItems = this.renderItem(this.localFilesList)
+    const treeItems = this.renderItems(this.localFilesList)
 
     return Promise.resolve(treeItems)
   }
 
-  renderItem(itemList: FileHeaderInfo[]): LocalItem[] {
-    return itemList.map((item) => {
-      const title = item.name || item.namespace || item.fileName
+  renderItems(itemList: FileHeaderInfo[]): LocalItem[] {
+    return itemList.map(this.renderItem)
+  }
 
-      const options: BaseTreeItemOptions & ExtLocalItemOptions = {
+  renderItem(item: FileHeaderInfo) {
+    const title = item.name || item.namespace || item.fileName
+
+    const options: BaseTreeItemOptions & ExtLocalItemOptions = {
+      title,
+      type: item.ignore ? 'file-ignore' : 'file-sync',
+      subTitle: `[${item.update || 'No Update Date'}] <${item.namespace}> ${item.path}`,
+      collapsible: 0,
+      filePath: item.filePath,
+      namespace: item.namespace,
+      command: {
         title,
-        type: item.ignore ? 'file-ignore' : 'file-sync',
-        subTitle: `[${item.update || 'No Update Date'}] <${item.namespace}> ${item.path}`,
-        collapsible: 0,
-        filePath: item.filePath,
-        namespace: item.namespace,
-        command: {
-          title,
-          command: 'cmd.common.openFile',
-          arguments: [item.filePath],
-        },
-      }
+        command: 'cmd.common.openFile',
+        arguments: [item.filePath],
+      },
+    }
 
-      return new LocalItem(options)
-    })
+    return new LocalItem(options)
+  }
+
+  getParent() {
+    return void 0
   }
 
   /** 重新生成本地文件列表 */
