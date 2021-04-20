@@ -143,9 +143,9 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
                   return log.info(`${localize.getLocalize('text.noChange')} <${item.name}> `)
                 }
                 log.info(
-                  `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${localize.getLocalize(
-                    'success'
-                  )}`
+                  `${localize.getLocalize('command.local.updateInterface')} <${item.name}> ${
+                    item.filePath
+                  } ${localize.getLocalize('success')}`
                 )
               })
               .catch((err) => {

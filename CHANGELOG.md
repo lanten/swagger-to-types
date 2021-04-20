@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [TODO]
 - [ ] 打开接口详情不重复创建新tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 
+## [1.1.1] 2021-04-20
+### Changed
+- [x] 有变更的接口输出路径, 以便于定位
+
 ## [1.1.0] 2021-04-16
 ### Changed
 - [x] 搜索接口后高亮本地列表
