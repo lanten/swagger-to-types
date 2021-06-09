@@ -34,7 +34,6 @@
   "text.group": "Group",
   "text.querySwaggerData": "Get Swagger API data...",
   "text.updateButton": "Update API",
-  "text.updateButtonTooltips": "Update all local interfaces with one click",
   "text.confirmUpdateAll": "Confirm the update? This will cause the local interface to be overwritten",
   "text.noChange": "Interfaces no change",
 

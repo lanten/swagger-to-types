@@ -34,7 +34,6 @@
   "text.group": "分组",
   "text.querySwaggerData": "获取 Swagger API 数据...",
   "text.updateButton": "更新接口",
-  "text.updateButtonTooltips": "一键更新已保存的接口",
   "text.confirmUpdateAll": "确认更新吗? 这将导致本地接口被覆盖",
   "text.noChange": "接口无变更",
 

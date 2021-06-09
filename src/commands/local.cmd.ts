@@ -15,7 +15,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
-          title: localize.getLocalize('text.updateButtonTooltips'),
+          title: localize.getLocalize('text.updateButton'),
           cancellable: false,
         },
         (progress) => {
@@ -83,7 +83,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
     updateAll() {
       if (viewLocal.localFilesMap.size <= 0)
         return log.info(
-          `${localize.getLocalize('text.updateButtonTooltips')}: ${localize.getLocalize('viewsWelcome.emptyLocal')}`,
+          `${localize.getLocalize('text.updateButton')}: ${localize.getLocalize('viewsWelcome.emptyLocal')}`,
           true
         )
 
@@ -92,7 +92,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
 
       vscode.window
         .showWarningMessage(
-          `${localize.getLocalize('text.updateButtonTooltips')}: ${localize.getLocalize('text.confirmUpdateAll')}`,
+          `${localize.getLocalize('text.updateButton')}: ${localize.getLocalize('text.confirmUpdateAll')}`,
           confirmText,
           cancelText
         )

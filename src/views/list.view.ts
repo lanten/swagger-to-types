@@ -11,7 +11,16 @@ import {
   ListPickerItem,
   parseToInterface,
 } from '../core'
-import { config, formatDate, log, SwaggerJsonUrlItem, saveDocument, WORKSPACE_PATH, localize } from '../tools'
+import {
+  config,
+  formatDate,
+  log,
+  SwaggerJsonUrlItem,
+  saveDocument,
+  WORKSPACE_PATH,
+  localize,
+  showLoading,
+} from '../tools'
 
 type SwaggerJsonMap = Map<string, SwaggerJsonTreeItem[]>
 interface ExtListItemConfig {
@@ -168,7 +177,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
   /** 获取可供搜索选择器使用的列表 */
   public getSearchList(): Promise<ListPickerItem[]> {
-    const loading = window.setStatusBarMessage(localize.getLocalize('text.querySwaggerData'))
+    const stopLoading = showLoading(localize.getLocalize('text.querySwaggerData'))
     return new Promise(async (resolve) => {
       let arr: ListPickerItem[] = []
       const { swaggerJsonUrl = [] } = config.extConfig
@@ -181,7 +190,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
         arr = arr.concat(this.mergeSwaggerJsonMap(list, conf, conf.title))
       })
 
-      loading.dispose()
+      stopLoading()
       resolve(arr)
     })
   }

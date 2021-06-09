@@ -62,7 +62,7 @@
         "command": "cmd.local.updateAll",
         "title": "%text.updateButton%",
         "category": "%app.category%",
-        "icon": "$(sync)"
+        "icon": "$(cloud-download)"
       },
       {
         "command": "cmd.local.updateInterface",

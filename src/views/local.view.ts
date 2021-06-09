@@ -65,7 +65,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   /** 初始化状态栏按钮 */
   initStatusBarItem() {
     const { showStatusbarItem, swaggerJsonUrl } = config.extConfig
-    this.statusBarItem.text = `$(sync) ${localize.getLocalize('text.updateButton')}`
+    this.statusBarItem.text = `$(cloud-download) ${localize.getLocalize('text.updateButton')}`
     this.statusBarItem.command = 'cmd.local.updateAll'
     if (showStatusbarItem && swaggerJsonUrl.length) {
       this.statusBarItem.show()
@@ -102,13 +102,13 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** 更新所有本地接口 */
   public updateAll() {
-    const statusBarItemText = `$(sync) ${localize.getLocalize('text.updateButton')}`
+    const statusBarItemText = `$(cloud-download) ${localize.getLocalize('text.updateButton')}`
     this.statusBarItem.text = statusBarItemText + '...'
     this.statusBarItem.command = undefined
     const progressPanel = vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: localize.getLocalize('text.updateButtonTooltips'),
+        title: localize.getLocalize('text.updateButton'),
         cancellable: false,
       },
       async (progress) => {
@@ -170,7 +170,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
       this.statusBarItem.text = statusBarItemText
       this.statusBarItem.command = 'cmd.local.updateAll'
       this.initLocalFiles()
-      log.info(`${localize.getLocalize('text.updateButtonTooltips')} ${localize.getLocalize('success')}`)
+      log.info(`${localize.getLocalize('text.updateButton')} ${localize.getLocalize('success')}`)
       log.outputChannel.show()
     })
   }
