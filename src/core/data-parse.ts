@@ -28,14 +28,25 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     })
   }
 
-  for (const path in paths) {
-    const v = paths[path]
-    const method = Object.keys(v)[0]
-    const { summary, tags, parameters = [], responses = {}, ...item } = v[method]
-    const pathName = toCamel(path, false, '/')
+  /**
+   *
+   * @param path
+   * @param pathItem
+   * @param method
+   * @param multipleMethod 是否具有多个方法
+   */
+  function parseMethodItem(
+    path: string,
+    pathItem: SwaggerJson['paths'][string],
+    method: string,
+    multipleMethod: boolean
+  ) {
+    const { summary, tags, parameters = [], responses = {}, ...item } = pathItem[method]
+    let fileName = path.slice(1, path.length).replace(/\//g, '-')
+    if (multipleMethod) fileName += `-${method.toLowerCase()}`
+    const pathName = toCamel(fileName)
       .replace('/', '')
       .replace(/[\[\]<>(){|}]/g, '$')
-    const fileName = path.slice(1, path.length).replace(/\//g, '-')
 
     let params: any[] = []
     if (!parameters || !parameters.length) {
@@ -107,6 +118,16 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
         }
       })
     }
+
+    // console.log(itemRes)
+    // return itemRes
+  }
+
+  for (const path in paths) {
+    const pathItem = paths[path]
+    const pathItemKeys = Object.keys(pathItem)
+
+    pathItemKeys.forEach((method) => parseMethodItem(path, pathItem, method, pathItemKeys.length > 1))
   }
 
   // console.log(res)

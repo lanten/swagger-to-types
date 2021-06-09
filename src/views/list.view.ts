@@ -288,9 +288,11 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   /** 批量保存分组到本地 */
   public async saveInterfaceGroup(item: ListItem) {
     return new Promise(async (resolve, reject) => {
-      await this._refresh()
+      // await this._refresh()
       const listData = this.swaggerJsonMap.get(item.options.configItem.url) || []
       const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
+
+      console.log({ listData, itemChildren }, item.options.key)
       if (itemChildren && itemChildren.length) {
         for (let index = 0; index < itemChildren.length; index++) {
           await this.saveInterface(itemChildren[index])
