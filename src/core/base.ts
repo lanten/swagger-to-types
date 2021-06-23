@@ -45,11 +45,10 @@ export class BaseTreeItem<ExtOptions extends AnyObj = AnyObj> extends vscode.Tre
     } else {
       this.tooltip = `${this.label} - ${options.subTitle}`
     }
+
+    this.iconPath = ICON_MAP[options.type]
+    this.contextValue = options.contextValue
   }
-
-  iconPath = ICON_MAP[this.options.type]
-
-  contextValue = this.options.contextValue
 }
 
 export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
