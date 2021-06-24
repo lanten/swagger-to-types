@@ -8,6 +8,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - [ ] 打开接口详情不重复创建新 tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 
+## [1.1.3] unreleased
+
+### Added
+
+- [ ] 一键复制请求函数代码
+- [ ] 自定义请求函数模板
+
 ## [1.1.2] 2021-06-09
 
 ### Fixed

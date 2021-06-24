@@ -70,6 +70,11 @@
         "icon": "$(cloud-download)"
       },
       {
+        "command": "cmd.local.copyRequest",
+        "title": "%command.local.copyRequest%",
+        "icon": "$(code)"
+      },
+      {
         "command": "cmd.common.deleteFile",
         "title": "%command.remove%",
         "icon": "$(trash)"
@@ -132,8 +137,13 @@
     "menus": {
       "editor/title": [
         {
-          "command": "cmd.local.updateInterface",
+          "command": "cmd.local.copyRequest",
           "group": "navigation@01",
+          "when": "editorLangId == typescript && resourcePath in swaggerToTypes.localFiles"
+        },
+        {
+          "command": "cmd.local.updateInterface",
+          "group": "navigation@02",
           "when": "editorLangId == typescript && resourcePath in swaggerToTypes.localFiles"
         }
       ],
