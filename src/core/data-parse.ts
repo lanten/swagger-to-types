@@ -379,7 +379,7 @@ function handleType(type: string): string {
       return 'any // BUG: Type Error (ref)'
 
     case 'object':
-      return 'Record<string, unknown>'
+      return 'Record<string, any>'
 
     default:
       return type || 'any'

@@ -14,6 +14,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
+- [x] 优化对象解析
 
 ## [1.1.2] 2021-06-09
 
