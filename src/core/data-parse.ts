@@ -1,3 +1,4 @@
+import { OpenAPIV2 } from 'openapi-types'
 import {
   toCamel,
   log,
@@ -8,23 +9,31 @@ import {
   getValueByPath,
 } from '../tools'
 
-export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJsonUrlItem): SwaggerJsonTreeItem[] {
+export function parseSwaggerJson(
+  swaggerJson: OpenAPIV2.Document,
+  configItem: SwaggerJsonUrlItem
+): SwaggerJsonTreeItem[] {
   const { tags, paths, definitions } = swaggerJson
-  let res: SwaggerJsonTreeItem[] = []
+  const res: SwaggerJsonTreeItem[] = []
 
-  // console.log(swaggerJson)
+  function addTag(item: { name: string; description?: string }) {
+    const itemIndex = res.length
+    tagsMap[item.name] = itemIndex
+    const tagItem: SwaggerJsonTreeItem = {
+      key: randomId(`${item.name}-xxxxxx`),
+      parentKey: configItem.url,
+      title: item.name,
+      subTitle: item.description || '',
+      type: 'group',
+    }
+
+    res.push(tagItem)
+  }
 
   const tagsMap = {}
   if (tags && tags.length) {
-    res = tags.map((v, i) => {
-      tagsMap[v.name] = i
-      return {
-        key: randomId(`${v.name}-xxxxxx`),
-        parentKey: configItem.url,
-        title: v.name,
-        subTitle: v.description,
-        type: 'group',
-      }
+    tags.forEach((v) => {
+      addTag({ name: v.name, description: v.description })
     })
   }
 
@@ -35,13 +44,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
    * @param method
    * @param multipleMethod 是否具有多个方法
    */
-  function parseMethodItem(
-    path: string,
-    pathItem: SwaggerJson['paths'][string],
-    method: string,
-    multipleMethod: boolean
-  ) {
-    const { summary, tags, parameters = [], responses = {}, ...item } = pathItem[method]
+  function parseMethodItem(path: string, pathItem: OpenAPIV2.OperationObject, method: string, multipleMethod: boolean) {
+    const { summary, description, tags, parameters = [], responses = {}, ...item } = pathItem[method]
     let fileName = path.slice(1, path.length).replace(/\//g, '-')
     if (multipleMethod) fileName += `-${method.toLowerCase()}`
     const pathName = toCamel(fileName)
@@ -52,7 +56,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     if (!parameters || !parameters.length) {
       params = []
     } else {
-      const bodyIndex = parameters.findIndex((x) => x.in === 'body')
+      const bodyIndex = parameters.findIndex((x: any) => x.in === 'body')
 
       if (bodyIndex !== -1) {
         const paramsBody = parameters[bodyIndex]
@@ -71,7 +75,7 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
         }
       } else {
         // 忽略 headers
-        params = parameters.filter((x) => x.in !== 'header')
+        params = parameters.filter((x: any) => x.in !== 'header')
       }
     }
 
@@ -88,16 +92,18 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
       }
     }
 
+    const desc = description || summary || '无说明接口'
+
     const itemRes: SwaggerJsonTreeItem & TreeInterface = {
       groupName: configItem.title,
       type: 'interface',
-      key: randomId(`${summary}-xxxxxx`),
-      basePath: configItem.basePath || swaggerJson.basePath,
+      key: randomId(`${desc}-xxxxxx`),
+      basePath: configItem.basePath || swaggerJson.basePath || '',
       parentKey: '',
       method,
       params,
       response,
-      title: summary,
+      title: desc,
       subTitle: path,
       path,
       pathName,
@@ -106,8 +112,15 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     }
 
     if (tags && tags.length) {
-      tags.forEach((tagStr) => {
-        const tagIndex = tagsMap[tagStr]
+      tags.forEach((tagStr: string) => {
+        let tagIndex = tagsMap[tagStr]
+        if (tagIndex === undefined) {
+          tagIndex = tagsMap['未知分组']
+          if (!tagIndex) {
+            addTag({ name: '未知分组', description: '分组ID在TAG表中未找到 (无效 Tag)' })
+            tagIndex = tagsMap['未知分组']
+          }
+        }
         const tagVal = res[tagIndex]
         itemRes.parentKey = tagVal.key
 
@@ -117,6 +130,8 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
           tagVal.children = [itemRes]
         }
       })
+    } else {
+      res.push(itemRes)
     }
 
     // console.log(itemRes)
@@ -127,24 +142,25 @@ export function parseSwaggerJson(swaggerJson: SwaggerJson, configItem: SwaggerJs
     const pathItem = paths[path]
     const pathItemKeys = Object.keys(pathItem)
 
-    pathItemKeys.forEach((method) => parseMethodItem(path, pathItem, method, pathItemKeys.length > 1))
+    pathItemKeys.forEach((method) => parseMethodItem(path, pathItem as any, method, pathItemKeys.length > 1))
   }
-
-  // console.log(res)
 
   return res
 }
 
 // 递归获取 ref
-export function getSwaggerJsonRef(schema?: SwaggerJsonSchema, definitions?: SwaggerJsonDefinitions): any {
-  const { items } = schema || {}
-  let { originalRef, $ref } = schema || {}
+export function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAPIV2.DefinitionsObject): any {
+  const { items, originalRef } = schema || {}
+  let { $ref } = schema || {}
   let refData: any = {}
 
   if (items) {
-    const { originalRef: itemOriginalRef, $ref: item$ref } = items
+    const {
+      // originalRef: itemOriginalRef,
+      $ref: item$ref,
+    } = items
 
-    if (itemOriginalRef) originalRef = itemOriginalRef
+    // if (itemOriginalRef) originalRef = itemOriginalRef
     if (item$ref) $ref = item$ref
   }
 
@@ -174,7 +190,7 @@ export function getSwaggerJsonRef(schema?: SwaggerJsonSchema, definitions?: Swag
       }
 
       if ((val.originalRef && val.originalRef != originalRef) || (val.$ref && val.$ref != $ref)) {
-        obj.item = getSwaggerJsonRef(val as SwaggerJsonSchema, definitions)
+        obj.item = getSwaggerJsonRef(val, definitions)
       }
 
       if (val.items) {
@@ -336,8 +352,8 @@ function parseProperties(
 function parseHeaderInfo(data: TreeInterface): string[] {
   return [
     '/**',
-    ` * @name   ${data.title} (${data.groupName})`,
-    ` * @base   ${data.basePath}`,
+    ` * @name   ${data.title || ''} (${data.groupName})`,
+    ` * @base   ${data.basePath || ''}`,
     ` * @path   ${data.path}`,
     ` * @method ${data.method.toUpperCase()}`,
     ` * @update ${new Date().toLocaleString()}`,

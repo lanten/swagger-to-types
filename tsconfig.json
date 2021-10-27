@@ -1,27 +1,20 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "esnext",
-		"outDir": "out",
-		"baseUrl": "./",
-		"sourceMap": true,
-		"rootDir": ".",
-		"strict": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"lib": [
-			"esnext",
-			"es6",
-		],
-	},
-	"include": [
-		"types/**/*.ts",
-		"src/**/*.ts",
-	],
-	"exclude": [
-		"node_modules",
-	]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "outDir": "out",
+    "baseUrl": "./",
+    "sourceMap": true,
+    "useUnknownInCatchVariables": false,
+    "rootDir": ".",
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "lib": ["esnext", "es6"]
+  },
+  "include": ["types/**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

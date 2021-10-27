@@ -1,73 +1,7 @@
-interface SwaggerJson {
-  swagger: string
-  host: string
-  basePath: string
-  info: {
-    description: string
-    version: string
-    title: string
-    contact: any
-  }
-  tags?: SwaggerJsonTagsItem[]
-  paths: {
-    [key: string]: {
-      [key: string]: {
-        tags?: string[]
-        summary: string
-        operationId: string
-        description: string
-        consumes: string[]
-        produces: string[]
-        parameters?: {
-          name: string
-          in: string
-          description: string
-          required: boolean
-          type?: string
-          schema?: SwaggerJsonSchema
-          items?: ParametersItems
-        }[]
-        responses: {
-          [key: string]: {
-            description: string
-            schema?: SwaggerJsonSchema
-            items?: ParametersItems
-          }
-        }
-        deprecated: boolean
-      }
-    }
-  }
-  definitions: SwaggerJsonDefinitions
-}
-
-interface SwaggerJsonDefinitions {
-  [key: string]: SwaggerJsonDefinitionsItem
-}
-
-interface SwaggerJsonDefinitionsItem {
-  type: string
-  required?: string[]
-  properties: any
-  title: string
-  item?: any
-}
-
-interface SwaggerJsonTagsItem {
-  name: string
-  description: string
-}
-
 interface ParametersItems {
   default: string
   enum: string[]
   type: string
-}
-
-interface SwaggerJsonSchema {
-  originalRef?: string
-  $ref?: string
-  items?: SwaggerJsonSchema & ParametersItems
 }
 
 interface SwaggerJsonTreeItem {

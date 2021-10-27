@@ -2,6 +2,38 @@
 # yarn lockfile v1
 
 
+"@apidevtools/json-schema-ref-parser@^9.0.6":
+  version "9.0.9"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#d720f9256e3609621280584f2b47ae165359268b"
+  integrity sha1-1yD5JW42CWISgFhPK0euFlNZJos=
+  dependencies:
+    "@jsdevtools/ono" "^7.1.3"
+    "@types/json-schema" "^7.0.6"
+    call-me-maybe "^1.0.1"
+    js-yaml "^4.1.0"
+
+"@apidevtools/openapi-schemas@^2.0.4":
+  version "2.1.0"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@apidevtools/openapi-schemas/-/openapi-schemas-2.1.0.tgz#9fa08017fb59d80538812f03fc7cac5992caaa17"
+  integrity sha1-n6CAF/tZ2AU4gS8D/HysWZLKqhc=
+
+"@apidevtools/swagger-methods@^3.0.2":
+  version "3.0.2"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@apidevtools/swagger-methods/-/swagger-methods-3.0.2.tgz#b789a362e055b0340d04712eafe7027ddc1ac267"
+  integrity sha1-t4mjYuBVsDQNBHEur+cCfdwawmc=
+
+"@apidevtools/swagger-parser@^10.0.3":
+  version "10.0.3"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@apidevtools/swagger-parser/-/swagger-parser-10.0.3.tgz#32057ae99487872c4dd96b314a1ab4b95d89eaf5"
+  integrity sha1-MgV66ZSHhyxN2WsxShq0uV2J6vU=
+  dependencies:
+    "@apidevtools/json-schema-ref-parser" "^9.0.6"
+    "@apidevtools/openapi-schemas" "^2.0.4"
+    "@apidevtools/swagger-methods" "^3.0.2"
+    "@jsdevtools/ono" "^7.1.3"
+    call-me-maybe "^1.0.1"
+    z-schema "^5.0.1"
+
 "@babel/code-frame@^7.0.0":
   version "7.10.4"
   resolved "https://registry.npm.taobao.org/@babel/code-frame/download/@babel/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"
@@ -38,6 +70,11 @@
     lodash "^4.17.19"
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
+
+"@jsdevtools/ono@^7.1.3":
+  version "7.1.3"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@jsdevtools/ono/-/ono-7.1.3.tgz#9df03bbd7c696a5c58885c34aa06da41c8543796"
+  integrity sha1-nfA7vXxpalxYiFw0qgbaQchUN5Y=
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
@@ -77,6 +114,11 @@
   version "7.0.6"
   resolved "https://registry.npm.taobao.org/@types/json-schema/download/@types/json-schema-7.0.6.tgz#f4c7ec43e81b319a9815115031709f26987891f0"
   integrity sha1-9MfsQ+gbMZqYFRFQMXCfJph4kfA=
+
+"@types/json-schema@^7.0.6":
+  version "7.0.9"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/@types/json-schema/-/json-schema-7.0.9.tgz#97edc9037ea0c38585320b28964dde3b39e4660d"
+  integrity sha1-l+3JA36gw4WFMgsolk3eOznkZg0=
 
 "@types/minimatch@*":
   version "3.0.3"
@@ -263,6 +305,11 @@ argparse@^1.0.7:
   dependencies:
     sprintf-js "~1.0.2"
 
+argparse@^2.0.1:
+  version "2.0.1"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
+  integrity sha1-JG9Q88p4oyQPbJl+ipvR6sSeSzg=
+
 array-union@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/array-union/download/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
@@ -322,6 +369,11 @@ browser-stdout@1.3.1:
   version "1.3.1"
   resolved "https://registry.npm.taobao.org/browser-stdout/download/browser-stdout-1.3.1.tgz#baa559ee14ced73452229bad7326467c61fabd60"
   integrity sha1-uqVZ7hTO1zRSIputcyZGfGH6vWA=
+
+call-me-maybe@^1.0.1:
+  version "1.0.1"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/call-me-maybe/-/call-me-maybe-1.0.1.tgz#26d208ea89e37b5cbde60250a15f031c16a4d66b"
+  integrity sha1-JtII6onje1y95gJQoV8DHBak1ms=
 
 callsites@^3.0.0:
   version "3.1.0"
@@ -404,6 +456,11 @@ combined-stream@^1.0.8:
   integrity sha1-w9RaizT9cwYxoRCoolIGgrMdWn8=
   dependencies:
     delayed-stream "~1.0.0"
+
+commander@^2.7.1:
+  version "2.20.3"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
+  integrity sha1-/UhehMA+tIgcIHIrpIA16FMa6zM=
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -1113,6 +1170,13 @@ js-yaml@3.14.0, js-yaml@^3.13.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js-yaml@^4.1.0:
+  version "4.1.0"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
+  integrity sha1-wftl+PUBeQHN0slRhkuhhFihBgI=
+  dependencies:
+    argparse "^2.0.1"
+
 json-schema-traverse@^0.4.1:
   version "0.4.1"
   resolved "https://registry.npm.taobao.org/json-schema-traverse/download/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
@@ -1175,6 +1239,16 @@ locate-path@^6.0.0:
   integrity sha1-VTIeswn+u8WcSAHZMackUqaB0oY=
   dependencies:
     p-locate "^5.0.0"
+
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
 
 lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19:
   version "4.17.20"
@@ -1326,6 +1400,11 @@ once@^1.3.0:
   integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
   dependencies:
     wrappy "1"
+
+openapi-types@^9.3.0:
+  version "9.3.0"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/openapi-types/-/openapi-types-9.3.0.tgz#2d90549edb928cf06cf83018485a1a5961fbd2b9"
+  integrity sha1-LZBUntuSjPBs+DAYSFoaWWH70rk=
 
 optionator@^0.9.1:
   version "0.9.1"
@@ -1739,6 +1818,11 @@ v8-compile-cache@^2.0.3:
   resolved "https://registry.npm.taobao.org/v8-compile-cache/download/v8-compile-cache-2.1.1.tgz#54bc3cdd43317bca91e35dcaf305b1a7237de745"
   integrity sha1-VLw83UMxe8qR413K8wWxpyN950U=
 
+validator@^13.6.0:
+  version "13.6.0"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/validator/-/validator-13.6.0.tgz#1e71899c14cdc7b2068463cb24c1cc16f6ec7059"
+  integrity sha1-HnGJnBTNx7IGhGPLJMHMFvbscFk=
+
 vscode-test@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npm.taobao.org/vscode-test/download/vscode-test-1.4.0.tgz#a56f73c1667b4d37ba6baa6765f233a19d4ffbfe"
@@ -1862,3 +1946,14 @@ yargs@^14.2.3:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^15.0.1"
+
+z-schema@^5.0.1:
+  version "5.0.1"
+  resolved "https://test-artifactory.huazhucorp.com/repository/npm-public/z-schema/-/z-schema-5.0.1.tgz#f4d4efb1e8763c968b5539e42d11b6a47e91da62"
+  integrity sha1-9NTvseh2PJaLVTnkLRG2pH6R2mI=
+  dependencies:
+    lodash.get "^4.4.2"
+    lodash.isequal "^4.5.0"
+    validator "^13.6.0"
+  optionalDependencies:
+    commander "^2.7.1"

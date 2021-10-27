@@ -32,7 +32,7 @@ export function requireModule(modulePath: string) {
       delete require.cache[require.resolve(modulePath)]
     }, 200)
     return m
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error)
   }
 }
@@ -77,7 +77,7 @@ export async function saveDocument(docStr: string, filePath: string): Promise<vo
     try {
       fs.writeFileSync(filePath, docStr, 'utf-8')
       resolve(void 0)
-    } catch (error) {
+    } catch (error: any) {
       log.error(error, true)
       reject()
     }

@@ -1,12 +1,14 @@
 import fs from 'fs'
 import path from 'path'
 import { ProviderResult, window } from 'vscode'
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 
 import {
   BaseTreeProvider,
   BaseTreeItem,
   getSwaggerJson,
   parseSwaggerJson,
+  parseSwaggerJsonV3,
   BaseTreeItemOptions,
   ListPickerItem,
   parseToInterface,
@@ -104,10 +106,16 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       getSwaggerJson(item.url)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
-          this.swaggerJsonMap.set(item.url, parseSwaggerJson(res, item))
+          console.log(res)
+          if (res.swagger) {
+            this.swaggerJsonMap.set(item.url, parseSwaggerJson(res as OpenAPIV2.Document, item))
+          } else if (res.openapi) {
+            this.swaggerJsonMap.set(item.url, parseSwaggerJsonV3(res as OpenAPIV3.Document, item))
+          }
           resolve(this.swaggerJsonMap)
         })
-        .catch(() => {
+        .catch((err) => {
+          log.error(err, true)
           resolve(this.swaggerJsonMap) // reject map
         })
     })
