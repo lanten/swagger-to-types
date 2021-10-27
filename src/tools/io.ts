@@ -37,29 +37,32 @@ export function requireModule(modulePath: string) {
   }
 }
 
+class SwaggerInterfaceProvider implements vscode.TextDocumentContentProvider {
+  static scheme = 'swagger-interface-provider'
+  public doc = ''
+
+  provideTextDocumentContent(): string {
+    return this.doc
+  }
+}
+
+const swaggerInterfaceProvider = new SwaggerInterfaceProvider()
+
+vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.scheme, swaggerInterfaceProvider)
+
 /**
  * 打开一个未保存的文档
  * @param docStr
  * @param name
  */
 export async function preSaveDocument(docStr: string, filePath: string) {
-  const newFile = vscode.Uri.parse((fs.existsSync(filePath) ? 'file' : 'untitled') + ':' + filePath)
+  const newFile = vscode.Uri.parse(
+    (fs.existsSync(filePath) ? 'file' : SwaggerInterfaceProvider.scheme) + ':' + filePath
+  )
 
-  return vscode.workspace.openTextDocument(newFile).then(async (document) => {
-    const edit = new vscode.WorkspaceEdit()
-    const pMin = new vscode.Position(0, 0)
-    const pMax = new vscode.Position(999999999, 999999999) // TODO 主要目的是替换文本, 暂未找到替代方案
-    edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
-
-    return vscode.workspace.applyEdit(edit).then((success) => {
-      if (success) {
-        vscode.window.showTextDocument(document, { preview: true, viewColumn: vscode.ViewColumn.Active })
-      } else {
-        log.error('open document error error!', true)
-      }
-      return success
-    })
-  })
+  swaggerInterfaceProvider.doc = docStr
+  const doc = await vscode.workspace.openTextDocument(newFile)
+  await vscode.window.showTextDocument(doc)
 }
 
 /**

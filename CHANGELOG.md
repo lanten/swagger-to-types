@@ -6,7 +6,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
-- [ ] 打开接口详情不重复创建新 tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
 
@@ -14,6 +13,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
+- 打开接口详情不重复创建新 tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 - 修复未分组接口不显示问题
 - 修复无效分组接口不现实问题
 
