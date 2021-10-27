@@ -8,7 +8,7 @@ import {
   BaseTreeItem,
   getSwaggerJson,
   parseSwaggerJson,
-  parseSwaggerJsonV3,
+  OpenAPIV3Parser,
   BaseTreeItemOptions,
   ListPickerItem,
   parseToInterface,
@@ -110,7 +110,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           if (res.swagger) {
             this.swaggerJsonMap.set(item.url, parseSwaggerJson(res as OpenAPIV2.Document, item))
           } else if (res.openapi) {
-            this.swaggerJsonMap.set(item.url, parseSwaggerJsonV3(res as OpenAPIV3.Document, item))
+            this.swaggerJsonMap.set(item.url, new OpenAPIV3Parser(res as OpenAPIV3.Document, item).parse())
           }
           resolve(this.swaggerJsonMap)
         })

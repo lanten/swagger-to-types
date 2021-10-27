@@ -3,11 +3,10 @@ import path from 'path'
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
-import { openListPicker } from '../core'
+import { openListPicker, parseToInterface } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
 import { ViewLocal, LocalItem } from '../views/local.view'
-import { parseToInterface } from '../core/data-parse'
 
 export function registerListCommands({
   viewList,
