@@ -56,12 +56,25 @@ vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.sc
  * @param name
  */
 export async function preSaveDocument(docStr: string, filePath: string) {
-  const newFile = vscode.Uri.parse(
-    (fs.existsSync(filePath) ? 'file' : SwaggerInterfaceProvider.scheme) + ':' + filePath
-  )
+  const newFile = vscode.Uri.parse(SwaggerInterfaceProvider.scheme + ':' + filePath)
 
   swaggerInterfaceProvider.doc = docStr
   const doc = await vscode.workspace.openTextDocument(newFile)
+
+  // const edit = new vscode.WorkspaceEdit()
+  // const pMin = new vscode.Position(0, 0)
+  // const pMax = new vscode.Position(999999999, 999999999)
+  // edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
+
+  // return vscode.workspace.applyEdit(edit).then((success) => {
+  //   if (success) {
+  //     vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Active })
+  //   } else {
+  //     log.error('open document error error!', true)
+  //   }
+  //   return success
+  // })
+
   await vscode.window.showTextDocument(doc)
 }
 

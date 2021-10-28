@@ -4,7 +4,7 @@ interface ParametersItems {
   type: string
 }
 
-interface SwaggerJsonTreeItem {
+interface SwaggerJsonTreeItem extends Partial<TreeInterface> {
   key: string
   parentKey: string
   type:
@@ -15,25 +15,25 @@ interface SwaggerJsonTreeItem {
     | 'file-ignore' // 本地文件
   title: string
   subTitle: string
-  pathName?: string
-  fileName?: string
-  method?: string
+  // pathName?: string
+  // fileName?: string
+  // method?: string
   children?: any[]
 }
 
 interface TreeInterfaceParamsItem {
   name: string
   in?: string
-  description: string
-  required: boolean
-  type: string
+  description?: string
+  required?: boolean
+  type?: string
 }
 
 interface TreeInterfacePropertiesItem {
   name: string
   description?: string
-  required: boolean
-  type: string
+  required?: boolean
+  type?: string
   properties?: TreeInterfacePropertiesItem
   item?: TreeInterfacePropertiesItem[]
   title?: string
@@ -48,15 +48,15 @@ interface TreeInterface {
   groupName: string
   method: string
   params: TreeInterfaceParamsItem[]
-  response: TreeInterfacePropertiesItem
+  response: TreeInterfacePropertiesItem | string
   title: string
   path: string
   subTitle: string
   pathName: string
   fileName: string
   operationId: string
-  produces: string[]
-  deprecated: boolean
+  // produces: string[]
+  // deprecated: boolean
 }
 
 interface FileHeaderInfo {

@@ -1,8 +1,9 @@
-import { BaseParser } from './data-parser'
-
 import type { OpenAPIV3 } from 'openapi-types'
 
+import { BaseParser, handleType } from './data-parser'
 import { randomId } from '../tools'
+
+interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
 export class OpenAPIV3Parser extends BaseParser {
   parse() {
@@ -12,25 +13,28 @@ export class OpenAPIV3Parser extends BaseParser {
       if (!pathItem) continue
       const pathItemKeys = Object.keys(pathItem)
       const multipleMethod = pathItemKeys.length > 1
-      pathItemKeys.forEach((method) => this.parseMethodItem(path, pathItem, method, multipleMethod))
+      pathItemKeys.forEach((method) => this.parseMethodItem(path, pathItem[method], method, multipleMethod))
     }
 
     return this.result
   }
 
   /** 解析接口方法 */
-  parseMethodItem(path: string, item: OpenAPIV3.PathItemObject, method: string, multipleMethod: boolean) {
-    const { description, summary } = item
+  parseMethodItem(path: string, item: DereferenceItem, method: string, multipleMethod: boolean) {
+    const { description, summary, tags, operationId, parameters, responses } = item
     const fileName = this.getKebabNameByPath(path)
     const pathName = this.getCamelNameByKebab(fileName)
     const desc = description || summary || '无说明接口'
 
     const params = this.parseParams(item.parameters as OpenAPIV3.ParameterObject[])
 
-    console.log(params)
-    const response: any = {}
+    console.log('params---', params)
 
-    const itemRes: SwaggerJsonTreeItem & TreeInterface = {
+    console.log(desc, item)
+
+    const response = this.parseResponse(responses)
+
+    const itemRes: SwaggerJsonTreeItem = {
       groupName: this.configItem.title,
       type: 'interface',
       key: randomId(`${desc}-xxxxxx`),
@@ -44,35 +48,15 @@ export class OpenAPIV3Parser extends BaseParser {
       path,
       pathName,
       fileName,
-      ...item,
+      operationId,
     }
 
-    // if (tags && tags.length) {
-    //   tags.forEach((tagStr: string) => {
-    //     let tagIndex = tagsMap[tagStr]
-    //     if (tagIndex === undefined) {
-    //       tagIndex = tagsMap['未知分组']
-    //       if (!tagIndex) {
-    //         addTag({ name: '未知分组', description: '分组ID在TAG表中未找到 (无效 Tag)' })
-    //         tagIndex = tagsMap['未知分组']
-    //       }
-    //     }
-    //     const tagVal = res[tagIndex]
-    //     itemRes.parentKey = tagVal.key
-
-    //     if (res[tagIndex].children && Array.isArray(tagVal.children)) {
-    //       tagVal.children?.push(itemRes)
-    //     } else {
-    //       tagVal.children = [itemRes]
-    //     }
-    //   })
-    // } else {
-    //   res.push(itemRes)
-    // }
+    this.pushGroupItem(tags, itemRes)
   }
 
+  /** 解析接口参数 */
   parseParams(parameters: OpenAPIV3.ParameterObject[]) {
-    let params: any[] = []
+    let params: TreeInterfaceParamsItem[] = []
 
     if (!parameters || !parameters.length) {
       params = []
@@ -85,7 +69,7 @@ export class OpenAPIV3Parser extends BaseParser {
         if (paramsSource && paramsSource.properties) {
           const { properties } = paramsSource
           for (const name in properties) {
-            const val = properties[name]
+            const val = properties[name] as OpenAPIV3.SchemaObject
             const obj = {
               name,
               ...val,
@@ -95,11 +79,74 @@ export class OpenAPIV3Parser extends BaseParser {
           }
         }
       } else {
-        // 忽略 headers
-        params = parameters.filter((x: any) => x.in !== 'header')
+        parameters.forEach((val) => {
+          if (val.in === 'header') return // 忽略 headers
+          const schema = (val.schema || {}) as OpenAPIV3.SchemaObject
+          const parameItem: TreeInterfacePropertiesItem = {
+            ...val,
+            itemsType: schema.type,
+            item: this.parseParams(schema),
+          }
+          params.push(parameItem)
+        })
       }
     }
 
     return params
+  }
+
+  /** 解析接口返回值 */
+  parseResponse(responses: OpenAPIV3.ResponsesObject): TreeInterfacePropertiesItem | string {
+    const responseBody = (responses[200] || {}) as OpenAPIV3.ResponseObject
+
+    const content = Object.values(responseBody.content || {})
+    const schema = content[0].schema as OpenAPIV3.SchemaObject | undefined
+
+    if (!schema) return 'any'
+
+    const { properties, type, required } = schema
+
+    if (!properties) return handleType(type)
+
+    for (const key in properties) {
+      const val = properties[key] as OpenAPIV3.SchemaObject
+      const obj: TreeInterfacePropertiesItem = {
+        name: key,
+        type: handleType(val.type),
+        required: required && required.length && required.includes(key) ? true : false,
+        description: val.description,
+        titRef: val.title,
+      }
+
+      // if ((val.originalRef && val.originalRef != originalRef) || (val.$ref && val.$ref != $ref)) {
+      //   obj.item = getSwaggerJsonRef(val, definitions)
+      // }
+
+      // if (val.items) {
+      //   let schema
+      //   if (val.items.schema) {
+      //     schema = val.items.schema
+      //   } else if (val.items.originalRef || val.items.$ref) {
+      //     schema = val.items
+      //   } else if (val.items.type) {
+      //     obj.itemsType = val.items.type
+      //   } else if (val.originalRef || val.$ref) {
+      //     schema = val
+      //   }
+
+      //   if (schema && (schema.originalRef != originalRef || schema.$ref != $ref)) {
+      //     obj.item = getSwaggerJsonRef(schema, definitions)
+      //   }
+      // }
+
+      // propertiesList.push(obj)
+    }
+
+    return 'number'
+  }
+
+  /** 解析属性 */
+  parseProperties(properties: OpenAPIV3.SchemaObject): TreeInterfacePropertiesItem {
+    // return
   }
 }

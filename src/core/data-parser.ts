@@ -31,6 +31,32 @@ export abstract class BaseParser {
     this.result.push(tagItem)
   }
 
+  /** 添加分组内元素 */
+  pushGroupItem(tags: string[], itemRes: SwaggerJsonTreeItem) {
+    if (tags && tags.length) {
+      tags.forEach((tagStr: string) => {
+        let tagIndex = this.tagsMap[tagStr]
+        if (tagIndex === undefined) {
+          tagIndex = this.tagsMap['未知分组']
+          if (!tagIndex) {
+            this.addGroup({ name: '未知分组', description: '分组ID在TAG表中未找到 (无效 Tag)' })
+            tagIndex = this.tagsMap['未知分组']
+          }
+        }
+        const tagVal = this.result[tagIndex]
+        itemRes.parentKey = tagVal.key
+
+        if (this.result[tagIndex].children && Array.isArray(tagVal.children)) {
+          tagVal.children?.push(itemRes)
+        } else {
+          tagVal.children = [itemRes]
+        }
+      })
+    } else {
+      this.result.push(itemRes)
+    }
+  }
+
   public getKebabNameByPath(path: string) {
     return path.slice(1, path.length).replace(/\//g, '-').replace(/\s/g, '')
   }
@@ -107,7 +133,7 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
  * @param response
  * @param indentation
  */
-function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): string[] {
+function parseResponse(response: TreeInterfacePropertiesItem | string, indentation = 0): string[] {
   const res = parseProperties('Response', response, indentation)
   // res.pop() // 删除多余空行
   return res
@@ -120,7 +146,7 @@ function parseResponse(response: TreeInterfacePropertiesItem, indentation = 0): 
  */
 function parseProperties(
   interfaceName: string,
-  properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | undefined,
+  properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string | undefined,
   indentation = 0
 ): string[] {
   const indentationSpace = handleIndentation(indentation)
@@ -153,7 +179,7 @@ function parseProperties(
       const description = v.description ? `${indentationSpace2}/** ${v.description}${defaultValDesc} */\n` : ''
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
     })
-  } else if (properties) {
+  } else if (typeof properties === 'object') {
     let arr: TreeInterfacePropertiesItem[] = []
 
     if (properties.properties && Array.isArray(properties.properties)) arr = properties.properties
@@ -163,7 +189,9 @@ function parseProperties(
     }
   }
 
-  if (content.length) {
+  if (typeof properties === 'string') {
+    interfaceList.push(`${indentationSpace}type ${interfaceName} = ${handleType(properties)}`, '')
+  } else if (content.length) {
     interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
   }
 
@@ -208,7 +236,7 @@ function toUp(str: string) {
  * 处理数据类型
  * @param type
  */
-function handleType(type: string): string {
+export function handleType(type?: string): string {
   switch (type) {
     case 'integer':
       return 'number'

@@ -37,7 +37,7 @@ export async function getSwaggerJson(url: string): Promise<OpenAPI.Document & Do
 function parseJsonData(data: OpenAPI.Document & DocumentCommom): Promise<OpenAPI.Document> {
   return new Promise((resolve, reject) => {
     if (data.openapi) {
-      SwaggerParser.dereference(data, { parse: { json: {} } }, (err, api) => {
+      SwaggerParser.validate(data, (err, api) => {
         if (api) {
           resolve(api)
         } else {
