@@ -5,6 +5,23 @@ import { randomId } from '../tools'
 
 interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
+type SchemaType<T> = T extends 'array'
+  ? OpenAPIV3.ArraySchemaObject
+  : T extends 'object'
+  ? OpenAPIV3.NonArraySchemaObject
+  : OpenAPIV3.SchemaObject
+
+type SchemaItem<T extends 'array' | 'object' | void = void> = Omit<SchemaType<T>, 'required'> & {
+  /** 字段名 */
+  name: string
+  /** 是否必填项 */
+  required?: boolean
+  /** 子代必填项 */
+  itemsRequiredNamesList?: string[]
+  /** 子代类型 */
+  itemsType?: string
+}
+
 export class OpenAPIV3Parser extends BaseParser {
   parse() {
     const { paths } = this.swaggerJson
@@ -30,9 +47,8 @@ export class OpenAPIV3Parser extends BaseParser {
 
     console.log('params---', params)
 
-    console.log(desc, item)
-
-    const response = this.parseResponse(responses)
+    const response = {} as any
+    // const response = this.parseResponse(responses)
 
     const itemRes: SwaggerJsonTreeItem = {
       groupName: this.configItem.title,
@@ -56,41 +72,58 @@ export class OpenAPIV3Parser extends BaseParser {
 
   /** 解析接口参数 */
   parseParams(parameters: OpenAPIV3.ParameterObject[]) {
-    let params: TreeInterfaceParamsItem[] = []
+    const params: TreeInterfaceParamsItem[] = []
 
-    if (!parameters || !parameters.length) {
-      params = []
-    } else {
-      const bodyIndex = parameters.findIndex((x: any) => x.in === 'body')
+    console.log('parameters---', parameters)
 
-      if (bodyIndex !== -1) {
-        const paramsBody = parameters[bodyIndex]
-        const paramsSource = paramsBody.schema as OpenAPIV3.SchemaObject | undefined
-        if (paramsSource && paramsSource.properties) {
-          const { properties } = paramsSource
-          for (const name in properties) {
-            const val = properties[name] as OpenAPIV3.SchemaObject
-            const obj = {
-              name,
-              ...val,
-            }
+    parameters.forEach((val) => {
+      if (val.in === 'header') return // 忽略 headers
 
-            params.push(obj)
-          }
-        }
-      } else {
-        parameters.forEach((val) => {
-          if (val.in === 'header') return // 忽略 headers
-          const schema = (val.schema || {}) as OpenAPIV3.SchemaObject
-          const parameItem: TreeInterfacePropertiesItem = {
-            ...val,
-            itemsType: schema.type,
-            item: this.parseParams(schema),
-          }
-          params.push(parameItem)
-        })
+      const schema = (val.schema || {}) as OpenAPIV3.SchemaObject
+      const propertiesItem: SchemaItem = {
+        name: val.name,
+        description: val.description,
+        ...schema,
+        required: val.required,
       }
-    }
+
+      if (val.required) {
+        propertiesItem.itemsRequiredNamesList = schema.required
+      }
+
+      if (schema.type === 'array') {
+        params.push(this.parseArray(propertiesItem as SchemaItem<'array'>))
+      } else {
+        params.push(this.parseObject(propertiesItem as SchemaItem<'object'>))
+      }
+    })
+
+    // if (!parameters || !parameters.length) {
+    //   params = []
+    // } else {
+    //   const bodyIndex = parameters.findIndex((x: any) => x.in === 'body')
+
+    //   console.log(bodyIndex)
+
+    //   if (bodyIndex !== -1) {
+    //     const paramsBody = parameters[bodyIndex]
+    //     const paramsSource = paramsBody.schema as OpenAPIV3.SchemaObject | undefined
+    //     if (paramsSource && paramsSource.properties) {
+    //       const { properties } = paramsSource
+    //       for (const name in properties) {
+    //         const val = properties[name] as OpenAPIV3.SchemaObject
+    //         const obj = {
+    //           name,
+    //           ...val,
+    //         }
+
+    //         params.push(obj)
+    //       }
+    //     }
+    //   } else {
+
+    //   }
+    // }
 
     return params
   }
@@ -145,8 +178,70 @@ export class OpenAPIV3Parser extends BaseParser {
     return 'number'
   }
 
-  /** 解析属性 */
-  parseProperties(properties: OpenAPIV3.SchemaObject): TreeInterfacePropertiesItem {
-    // return
+  /** 解析数组 */
+  parseArray(arrayItem: SchemaItem<'array'>): TreeInterfacePropertiesItem {
+    const { type, description } = arrayItem as OpenAPIV3.ArraySchemaObject
+    const items = arrayItem.items as OpenAPIV3.SchemaObject
+    const { type: itemsType, ...itemsData } = items
+
+    const itemSchema: SchemaItem = {
+      name: arrayItem.name,
+      type,
+      itemsType,
+      description,
+      ...itemsData,
+      required: undefined,
+    }
+
+    if (arrayItem.itemsRequiredNamesList) {
+      itemSchema.required = arrayItem.itemsRequiredNamesList.includes(arrayItem.name)
+    }
+
+    if (!type) {
+      return itemSchema
+    }
+
+    if (itemsType === 'array') {
+      return this.parseArray(itemSchema as SchemaItem<'array'>)
+    } else {
+      if (items.required) {
+        itemSchema.itemsRequiredNamesList = items.required
+      }
+      return this.parseObject(itemSchema as SchemaItem<'object'>)
+    }
+
+    // return res
+  }
+
+  /** 解析对象 */
+  parseObject(propertiesItem: SchemaItem<'object'>): TreeInterfacePropertiesItem {
+    const res: TreeInterfacePropertiesItem = {
+      ...propertiesItem,
+    }
+
+    if (res.properties) {
+      res.itemsType = propertiesItem.type
+      res.item = []
+
+      for (const name in res.properties) {
+        const val = res.properties[name]
+        const itemSource: SchemaItem = {
+          name,
+          ...val,
+        }
+
+        if (propertiesItem.itemsRequiredNamesList) {
+          itemSource.required = propertiesItem.itemsRequiredNamesList.includes(name)
+        }
+
+        if (itemSource.type === 'array') {
+          res.item.push(this.parseArray(itemSource as SchemaItem<'array'>))
+        } else {
+          res.item.push(this.parseObject(itemSource as SchemaItem<'object'>))
+        }
+      }
+    }
+
+    return res
   }
 }
