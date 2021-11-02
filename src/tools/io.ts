@@ -56,7 +56,12 @@ vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.sc
  * @param name
  */
 export async function preSaveDocument(docStr: string, filePath: string) {
-  const newFile = vscode.Uri.parse(SwaggerInterfaceProvider.scheme + ':' + filePath)
+  // const newFile = vscode.Uri.parse(SwaggerInterfaceProvider.scheme + ':' + filePath)
+  const newFile = vscode.Uri.parse(
+    (fs.existsSync(filePath) ? 'file' : SwaggerInterfaceProvider.scheme) + ':' + filePath
+  )
+
+  // TODO file 下文档不刷新
 
   swaggerInterfaceProvider.doc = docStr
   const doc = await vscode.workspace.openTextDocument(newFile)
