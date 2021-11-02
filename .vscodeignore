@@ -1,51 +1,20 @@
-.github/**
 .vscode/**
 .vscode-test/**
-# node_modules
-types
-out/test/**
-out/**/*.map
 src/**
-screenshots/**
-examples/**
-test/**
+test
+types
 
-.gitignore
-.editorconfig
 .eslintrc.js
+.gitignore
+.yarnrc
 .eslintignore
-package-lock.json
-tsconfig.json
-webpack.config.js
-renovate.json
+.prettierrc
+yarn.lock
+package.lock
 
-# Externals
-# jieba
-!node_modules/nodejieba/build/Release/nodejieba.*
-!node_modules/nodejieba/dict/**
-!node_modules/nodejieba/*.js
-!node_modules/nodejieba/*.json
+*.vsix
 
-# esm
-!node_modules/esm/**/*.js
-!node_modules/esm/**/*.json
-
-# ts-node
-!node_modules/ts-node/**/*.js
-!node_modules/ts-node/**/*.json
-!node_modules/arg/*.js
-!node_modules/arg/*.json
-!node_modules/buffer-from/*.js
-!node_modules/buffer-from/*.json
-!node_modules/source-map/**/*.js
-!node_modules/source-map/**/*.json
-!node_modules/source-map-support/*.js
-!node_modules/source-map-support/*.json
-!node_modules/yn/*.js
-!node_modules/yn/*.json
-!node_modules/make-error/*.js
-!node_modules/make-error/*.json
-!node_modules/typescript/bin/**
-!node_modules/typescript/lib/**
-!node_modules/typescript/*.js
-!node_modules/typescript/*.json
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts

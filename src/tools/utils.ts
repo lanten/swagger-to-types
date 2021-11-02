@@ -13,24 +13,23 @@ export function toCamel(str: string, c?: boolean, s = '-'): string {
 /**
  * 格式化日期
  * @param d
- * @param format 'YYYY-MM-DD H:I:S.MS'
+ * @param format 'YYYY-MM-DD HH:mm:ss.ms'
  */
-export function formatDate(date: Date = new Date(), format = 'YYYY-MM-DD H:I:S.MS') {
+export function formatDate(date: Date = new Date(), format = 'YYYY-MM-DD HH:mm:ss.ms') {
   const obj = {
     YYYY: date.getFullYear().toString().padStart(4, '0'),
     MM: (date.getMonth() + 1).toString().padStart(2, '0'),
     DD: date.getDate().toString().padStart(2, '0'),
-    H: date.getHours().toString().padStart(2, '0'),
-    I: date.getMinutes().toString().padStart(2, '0'),
-    S: date.getSeconds().toString().padStart(2, '0'),
-    MS: date.getMilliseconds().toString().padStart(3, '0'),
+    HH: date.getHours().toString().padStart(2, '0'),
+    mm: date.getMinutes().toString().padStart(2, '0'),
+    ss: date.getSeconds().toString().padStart(2, '0'),
+    ms: date.getMilliseconds().toString().padStart(3, '0'),
   }
 
-  return format.replace(/(YYYY|MM|DD|H|I|S|MS)/g, (_, $1) => {
+  return format.replace(/(YYYY|MM|DD|HH|mm|ss|ms)/g, (_, $1) => {
     return obj[$1]
   })
 }
-
 /**
  * 生成一组随机 ID
  * @param {String} 格式, x 为随机字符

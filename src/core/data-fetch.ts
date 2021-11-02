@@ -1,6 +1,6 @@
 import path from 'path'
-import fetch from 'node-fetch'
-import SwaggerParser from '@apidevtools/swagger-parser'
+import http from 'http'
+import https from 'https'
 import { OpenAPI } from 'openapi-types'
 
 import { log, requireModule, WORKSPACE_PATH } from '../tools'
@@ -10,44 +10,77 @@ interface DocumentCommom {
   openapi?: string
 }
 
-export async function getSwaggerJson(url: string): Promise<OpenAPI.Document & DocumentCommom> {
-  return new Promise((resolve, reject) => {
-    if (/^https?:\/\//.test(url)) {
-      fetch(url)
-        .then(async (res) => {
-          const json = await res.json()
-          log.info(`<fetch> ${url}`)
-          parseJsonData(json).then(resolve).catch(reject)
-        })
-        .catch((err) => {
-          log.error(`<fetch>: ${url} - ${err}`, true)
-          reject(err)
-        })
-    } else {
-      try {
-        const res = requireModule(path.join(WORKSPACE_PATH || '', url))
-        parseJsonData(res).then(resolve).catch(reject)
-      } catch (err) {
-        reject(err)
-      }
+/** 获取 Swagger JSON 数据 */
+export async function getSwaggerJson(url: string) {
+  if (/^https?:\/\//.test(url)) {
+    return requestJson(url)
+  } else {
+    try {
+      const res = requireModule(path.join(WORKSPACE_PATH || '', url))
+      return Promise.resolve(res)
+    } catch (err) {
+      log.error(err, true)
+      return Promise.reject(err)
     }
-  })
+  }
 }
 
-function parseJsonData(data: OpenAPI.Document & DocumentCommom): Promise<OpenAPI.Document> {
+/** 发起请求 */
+export function requestJson(url: string): Promise<OpenAPI.Document & DocumentCommom> {
   return new Promise((resolve, reject) => {
-    if (data.openapi) {
-      SwaggerParser.validate(data, (err, api) => {
-        if (api) {
-          resolve(api)
-        } else {
+    let TM: NodeJS.Timeout
+    const request = /^https/.test(url) ? https.request : http.request
+
+    log.info(`Request Start: ${url}`)
+
+    const req = request(
+      url,
+      {
+        method: 'GET',
+        rejectUnauthorized: false,
+        headers: {
+          Accept: '*/*',
+          'Accept-Encoding': 'utf-8',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
+      (res) => {
+        let dataStr = ''
+        res.on('data', (data: Buffer) => {
+          dataStr += data.toString()
+        })
+
+        res.on('end', () => {
+          clearTimeout(TM)
+          try {
+            const json = JSON.parse(dataStr)
+            log.info(`Request Successful: ${url}`)
+            resolve(json)
+          } catch (error) {
+            log.error(`Request Failed: ${url}`, true)
+            reject(error)
+          }
+        })
+
+        res.on('error', (err) => {
+          log.error(`Request Failed: ${url}`, true)
           reject(err)
-        }
-      })
-    } else if (data.swagger) {
-      resolve(data) // v2 api 不做处理
-    } else {
-      log.error('swagger-json error.', true)
-    }
+        })
+      }
+    )
+
+    req.on('timeout', (err: Error) => {
+      log.error(err, true)
+      reject(err)
+    })
+
+    TM = setTimeout(() => {
+      const err = new Error()
+      err.name = 'Request Timeout'
+      err.message = url
+      req.emit('timeout', err)
+    }, 15000) // 15秒超时
+
+    req.end()
   })
 }

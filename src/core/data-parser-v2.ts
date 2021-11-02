@@ -42,8 +42,8 @@ export function parseSwaggerJson(
     let fileName = path.slice(1, path.length).replace(/\//g, '-')
     if (multipleMethod) fileName += `-${method.toLowerCase()}`
     const pathName = toCamel(fileName)
-      .replace('/', '')
-      .replace(/[\[\]<>(){|}]/g, '$')
+      .replace(/[-\/\s]/, '')
+      .replace(/[\[\]<>(){|}\*]/g, '$')
 
     let params: any[] = []
     if (!parameters || !parameters.length) {

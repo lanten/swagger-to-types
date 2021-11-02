@@ -114,8 +114,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           }
           resolve(this.swaggerJsonMap)
         })
-        .catch((err) => {
-          log.error(err, true)
+        .catch(() => {
           resolve(this.swaggerJsonMap) // reject map
         })
     })

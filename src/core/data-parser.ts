@@ -63,8 +63,8 @@ export abstract class BaseParser {
 
   public getCamelNameByKebab(kebab: string) {
     return toCamel(kebab)
-      .replace('/', '')
-      .replace(/[\[\]<>(){|}]/g, '$')
+      .replace(/[\/\s]/g, '')
+      .replace(/[\[\]<>(){|}\*]/g, '$')
   }
 
   /** 执行解析 */
