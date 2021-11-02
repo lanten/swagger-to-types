@@ -174,6 +174,12 @@ function parseProperties(
         type = `${type === 'array' ? (v.items ? handleEnumType(v.items) : handleType(v.itemsType || 'any')) : type}[]`
       }
 
+      // TODO 美居类型待完善
+      // if (v.enum) {
+      //   console.log('enum!', v)
+      //   type = handleEnumType(v)
+      // }
+
       const defaultValDesc = v.items?.default ? ` [default:${v.items.default}]` : ''
 
       const description = v.description ? `${indentationSpace2}/** ${v.description}${defaultValDesc} */\n` : ''

@@ -2,8 +2,8 @@ import { OpenAPIV3 } from 'openapi-types'
 
 declare global {
   interface ParametersItems {
-    default: string
-    enum: string[]
+    default?: string
+    enum?: string[]
     type: string
   }
 
