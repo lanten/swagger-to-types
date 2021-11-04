@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types'
 
 import { BaseParser, handleType } from './data-parser'
-import { randomId } from '../tools'
+import { randomId, getValueByPath } from '../tools'
 
 interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
@@ -43,7 +43,7 @@ export class OpenAPIV3Parser extends BaseParser {
     const pathName = this.getCamelNameByKebab(fileName)
     const desc = description || summary || '无说明接口'
 
-    const params = this.parseParams(item.parameters as OpenAPIV3.ParameterObject[])
+    let params = this.parseParams(parameters)
 
     console.log('params---', params)
 
@@ -71,61 +71,37 @@ export class OpenAPIV3Parser extends BaseParser {
   }
 
   /** 解析接口参数 */
-  parseParams(parameters: OpenAPIV3.ParameterObject[]) {
-    const params: TreeInterfaceParamsItem[] = []
-
-    console.log('parameters---', parameters)
+  parseParams(parameters: OpenAPIV3.OperationObject['parameters']) {
+    if (!parameters) return []
+    const paramCatchObj: Record<string, TreeInterfaceParamsItem> = {}
 
     parameters.forEach((val) => {
-      if (val.in === 'header') return // 忽略 headers
+      const paramSchema = this.dereferenceSchema<OpenAPIV3.ParameterObject>(val)
 
-      const schema = (val.schema || {}) as OpenAPIV3.SchemaObject
+      if (!paramSchema) return
+      if (paramSchema.in === 'header') return // 忽略 headers
+      if (Object.prototype.hasOwnProperty.call(paramCatchObj, paramSchema?.name)) return // 字段重复
+
+      const schema = this.dereferenceSchema(paramSchema.schema) || {}
       const propertiesItem: SchemaItem = {
-        name: val.name,
-        description: val.description,
+        name: paramSchema.name,
+        description: paramSchema.description,
         ...schema,
-        required: val.required,
+        required: paramSchema.required,
       }
 
-      if (val.required) {
+      if (paramSchema.required) {
         propertiesItem.itemsRequiredNamesList = schema.required
       }
 
       if (schema.type === 'array') {
-        params.push(this.parseArray(propertiesItem as SchemaItem<'array'>))
+        paramCatchObj[propertiesItem.name] = this.parseArray(propertiesItem as SchemaItem<'array'>)
       } else {
-        params.push(this.parseObject(propertiesItem as SchemaItem<'object'>))
+        paramCatchObj[propertiesItem.name] = this.parseObject(propertiesItem as SchemaItem<'object'>)
       }
     })
 
-    // if (!parameters || !parameters.length) {
-    //   params = []
-    // } else {
-    //   const bodyIndex = parameters.findIndex((x: any) => x.in === 'body')
-
-    //   console.log(bodyIndex)
-
-    //   if (bodyIndex !== -1) {
-    //     const paramsBody = parameters[bodyIndex]
-    //     const paramsSource = paramsBody.schema as OpenAPIV3.SchemaObject | undefined
-    //     if (paramsSource && paramsSource.properties) {
-    //       const { properties } = paramsSource
-    //       for (const name in properties) {
-    //         const val = properties[name] as OpenAPIV3.SchemaObject
-    //         const obj = {
-    //           name,
-    //           ...val,
-    //         }
-
-    //         params.push(obj)
-    //       }
-    //     }
-    //   } else {
-
-    //   }
-    // }
-
-    return params
+    return Object.values(paramCatchObj)
   }
 
   /** 解析接口返回值 */
@@ -133,7 +109,7 @@ export class OpenAPIV3Parser extends BaseParser {
     const responseBody = (responses[200] || {}) as OpenAPIV3.ResponseObject
 
     const content = Object.values(responseBody.content || {})
-    const schema = content[0].schema as OpenAPIV3.SchemaObject | undefined
+    const schema = this.dereferenceSchema(content[0].schema)
 
     if (!schema) return 'any'
 
@@ -142,7 +118,8 @@ export class OpenAPIV3Parser extends BaseParser {
     if (!properties) return handleType(type)
 
     for (const key in properties) {
-      const val = properties[key] as OpenAPIV3.SchemaObject
+      const val = this.dereferenceSchema(properties[key])
+      if (!val) continue
       const obj: TreeInterfacePropertiesItem = {
         name: key,
         type: handleType(val.type),
@@ -243,5 +220,15 @@ export class OpenAPIV3Parser extends BaseParser {
     }
 
     return res
+  }
+
+  dereferenceSchema<T = OpenAPIV3.SchemaObject>(scheam?: { $ref?: string } & Record<string, any>): T | undefined {
+    if (!scheam) return
+    if (scheam.$ref) {
+      const pathStr = scheam.$ref.substring(1, scheam.$ref.length)
+      return getValueByPath<T>(this.swaggerJson, pathStr)
+    } else {
+      return scheam as T
+    }
   }
 }

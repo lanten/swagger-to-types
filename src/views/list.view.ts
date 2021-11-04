@@ -106,7 +106,6 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       getSwaggerJson(item.url)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
-          console.log(res)
           if (res.swagger) {
             this.swaggerJsonMap.set(item.url, parseSwaggerJson(res as OpenAPIV2.Document, item))
           } else if (res.openapi) {

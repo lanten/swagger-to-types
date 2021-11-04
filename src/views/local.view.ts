@@ -130,7 +130,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
               log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
               continue
             }
-            const swaggerItem = (this.viewList.interFacePathNameMap.get(item.namespace) as unknown) as TreeInterface
+            const swaggerItem = this.viewList.interFacePathNameMap.get(item.namespace) as unknown as TreeInterface
             if (!swaggerItem) {
               log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
               continue
