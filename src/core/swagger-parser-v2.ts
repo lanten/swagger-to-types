@@ -85,7 +85,7 @@ export function parseSwaggerJson(
       }
     }
 
-    const desc = description || summary || '无说明接口'
+    const desc = description || summary || pathName
 
     const itemRes: SwaggerJsonTreeItem & TreeInterface = {
       groupName: configItem.title,

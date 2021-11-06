@@ -11,7 +11,7 @@ import {
   OpenAPIV3Parser,
   BaseTreeItemOptions,
   ListPickerItem,
-  parseToInterface,
+  renderToInterface,
 } from '../core'
 import {
   config,
@@ -277,7 +277,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
     const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
-    const nextStr = parseToInterface(item)
+    const nextStr = renderToInterface(item)
 
     if (compareChanges && fs.existsSync(filePathH)) {
       const currentStr = fs.readFileSync(filePathH, 'utf-8')

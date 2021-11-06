@@ -1,94 +1,15 @@
-import { OpenAPIV3 } from 'openapi-types'
-import { BASE_INDENTATION, BASE_INDENTATION_COUNT, randomId, SwaggerJsonUrlItem, toCamel } from '../tools'
+import { BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
 
-export abstract class BaseParser {
-  public tagsMap = {}
-  public result: SwaggerJsonTreeItem[] = []
-
-  constructor(public swaggerJson: OpenAPIV3.Document, public configItem: SwaggerJsonUrlItem) {
-    const { tags } = swaggerJson
-    if (tags && tags.length) {
-      tags.forEach((v) => {
-        this.addGroup({ name: v.name, description: v.description })
-      })
-    }
-
-    console.log(swaggerJson, configItem)
-  }
-
-  /** 添加分组 */
-  addGroup(item: { name: string; description?: string }) {
-    const itemIndex = this.result.length
-    this.tagsMap[item.name] = itemIndex
-    const tagItem: SwaggerJsonTreeItem = {
-      key: randomId(`${item.name}-xxxxxx`),
-      parentKey: this.configItem.url,
-      title: item.name,
-      subTitle: item.description || '',
-      type: 'group',
-    }
-
-    this.result.push(tagItem)
-  }
-
-  /** 添加分组内元素 */
-  pushGroupItem(tags: string[], itemRes: SwaggerJsonTreeItem) {
-    if (tags && tags.length) {
-      tags.forEach((tagStr: string) => {
-        let tagIndex = this.tagsMap[tagStr]
-        if (tagIndex === undefined) {
-          tagIndex = this.tagsMap['未知分组']
-          if (!tagIndex) {
-            this.addGroup({ name: '未知分组', description: '分组ID在TAG表中未找到 (无效 Tag)' })
-            tagIndex = this.tagsMap['未知分组']
-          }
-        }
-        const tagVal = this.result[tagIndex]
-        itemRes.parentKey = tagVal.key
-
-        if (this.result[tagIndex].children && Array.isArray(tagVal.children)) {
-          tagVal.children?.push(itemRes)
-        } else {
-          tagVal.children = [itemRes]
-        }
-      })
-    } else {
-      this.result.push(itemRes)
-    }
-  }
-
-  public getKebabNameByPath(path: string) {
-    return path.slice(1, path.length).replace(/\//g, '-').replace(/\s/g, '')
-  }
-
-  public getCamelNameByKebab(kebab: string) {
-    return toCamel(kebab)
-      .replace(/[\/\s]/g, '')
-      .replace(/[\[\]<>(){|}\*]/g, '$')
-  }
-
-  /** 执行解析 */
-  abstract parse(): SwaggerJsonTreeItem[]
-}
-
-/** 删除多余空行 */
-function removeEmptyLines(arr: string[]): string[] {
-  if (arr[0] === '') {
-    arr.shift()
-    if (arr[0] === '') return removeEmptyLines(arr)
-  }
-
-  if (arr[arr.length - 1] === '') {
-    arr.pop()
-    if (arr[arr.length - 1] === '') return removeEmptyLines(arr)
-  }
-
-  return arr
-}
-
-export function parseToInterface(data: TreeInterface): string {
+/**
+ * 渲染 Typescript Interface
+ * @param data
+ * @returns
+ */
+export function renderToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
   const name = data.pathName
+
+  console.log(data)
 
   const paramsArr = removeEmptyLines(parseParams(data.params, 1))
   const resArr = removeEmptyLines(parseResponse(data.response, 1))
@@ -122,7 +43,10 @@ function parseNameSpace(name: string, content: string[], indentation = 0): strin
  * @param params
  * @param indentation
  */
-function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string[] {
+function parseParams(
+  params: TreeInterfaceParamsItem[] | TreeInterfacePropertiesItem | string,
+  indentation = 0
+): string[] {
   const res = parseProperties('Params', params, indentation)
   // res.pop() // 删除多余空行
   return res
@@ -133,7 +57,10 @@ function parseParams(params: TreeInterfaceParamsItem[], indentation = 0): string
  * @param response
  * @param indentation
  */
-function parseResponse(response: TreeInterfacePropertiesItem | string, indentation = 0): string[] {
+function parseResponse(
+  response: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string,
+  indentation = 0
+): string[] {
   const res = parseProperties('Response', response, indentation)
   // res.pop() // 删除多余空行
   return res
@@ -149,8 +76,8 @@ function parseProperties(
   properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string | undefined,
   indentation = 0
 ): string[] {
-  const indentationSpace = handleIndentation(indentation)
-  const indentationSpace2 = handleIndentation(indentation + 1)
+  const indentationSpace = handleIndentation(indentation) // 一级缩进
+  const indentationSpace2 = handleIndentation(indentation + 1) // 二级缩进
   const interfaceList = []
   let content: string[] = []
 
@@ -170,19 +97,35 @@ function parseProperties(
         // console.warn(error)
       }
 
-      if (v.type === 'array') {
-        type = `${type === 'array' ? (v.items ? handleEnumType(v.items) : handleType(v.itemsType || 'any')) : type}[]`
+      if (v.enum) {
+        type = parseEnumToUnionType(v.enum)
+      } else if (v.items?.enum) {
+        type = parseEnumToUnionType(v.items.enum)
       }
 
-      // TODO 美居类型待完善
-      // if (v.enum) {
-      //   console.log('enum!', v)
-      //   type = handleEnumType(v)
-      // }
+      if (v.type === 'array') {
+        if ((v.enum || v.items?.enum) && type !== 'any') {
+          type = `(${type})`
+        }
+        type = `${type === 'array' ? handleType(v.itemsType || 'any') : type}[]`
+      }
 
-      const defaultValDesc = v.items?.default ? ` [default:${v.items.default}]` : ''
+      let defaultValDesc = v.default || v.items?.default || ''
+      if (typeof defaultValDesc === 'object') {
+        defaultValDesc = JSON.stringify(defaultValDesc)
+      }
+      if (defaultValDesc) {
+        defaultValDesc = `[default:${defaultValDesc}]`
+      }
 
-      const description = v.description ? `${indentationSpace2}/** ${v.description}${defaultValDesc} */\n` : ''
+      let description: string = v.description || ''
+      if (defaultValDesc) {
+        description = description ? `${description} -- ${defaultValDesc}` : defaultValDesc
+      }
+      if (description) {
+        description = `${indentationSpace2}/** ${description} */\n`
+      }
+
       return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
     })
   } else if (typeof properties === 'object') {
@@ -193,11 +136,11 @@ function parseProperties(
     if (arr.length) {
       interfaceList.push(...parseProperties(`${interfaceName}${toUp(properties.name)}`, arr, indentation))
     }
+  } else if (typeof properties === 'string') {
+    interfaceList.push(`${indentationSpace}type ${interfaceName} = ${handleType(properties)}`, '')
   }
 
-  if (typeof properties === 'string') {
-    interfaceList.push(`${indentationSpace}type ${interfaceName} = ${handleType(properties)}`, '')
-  } else if (content.length) {
+  if (content.length) {
     interfaceList.push(`${indentationSpace}interface ${interfaceName} {`, ...content, `${indentationSpace}}`, '')
   }
 
@@ -262,11 +205,32 @@ export function handleType(type?: string): string {
 }
 
 /**
- * 处理枚举类型
+ * 将枚举类型解析为联合
+ * @param name
+ * @param enumArr
+ * @param indentation
+ * @returns
  */
-function handleEnumType(items?: ParametersItems): string {
-  if (!items || !items.enum) return 'any'
+function parseEnumToUnionType(enumArr?: string[]): string {
+  if (!enumArr || !enumArr.length) return 'any'
+  return `${enumArr.map((v) => `'${v}'`).join(' | ')}`
+}
 
-  const enumH = items.type === 'string' ? items.enum.map((v) => `'${v}'`) : items.enum
-  return `(${enumH.join(' | ')})`
+/**
+ * 删除多余空行
+ * @param arr
+ * @returns
+ */
+function removeEmptyLines(arr: string[]): string[] {
+  if (arr[0] === '') {
+    arr.shift()
+    if (arr[0] === '') return removeEmptyLines(arr)
+  }
+
+  if (arr[arr.length - 1] === '') {
+    arr.pop()
+    if (arr[arr.length - 1] === '') return removeEmptyLines(arr)
+  }
+
+  return arr
 }

@@ -32,16 +32,21 @@ declare global {
     type?: string
   }
 
-  interface TreeInterfacePropertiesItem {
+  type TreeInterfacePropertiesItem = {
     name: string
     description?: string
     required?: boolean
     type?: string
+    enum?: string[]
     properties?: Partial<TreeInterfacePropertiesItem>
-    item?: TreeInterfacePropertiesItem[]
+    /** 子类型 */
+    item?: TreeInterfacePropertiesItem[] | string
+    /** 子类型-联合 */
+    itemUnion?: Required<TreeInterfacePropertiesItem['item']>[]
     title?: string
     titRef?: string
     itemsType?: string
+    default?: any
     items?: ParametersItems
   }
 
@@ -50,8 +55,8 @@ declare global {
     basePath: string
     groupName: string
     method: string
-    params: TreeInterfaceParamsItem[]
-    response: TreeInterfacePropertiesItem | string
+    params: TreeInterfaceParamsItem[] | TreeInterfacePropertiesItem
+    response: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string
     title: string
     path: string
     subTitle: string

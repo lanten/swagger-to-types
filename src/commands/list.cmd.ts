@@ -3,7 +3,7 @@ import path from 'path'
 import vscode from 'vscode'
 
 import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
-import { openListPicker, parseToInterface } from '../core'
+import { openListPicker, renderToInterface } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
 import { ViewLocal, LocalItem } from '../views/local.view'
@@ -30,7 +30,7 @@ export function registerListCommands({
       const { savePath = '' } = config.extConfig
 
       const filePath = path.join(WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`)
-      preSaveDocument(parseToInterface(e), filePath)
+      preSaveDocument(renderToInterface(e), filePath)
     },
 
     /** 添加 swagger 项目 */
@@ -80,7 +80,7 @@ export function registerListCommands({
 
         listTreeView.reveal(listItem, { expand: true, select: true }).then(() => {
           setTimeout(() => {
-            commands.onSelect((res.source as unknown) as TreeInterface)
+            commands.onSelect(res.source as unknown as TreeInterface)
           }, 100)
         })
 
