@@ -13,7 +13,7 @@ export abstract class BaseParser {
       })
     }
 
-    console.log(swaggerJson, configItem)
+    // console.log(swaggerJson, configItem)
   }
 
   /** 添加分组 */

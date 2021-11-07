@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, log } from '../tools'
+import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, saveDocument, log } from '../tools'
 import { openListPicker, renderToInterface } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
@@ -30,7 +30,7 @@ export function registerListCommands({
       const { savePath = '' } = config.extConfig
 
       const filePath = path.join(WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`)
-      preSaveDocument(renderToInterface(e), filePath)
+      preSaveDocument(renderToInterface(e), filePath, true)
     },
 
     /** 添加 swagger 项目 */
@@ -158,6 +158,15 @@ export function registerListCommands({
           log.warn(JSON.stringify(item))
           break
       }
+    },
+
+    /** 保存文档 */
+    saveInterfaceWitchDoc(doc: vscode.TextDocument) {
+      const docText = doc.getText()
+      saveDocument(docText, doc.fileName).then(() => {
+        viewLocal.refresh()
+        preSaveDocument(docText, doc.fileName) // 更新显示状态
+      })
     },
   }
 

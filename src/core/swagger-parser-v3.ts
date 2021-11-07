@@ -61,9 +61,6 @@ export class OpenAPIV3Parser extends BaseParser {
       }
     }
 
-    console.log('params---', params)
-
-    // const response = {} as any
     const response = this.parseResponse(responses)
 
     const itemRes: SwaggerJsonTreeItem = {
@@ -239,6 +236,10 @@ export class OpenAPIV3Parser extends BaseParser {
       if (!allOfSingleSchema) return res
       res.item = this.parseProperties(allOfSingleSchema.properties, itemsRequiredNamesList)
     }
+
+    // TODO: allOf 转组合类型
+    // TODO: oneOf, anyOf 转联合类型
+
     // let properties = res.properties
 
     // if (!properties) {

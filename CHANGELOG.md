@@ -8,15 +8,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
-- [ ] 添加 openapi 3.0 支持
 
-## [1.1.4] 2021-10-27
-
-### Fixed
+## [1.1.4] 2021-11-07
 
 - 打开接口详情不重复创建新 tab [#15](https://github.com/lanten/swagger-to-types/issues/15)
 - 修复未分组接口不显示问题
 - 修复无效分组接口不现实问题
+
+- 添加 openapi 3.0 支持，目前测试样本不多，如发现问题请及时反馈。
+- 优化接口预览
 
 ## [1.1.3] 2021-08-25
 

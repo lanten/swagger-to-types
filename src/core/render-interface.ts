@@ -9,8 +9,6 @@ export function renderToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
   const name = data.pathName
 
-  console.log(data)
-
   const paramsArr = removeEmptyLines(parseParams(data.params, 1))
   const resArr = removeEmptyLines(parseResponse(data.response, 1))
 
