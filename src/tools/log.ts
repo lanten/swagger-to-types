@@ -13,7 +13,9 @@ class Log {
   }
 
   public log(type: LogTypes, message: string, intend = 0) {
-    this.outputChannel.appendLine(`${'\t'.repeat(intend)} [${type} - ${formatDate(new Date())}] ${message}`)
+    this.outputChannel.appendLine(
+      `${'\t'.repeat(intend)} [${type} - ${formatDate(new Date(), 'HH:mm:ss.ms')}] ${message}`
+    )
     return message
   }
 

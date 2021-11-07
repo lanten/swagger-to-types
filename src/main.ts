@@ -10,7 +10,7 @@ const viewLocal = new ViewLocal(viewList)
 
 export function activate(ctx: vscode.ExtensionContext) {
   const { reloadWhenSettingsChanged } = config.extConfig
-  global.ctx = ctx
+  // global.ctx = ctx
 
   const listTreeView = vscode.window.createTreeView('view.list', { treeDataProvider: viewList })
   const localTreeView = vscode.window.createTreeView('view.local', { treeDataProvider: viewLocal })

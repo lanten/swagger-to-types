@@ -1,15 +1,17 @@
 import fs from 'fs'
 import path from 'path'
 import { ProviderResult, window } from 'vscode'
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 
 import {
   BaseTreeProvider,
   BaseTreeItem,
   getSwaggerJson,
   parseSwaggerJson,
+  OpenAPIV3Parser,
   BaseTreeItemOptions,
   ListPickerItem,
-  parseToInterface,
+  renderToInterface,
 } from '../core'
 import {
   config,
@@ -104,7 +106,11 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       getSwaggerJson(item.url)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
-          this.swaggerJsonMap.set(item.url, parseSwaggerJson(res, item))
+          if (res.swagger) {
+            this.swaggerJsonMap.set(item.url, parseSwaggerJson(res as OpenAPIV2.Document, item))
+          } else if (res.openapi) {
+            this.swaggerJsonMap.set(item.url, new OpenAPIV3Parser(res as OpenAPIV3.Document, item).parse())
+          }
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
@@ -265,13 +271,16 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   }
 
   /** 保存接口到本地 */
-  public async saveInterface(itemSource: TreeInterface | ListItem, filePath?: string): Promise<'no-change' | void> {
+  public async saveInterface(
+    itemSource: TreeInterface | ListItem | SwaggerJsonUrlItem,
+    filePath?: string
+  ): Promise<'no-change' | void> {
     const item = itemSource as TreeInterface
     const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
     const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
-    const nextStr = parseToInterface(item)
+    const nextStr = renderToInterface(item)
 
     if (compareChanges && fs.existsSync(filePathH)) {
       const currentStr = fs.readFileSync(filePathH, 'utf-8')
@@ -291,8 +300,6 @@ export class ViewList extends BaseTreeProvider<ListItem> {
       // await this._refresh()
       const listData = this.swaggerJsonMap.get(item.options.configItem.url) || []
       const itemChildren: ListItem[] | undefined = listData.find((x) => x.key === item.options.key)?.children
-
-      console.log({ listData, itemChildren }, item.options.key)
       if (itemChildren && itemChildren.length) {
         for (let index = 0; index < itemChildren.length; index++) {
           await this.saveInterface(itemChildren[index])

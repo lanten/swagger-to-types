@@ -1,27 +1,21 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "esnext",
-		"outDir": "out",
-		"baseUrl": "./",
-		"sourceMap": true,
-		"rootDir": ".",
-		"strict": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"lib": [
-			"esnext",
-			"es6",
-		],
-	},
-	"include": [
-		"types/**/*.ts",
-		"src/**/*.ts",
-	],
-	"exclude": [
-		"node_modules",
-	]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "outDir": "out",
+    "rootDir": ".",
+    "baseUrl": "./",
+    "sourceMap": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
+    "allowSyntheticDefaultImports": true,
+    "suppressImplicitAnyIndexErrors": true,
+
+    "lib": ["ES2020"]
+  },
+  "include": ["src", "types"],
+  "exclude": ["node_modules", ".vscode-test"]
 }

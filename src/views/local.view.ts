@@ -75,9 +75,9 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   }
 
   /** 读取本地文件 */
-  readLocalFile(fileName: string): FileHeaderInfo | undefined {
+  readLocalFile(fileName: string, text?: string): FileHeaderInfo | undefined {
     try {
-      const fileStr = fs.readFileSync(fileName, 'utf-8')
+      const fileStr = text || fs.readFileSync(fileName, 'utf-8')
       const headerStr = fileStr.replace(
         /^[\s]*\/\*\*(.*?)\*\/.*declare\s+namespace\s+([^\s\n]+).+$/s,
         '$1* @namespace $2\n'
@@ -130,7 +130,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
               log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
               continue
             }
-            const swaggerItem = (this.viewList.interFacePathNameMap.get(item.namespace) as unknown) as TreeInterface
+            const swaggerItem = this.viewList.interFacePathNameMap.get(item.namespace) as unknown as TreeInterface
             if (!swaggerItem) {
               log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
               continue

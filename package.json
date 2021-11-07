@@ -2,11 +2,11 @@
   "name": "swagger-to-types",
   "displayName": "Swagger To Types",
   "description": "VSCode Extension: Transform swagger-api to typescript interface.",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "icon": "assets/app-icon.png",
   "publisher": "lanten",
   "engines": {
-    "vscode": "^1.41.0"
+    "vscode": "^1.61.0"
   },
   "main": "./out/src/main.js",
   "keywords": [
@@ -251,26 +251,23 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.3",
-    "@types/node": "^14.11.2",
-    "@types/node-fetch": "^2.5.7",
-    "@types/vscode": "^1.41.0",
-    "@typescript-eslint/eslint-plugin": "^4.2.0",
-    "@typescript-eslint/parser": "^4.2.0",
-    "eslint": "^7.10.0",
-    "eslint-config-prettier": "^6.12.0",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-prettier": "^3.1.4",
-    "glob": "^7.1.6",
-    "mocha": "^8.1.3",
-    "prettier": "^2.1.2",
-    "typescript": "^4.0.3",
-    "vscode-test": "^1.4.0"
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.6",
+    "@types/node-fetch": "^3.0.3",
+    "@types/vscode": "^1.61.0",
+    "@typescript-eslint/parser": "^5.3.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.1.3",
+    "openapi-types": "^9.3.0",
+    "prettier": "^2.4.1",
+    "typescript": "^4.4.4",
+    "vscode-test": "^1.6.1"
   },
-  "dependencies": {
-    "node-fetch": "^2.6.1"
-  },
+  "dependencies": {},
   "author": {
     "name": "Lanten",
     "url": "https://www.lanten.me/",

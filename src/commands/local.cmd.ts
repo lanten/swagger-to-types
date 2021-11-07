@@ -11,7 +11,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
     refresh: () => viewLocal.refresh(),
 
     /** 更新本地接口 */
-    async updateInterface(item: LocalItem & FileHeaderInfo & { path: string }) {
+    async updateInterface(item: LocalItem & FileHeaderInfo & { path?: string }) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -45,7 +45,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         return log.error('<updateInterface> fileInfo error.', isMenuAction)
       }
 
-      const swaggerItem = (viewList.interFacePathNameMap.get(fileInfo.namespace) as unknown) as TreeInterface
+      const swaggerItem = viewList.interFacePathNameMap.get(fileInfo.namespace) as unknown as TreeInterface
 
       if (!swaggerItem) {
         return log.error('<updateInterface> swaggerItem is undefined.', isMenuAction)

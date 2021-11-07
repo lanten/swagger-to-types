@@ -37,6 +37,8 @@
   "text.updateButton": "Update API",
   "text.confirmUpdateAll": "Confirm the update? This will cause the local interface to be overwritten",
   "text.noChange": "Interfaces no change",
+  "text.preview": "Previewing",
+  "text.clickToSave": "Click to save",
 
   "success": "Success",
   "failed": "Failed",

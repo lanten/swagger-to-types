@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import vscode from 'vscode'
 
 import { WORKSPACE_PATH, log, config } from '.'
 
@@ -32,34 +31,9 @@ export function requireModule(modulePath: string) {
       delete require.cache[require.resolve(modulePath)]
     }, 200)
     return m
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(error)
   }
-}
-
-/**
- * 打开一个未保存的文档
- * @param docStr
- * @param name
- */
-export async function preSaveDocument(docStr: string, filePath: string) {
-  const newFile = vscode.Uri.parse((fs.existsSync(filePath) ? 'file' : 'untitled') + ':' + filePath)
-
-  return vscode.workspace.openTextDocument(newFile).then(async (document) => {
-    const edit = new vscode.WorkspaceEdit()
-    const pMin = new vscode.Position(0, 0)
-    const pMax = new vscode.Position(999999999, 999999999) // TODO 主要目的是替换文本, 暂未找到替代方案
-    edit.replace(newFile, new vscode.Range(pMin, pMax), docStr)
-
-    return vscode.workspace.applyEdit(edit).then((success) => {
-      if (success) {
-        vscode.window.showTextDocument(document, { preview: true, viewColumn: vscode.ViewColumn.Active })
-      } else {
-        log.error('open document error error!', true)
-      }
-      return success
-    })
-  })
 }
 
 /**
@@ -77,7 +51,7 @@ export async function saveDocument(docStr: string, filePath: string): Promise<vo
     try {
       fs.writeFileSync(filePath, docStr, 'utf-8')
       resolve(void 0)
-    } catch (error) {
+    } catch (error: any) {
       log.error(error, true)
       reject()
     }
