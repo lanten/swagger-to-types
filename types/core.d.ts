@@ -38,6 +38,7 @@ declare global {
     required?: boolean
     type?: string
     enum?: string[]
+    itemsRequiredNamesList?: string[]
     properties?: Partial<TreeInterfacePropertiesItem>
     /** 子类型 */
     item?: TreeInterfacePropertiesItem[] | string
