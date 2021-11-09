@@ -9,6 +9,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
 
+## [1.1.5] 2021-11-09
+
+- v2 api 根级参数处理
+
 ## [1.1.4] 2021-11-07
 
 - 打开接口详情不重复创建新 tab [#15](https://github.com/lanten/swagger-to-types/issues/15)

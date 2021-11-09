@@ -80,11 +80,26 @@ function parseProperties(
   let content: string[] = []
 
   if (Array.isArray(properties)) {
+    if (properties.length === 1 && properties[0].name === '____body_root_param____') {
+      let type = properties[0].type
+      if (type === 'array') {
+        type = `${type === 'array' ? handleType(properties[0].items?.type) : type}[]`
+      }
+
+      const description: string = properties[0].description
+        ? `${indentationSpace}/** ${properties[0].description} */\n`
+        : ''
+
+      interfaceList.push(`${description}${indentationSpace}type ${interfaceName} = ${type}`, '')
+      return interfaceList
+    }
+
     content = properties.map((v) => {
       let type = handleType(v.type)
       if (v.item) {
         type = `${interfaceName}${toUp(v.name)}`
         if (v.type === 'array') type = `${type}Item`
+
         interfaceList.push(...parseProperties(type, v.item, indentation))
       }
 

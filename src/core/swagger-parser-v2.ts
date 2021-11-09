@@ -54,6 +54,18 @@ export function parseSwaggerJson(
       if (bodyIndex !== -1) {
         const paramsBody = parameters[bodyIndex]
         const paramsSource = paramsBody.schema && getSwaggerJsonRef(paramsBody.schema, definitions)
+
+        if (paramsBody?.schema?.type && !paramsSource?.properties?.length) {
+          paramsSource.properties?.push({
+            name: '____body_root_param____', // TAG 根级参数处理
+            description: paramsBody.description,
+            ...paramsBody.schema,
+          })
+        }
+
+        if (paramsBody.name === 'awardsIds') {
+          console.log(paramsSource)
+        }
         if (paramsSource && paramsSource.properties) {
           const { properties } = paramsSource
           for (const name in properties) {
