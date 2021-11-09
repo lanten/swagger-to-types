@@ -34,7 +34,7 @@
   "text.cancel": "取消",
   "text.group": "分组",
   "text.querySwaggerData": "获取 Swagger API 数据...",
-  "text.updateButton": "更新此接口",
+  "text.updateButton": "更新接口",
   "text.confirmUpdateAll": "确认更新吗? 这将导致本地接口被覆盖",
   "text.noChange": "接口无变更",
   "text.preview": "正在预览",

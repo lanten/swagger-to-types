@@ -9,9 +9,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
 
-## [1.1.5] 2021-11-09
+## [1.1.6] 2021-11-09
 
 - v2 api 根级参数处理
+- 文案修正
 
 ## [1.1.4] 2021-11-07
 
