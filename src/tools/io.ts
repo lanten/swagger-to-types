@@ -23,13 +23,16 @@ export function mkdirRecursive(dir: string, inputPath = WORKSPACE_PATH || '', sp
 /**
  * 动态导入一个 JS 文件
  * @param modulePath 要导入的文件路径
+ * @param clearCache 是否清除缓存
  */
-export function requireModule(modulePath: string) {
+export function requireModule(modulePath: string, clearCache = true) {
   try {
     const m = require(modulePath)
-    setTimeout(() => {
-      delete require.cache[require.resolve(modulePath)]
-    }, 200)
+    if (clearCache) {
+      setTimeout(() => {
+        delete require.cache[require.resolve(modulePath)]
+      }, 200)
+    }
     return m
   } catch (error: any) {
     throw new Error(error)

@@ -6,8 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.0] unreleased
+
 - [ ] 一键复制请求函数代码
 - [ ] 自定义请求函数模板
+- [ ] 自定义接口文件输出格式
+- [ ] 支持多目录
 
 ## [1.1.6] 2021-11-09
 
