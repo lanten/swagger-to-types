@@ -18,7 +18,8 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   public localFilesList: FileHeaderInfo[] = []
   public localFilesMap = new Map<string, FileHeaderInfo>()
 
-  private localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  // private localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  public allSavePath = this.getAllSavePath()
   public viewList: ViewList
 
   constructor(viewList: ViewList) {
@@ -31,35 +32,60 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
     vscode.workspace.onDidSaveTextDocument(({ languageId, fileName }) => {
       // 过滤非 TS 语言文件
       if (languageId !== 'typescript') return
-      // 过滤非接口目录文件
-      if (!fileName.includes(this.localPath)) return
+
+      let isSavePath = false
+      for (let i = 0; i < this.allSavePath.length; i++) {
+        const savePath = this.allSavePath[i]
+        if (fileName.includes(savePath)) {
+          isSavePath = true
+          continue
+        }
+      }
+      if (!isSavePath) return
 
       this.updateSingle(fileName)
     })
+  }
+
+  /** 获取所有本地文件保存路径 */
+  getAllSavePath() {
+    const { savePath, swaggerJsonUrl } = config.extConfig
+    const allSavePath = [path.resolve(WORKSPACE_PATH || '', savePath)]
+
+    swaggerJsonUrl.forEach((v) => {
+      if (v.savePath) {
+        allSavePath.push(path.resolve(WORKSPACE_PATH || '', v.savePath))
+      }
+    })
+
+    return allSavePath
   }
 
   /** 初始化本地文件 */
   initLocalFiles() {
     this.localFilesMap.clear()
 
-    if (fs.existsSync(this.localPath)) {
-      const localFiles: string[] = []
+    const localFiles: string[] = []
 
-      fs.readdirSync(this.localPath).forEach((file) => {
-        const filePath = path.join(this.localPath, file)
-        const fileInfo = this.readLocalFile(filePath)
+    this.allSavePath.forEach((savePath) => {
+      if (fs.existsSync(savePath)) {
+        fs.readdirSync(savePath).forEach((file) => {
+          const filePath = path.join(savePath, file)
+          const fileInfo = this.readLocalFile(filePath)
 
-        if (fileInfo && fileInfo.ext === 'ts') {
-          localFiles.push(filePath)
-          this.localFilesMap.set(fileInfo.fileName, fileInfo)
-        }
-      })
+          if (fileInfo && fileInfo.ext === 'ts') {
+            localFiles.push(filePath)
+            this.localFilesMap.set(fileInfo.fileName, fileInfo)
+          }
+        })
+      } else {
+        log.warn('<initLocalFiles> localPath does not exist')
+      }
+    })
 
-      vscode.commands.executeCommand('setContext', `${CONFIG_GROUP}.localFiles`, localFiles)
-      this.refactorLocalFilesList()
-    } else {
-      log.warn('<initLocalFiles> localPath does not exist')
-    }
+    // TAG setContext 写入本地文件目录
+    vscode.commands.executeCommand('setContext', `${CONFIG_GROUP}.localFiles`, localFiles)
+    this.refactorLocalFilesList()
   }
 
   /** 初始化状态栏按钮 */
@@ -230,7 +256,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** 刷新 */
   public refresh(): void {
-    // 0.5 秒防抖, 避免重复刷新占用大量资源
+    // 0.5 秒防抖, 避免重复刷新产生大量算力开销
     this.debounce(() => this._refresh(), 500)
   }
 
@@ -241,11 +267,8 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
-    const { savePath } = config.extConfig
-    this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
-
+    this.allSavePath = this.getAllSavePath()
     this.initStatusBarItem()
-
     this.refresh()
   }
 

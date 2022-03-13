@@ -28,11 +28,19 @@ export abstract class BaseParser {
       type: 'group',
     }
 
+    if (this.configItem.savePath) {
+      tagItem.savePath = this.configItem.savePath
+    }
+
     this.result.push(tagItem)
   }
 
   /** 添加分组内元素 */
   pushGroupItem(tags: string[], itemRes: SwaggerJsonTreeItem) {
+    if (this.configItem.savePath) {
+      itemRes.savePath = this.configItem.savePath
+    }
+
     if (tags && tags.length) {
       tags.forEach((tagStr: string) => {
         let tagIndex = this.tagsMap[tagStr]

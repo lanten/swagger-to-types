@@ -39,6 +39,8 @@
   "text.noChange": "Interfaces no change",
   "text.preview": "Previewing",
   "text.clickToSave": "Click to save",
+  "text.canBeEmpty": "Can be empty",
+  "text.exist": "${1} already exists",
 
   "success": "Success",
   "failed": "Failed",

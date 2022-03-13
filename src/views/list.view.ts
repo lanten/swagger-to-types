@@ -43,7 +43,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   public interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
-  public localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  public globalSavePath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
 
   constructor() {
     super()
@@ -111,6 +111,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           } else if (res.openapi) {
             this.swaggerJsonMap.set(item.url, new OpenAPIV3Parser(res as OpenAPIV3.Document, item).parse())
           }
+          console.log(this.swaggerJsonMap)
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
@@ -279,7 +280,11 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
-    const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
+    console.log(itemSource)
+
+    const savePath = item.savePath ? path.resolve(WORKSPACE_PATH || '', item.savePath) : this.globalSavePath
+
+    const filePathH = filePath ?? path.join(savePath, `${item.pathName}.d.ts`)
     const nextStr = renderToInterface(item)
 
     if (compareChanges && fs.existsSync(filePathH)) {
@@ -328,7 +333,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
     const { savePath } = config.extConfig
-    this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
+    this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
     this.refresh()
   }
 }

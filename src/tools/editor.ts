@@ -76,7 +76,6 @@ export class CodelensProviderLocal implements vscode.CodeLensProvider {
 
   public provideCodeLenses(doc: vscode.TextDocument): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     this.codeLenses = []
-
     this.codeLenses.push(
       new vscode.CodeLens(this.HEADER_RANGE, {
         title: `${localize.getLocalize('text.updateButton')}`,
@@ -93,6 +92,7 @@ vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.sc
 
 vscode.languages.registerCodeLensProvider({ scheme: SwaggerInterfaceProvider.scheme }, new CodelensProvider())
 
+// TODO 多目录处理
 vscode.languages.registerCodeLensProvider(
   { scheme: 'file', language: 'typescript', pattern: `${WORKSPACE_PATH}/${config.extConfig.savePath}/**/*.d.ts` },
   new CodelensProviderLocal()
