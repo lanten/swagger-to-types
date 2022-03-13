@@ -75,13 +75,6 @@
   resolved "https://registry.nlark.com/@types/mocha/download/@types/mocha-9.0.0.tgz?cache=0&sync_timestamp=1629708404261&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fmocha%2Fdownload%2F%40types%2Fmocha-9.0.0.tgz#3205bcd15ada9bc681ac20bef64e9e6df88fd297"
   integrity sha1-MgW80Vram8aBrCC+9k6ebfiP0pc=
 
-"@types/node-fetch@^3.0.3":
-  version "3.0.3"
-  resolved "https://registry.nlark.com/@types/node-fetch/download/@types/node-fetch-3.0.3.tgz#9d969c9a748e841554a40ee435d26e53fa3ee899"
-  integrity sha1-nZacmnSOhBVUpA7kNdJuU/o+6Jk=
-  dependencies:
-    node-fetch "*"
-
 "@types/node@*", "@types/node@^16.11.6":
   version "16.11.6"
   resolved "https://registry.npmmirror.com/@types/node/download/@types/node-16.11.6.tgz#6bef7a2a0ad684cf6e90fcfe31cecabd9ce0a3ae"
@@ -348,11 +341,6 @@ cross-spawn@^7.0.2:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-data-uri-to-buffer@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmmirror.com/data-uri-to-buffer/download/data-uri-to-buffer-3.0.1.tgz#594b8973938c5bc2c33046535785341abc4f3636"
-  integrity sha1-WUuJc5OMW8LDMEZTV4U0GrxPNjY=
-
 debug@4, debug@4.3.2, debug@^4.1.1, debug@^4.3.2:
   version "4.3.2"
   resolved "https://registry.nlark.com/debug/download/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
@@ -574,13 +562,6 @@ fastq@^1.6.0:
   integrity sha1-YWdg+Ip1Jr38WWt8q4wYk4w2uYw=
   dependencies:
     reusify "^1.0.4"
-
-fetch-blob@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.nlark.com/fetch-blob/download/fetch-blob-3.1.2.tgz#6bc438675f3851ecea51758ac91f6a1cd1bacabd"
-  integrity sha1-a8Q4Z184UezqUXWKyR9qHNG6yr0=
-  dependencies:
-    web-streams-polyfill "^3.0.3"
 
 file-entry-cache@^6.0.1:
   version "6.0.1"
@@ -978,14 +959,6 @@ natural-compare@^1.4.0:
   resolved "https://registry.npm.taobao.org/natural-compare/download/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-node-fetch@*:
-  version "3.0.0"
-  resolved "https://registry.npmmirror.com/node-fetch/download/node-fetch-3.0.0.tgz?cache=0&sync_timestamp=1635730583312&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fnode-fetch%2Fdownload%2Fnode-fetch-3.0.0.tgz#79da7146a520036f2c5f644e4a26095f17e411ea"
-  integrity sha1-edpxRqUgA28sX2ROSiYJXxfkEeo=
-  dependencies:
-    data-uri-to-buffer "^3.0.1"
-    fetch-blob "^3.1.2"
-
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
   resolved "https://registry.nlark.com/normalize-path/download/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
@@ -1347,11 +1320,6 @@ vscode-test@^1.6.1:
     https-proxy-agent "^5.0.0"
     rimraf "^3.0.2"
     unzipper "^0.10.11"
-
-web-streams-polyfill@^3.0.3:
-  version "3.1.1"
-  resolved "https://registry.nlark.com/web-streams-polyfill/download/web-streams-polyfill-3.1.1.tgz#1516f2d4ea8f1bdbfed15eb65cb2df87098c8364"
-  integrity sha1-FRby1OqPG9v+0V62XLLfhwmMg2Q=
 
 which@2.0.2, which@^2.0.1:
   version "2.0.2"
