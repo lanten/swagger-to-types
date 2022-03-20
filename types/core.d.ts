@@ -65,7 +65,7 @@ declare global {
     pathName: string
     fileName: string
     operationId: string
-    savePath?: string
+    savePath: string
     // produces: string[]
     // deprecated: boolean
   }

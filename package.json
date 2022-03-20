@@ -89,6 +89,12 @@
         "command": "cmd.common.openLink",
         "title": "%command.openLink%",
         "icon": "$(link-external)"
+      },
+      {
+        "command": "cmd.template.edit",
+        "title": "%command.template.edit%",
+        "category": "%app.category%",
+        "icon": "$(link-external)"
       }
     ],
     "viewsContainers": {

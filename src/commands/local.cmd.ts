@@ -30,7 +30,7 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
       let fileInfo = item
       let isMenuAction = false
 
-      if (!item.namespace) {
+      if (!item.fileName) {
         isMenuAction = true
         if (item.options) {
           fileInfo = item.options
@@ -43,14 +43,13 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         }
       }
 
-      if (!fileInfo || !fileInfo.namespace) {
+      if (!fileInfo || !fileInfo.fileName) {
         return log.error('<updateInterface> fileInfo error.', isMenuAction)
       }
 
-      const swaggerItem = viewList.getInterFacePathNameMap(
-        fileInfo.namespace,
-        fileInfo.savePath
-      ) as unknown as TreeInterface
+      const fileName = path.basename(fileInfo.fileName, '.d.ts')
+
+      const swaggerItem = viewList.getInterFacePathNameMap(fileName, fileInfo.savePath) as unknown as TreeInterface
 
       if (!swaggerItem) {
         return log.error('<updateInterface> swaggerItem is undefined.', isMenuAction)

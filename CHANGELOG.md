@@ -17,8 +17,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - [x] 优化添加流程
 - [x] 支持多目录配置
 - [x] 独立`.d.ts`目录保存及读取
+- [x] 自定义接口文件输出格式
 - [ ] 自定义请求函数模板
-- [ ] 自定义接口文件输出格式
 - [ ] 一键复制请求函数代码
 
 #### Bugs
