@@ -93,7 +93,14 @@ vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.sc
 vscode.languages.registerCodeLensProvider({ scheme: SwaggerInterfaceProvider.scheme }, new CodelensProvider())
 
 // TODO 多目录处理
+const savePaths = [config.extConfig.savePath]
+config.extConfig.swaggerJsonUrl.forEach((v) => {
+  if (v.savePath) {
+    savePaths.push(v.savePath)
+  }
+})
+
 vscode.languages.registerCodeLensProvider(
-  { scheme: 'file', language: 'typescript', pattern: `${WORKSPACE_PATH}/${config.extConfig.savePath}/**/*.d.ts` },
+  { scheme: 'file', language: 'typescript', pattern: `${WORKSPACE_PATH}/{${savePaths.join(',')}}/**/*.d.ts` },
   new CodelensProviderLocal()
 )

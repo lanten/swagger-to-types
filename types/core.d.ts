@@ -89,5 +89,7 @@ declare global {
     update?: string
     /** 忽略自动更新 */
     ignore?: boolean
+    /** 接口保存目录 */
+    savePath?: string
   }
 }

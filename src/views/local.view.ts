@@ -75,7 +75,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
 
           if (fileInfo && fileInfo.ext === 'ts') {
             localFiles.push(filePath)
-            this.localFilesMap.set(fileInfo.fileName, fileInfo)
+            this.localFilesMap.set(filePath, fileInfo)
           }
         })
       } else {
@@ -156,7 +156,10 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
               log.error(`<updateAll> namespace is undefined. (${item.filePath})`, false)
               continue
             }
-            const swaggerItem = this.viewList.interFacePathNameMap.get(item.namespace) as unknown as TreeInterface
+            const swaggerItem = this.viewList.getInterFacePathNameMap(
+              item.namespace,
+              item.savePath
+            ) as unknown as TreeInterface
             if (!swaggerItem) {
               log.error(`<updateAll> swaggerItem is undefined. (${item.filePath})`, false)
               continue
@@ -205,8 +208,10 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   public updateSingle(filePath: string) {
     const fileInfo = this.readLocalFile(filePath)
 
+    console.log('updateSingle', filePath)
+
     if (fileInfo && fileInfo.ext === 'ts') {
-      this.localFilesMap.set(fileInfo.fileName, fileInfo)
+      this.localFilesMap.set(filePath, fileInfo)
       this.refactorLocalFilesList()
     }
   }

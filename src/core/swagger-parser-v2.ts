@@ -9,8 +9,6 @@ export function parseSwaggerJson(
   const { tags, paths, definitions } = swaggerJson
   const res: SwaggerJsonTreeItem[] = []
 
-  console.log(configItem)
-
   function addTag(item: { name: string; description?: string }) {
     const itemIndex = res.length
     tagsMap[item.name] = itemIndex
@@ -159,8 +157,6 @@ export function parseSwaggerJson(
 
     pathItemKeys.forEach((method) => parseMethodItem(path, pathItem as any, method, pathItemKeys.length > 1))
   }
-
-  console.log(res)
 
   return res
 }

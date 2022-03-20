@@ -165,16 +165,23 @@ function parseProperties(
  * @param data
  */
 function parseHeaderInfo(data: TreeInterface): string[] {
-  return [
+  const lines = [
     '/**',
-    ` * @name   ${data.title || ''} (${data.groupName})`,
-    ` * @base   ${data.basePath || ''}`,
-    ` * @path   ${data.path}`,
-    ` * @method ${data.method.toUpperCase()}`,
-    ` * @update ${new Date().toLocaleString()}`,
+    ` * @name     ${data.title || ''} (${data.groupName})`,
+    ` * @base     ${data.basePath || ''}`,
+    ` * @path     ${data.path}`,
+    ` * @method   ${data.method.toUpperCase()}`,
+    ` * @update   ${new Date().toLocaleString()}`,
     ' */',
     '',
   ]
+
+  if (data.savePath) {
+    lines.splice(5, 0, ` * @savePath ${data.savePath}`)
+  }
+
+  return lines
+  // data.savePath ? ` * @savePath   ${data.savePath}` : undefined,
 }
 
 /**

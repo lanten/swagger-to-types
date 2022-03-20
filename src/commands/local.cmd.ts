@@ -1,4 +1,5 @@
 import vscode from 'vscode'
+import path from 'path'
 
 import { log, localize } from '../tools'
 
@@ -11,7 +12,9 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
     refresh: () => viewLocal.refresh(),
 
     /** 更新本地接口 */
-    async updateInterface(item: LocalItem & FileHeaderInfo & { path?: string }) {
+    async updateInterface(
+      item: LocalItem & FileHeaderInfo & { path: string; options?: any; savePath?: string; title?: string }
+    ) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -24,13 +27,12 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         }
       )
 
-      let fileInfo: FileHeaderInfo & { title?: string } = item
+      let fileInfo = item
       let isMenuAction = false
 
       if (!item.namespace) {
         isMenuAction = true
         if (item.options) {
-          // @ts-ignore
           fileInfo = item.options
         }
 
@@ -45,14 +47,17 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         return log.error('<updateInterface> fileInfo error.', isMenuAction)
       }
 
-      const swaggerItem = viewList.interFacePathNameMap.get(fileInfo.namespace) as unknown as TreeInterface
+      const swaggerItem = viewList.getInterFacePathNameMap(
+        fileInfo.namespace,
+        fileInfo.savePath
+      ) as unknown as TreeInterface
 
       if (!swaggerItem) {
         return log.error('<updateInterface> swaggerItem is undefined.', isMenuAction)
       }
 
       viewList
-        .saveInterface(swaggerItem, fileInfo.filePath)
+        .saveInterface(swaggerItem, item.path)
         .then((res) => {
           if (res === 'no-change') {
             return log.info(
@@ -61,7 +66,8 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
             )
           }
 
-          viewLocal.updateSingle(fileInfo.filePath)
+          viewLocal.updateSingle(item.path)
+
           log.info(
             `${localize.getLocalize('command.local.updateInterface')} <${
               fileInfo.name || fileInfo.title

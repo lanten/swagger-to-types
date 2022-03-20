@@ -40,7 +40,7 @@ interface ExtListItemConfig {
 export class ViewList extends BaseTreeProvider<ListItem> {
   /** Swagger JSON */
   public swaggerJsonMap: SwaggerJsonMap = new Map()
-  public interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
+  private interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
   public globalSavePath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
@@ -111,7 +111,6 @@ export class ViewList extends BaseTreeProvider<ListItem> {
           } else if (res.openapi) {
             this.swaggerJsonMap.set(item.url, new OpenAPIV3Parser(res as OpenAPIV3.Document, item).parse())
           }
-          console.log(this.swaggerJsonMap)
           resolve(this.swaggerJsonMap)
         })
         .catch(() => {
@@ -220,7 +219,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     data.forEach((v) => {
       if (v.type === 'interface') {
         if (v.pathName) {
-          this.interFacePathNameMap.set(v.pathName, v)
+          this.setInterFacePathNameMap(v.pathName, v.savePath, v)
         }
         arr.push({
           label: v.title,
@@ -240,6 +239,14 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     })
 
     return arr
+  }
+
+  setInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath, item: SwaggerJsonTreeItem) {
+    this.interFacePathNameMap.set(`${savePath}_${pathName}`, item)
+  }
+
+  getInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath) {
+    return this.interFacePathNameMap.get(`${savePath}_${pathName}`)
   }
 
   /** 获取父级元素 */
@@ -279,8 +286,6 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     const item = itemSource as TreeInterface
     const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
-
-    console.log(itemSource)
 
     const savePath = item.savePath ? path.resolve(WORKSPACE_PATH || '', item.savePath) : this.globalSavePath
 
