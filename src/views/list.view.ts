@@ -242,11 +242,12 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   }
 
   setInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath, item: SwaggerJsonTreeItem) {
-    this.interFacePathNameMap.set(`${savePath}_${pathName}`, item)
+    this.interFacePathNameMap.set(`${savePath}/${pathName}`, item)
   }
 
   getInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath) {
-    return this.interFacePathNameMap.get(`${savePath}_${pathName}`)
+    console.log(this.interFacePathNameMap, savePath, `${savePath}/${pathName}`)
+    return this.interFacePathNameMap.get(`${savePath}/${pathName}`)
   }
 
   /** 获取父级元素 */

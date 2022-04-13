@@ -51,6 +51,8 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
 
       const swaggerItem = viewList.getInterFacePathNameMap(fileName, fileInfo.savePath) as unknown as TreeInterface
 
+      console.log(fileName, swaggerItem)
+
       if (!swaggerItem) {
         return log.error('<updateInterface> swaggerItem is undefined.', isMenuAction)
       }
