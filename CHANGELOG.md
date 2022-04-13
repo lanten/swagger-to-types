@@ -8,7 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - none
 
-## [1.2.0] unreleased
+## [1.2.0] 2022-04-13
 
 - 添加了多个 swagger 配置区分不同的 `.d.ts` 文件保存路径，满足更复杂的项目结构需求。
 - 添加输出接口时的自定义格式模板支持。
