@@ -16,6 +16,8 @@
 
 #### 添加分组前缀
 
+编辑 `.vscode/swagger-to-types.template.js` 文件
+
 ```js
 function namespace(params) {
   return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
@@ -25,6 +27,8 @@ module.exports = { namespace }
 ```
 
 #### 将字段名转化为大驼峰
+
+编辑 `.vscode/swagger-to-types.template.js` 文件
 
 ```js
 /**
@@ -37,13 +41,16 @@ function toUp(str) {
 }
 
 function paramsItem(item, params) {
-  if (params.groupName === 'demo-1') return // groupName 为 demo-1 时忽略模板定制
+  // 项目标题(swaggerToTypes.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
+  if (params.groupName === 'demo-1') return
 
   return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
 }
+
+module.exports = { paramsItem }
 ```
 
 ## 注意
 
 - 高端定制，尊享奢华。
-- 请不要对模板处理函数的参数直接进行修改，否则可能产生破坏性影响。
+- 请不要对模板处理函数的参数直接进行赋值操作，这可能产生破坏性影响。
