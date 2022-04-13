@@ -64,9 +64,6 @@ export function parseSwaggerJson(
           })
         }
 
-        if (paramsBody.name === 'awardsIds') {
-          console.log(paramsSource)
-        }
         if (paramsSource && paramsSource.properties) {
           const { properties } = paramsSource
           for (const name in properties) {

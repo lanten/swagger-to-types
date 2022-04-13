@@ -208,8 +208,6 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
   public updateSingle(filePath: string) {
     const fileInfo = this.readLocalFile(filePath)
 
-    console.log('updateSingle', filePath)
-
     if (fileInfo && fileInfo.ext === 'ts') {
       this.localFilesMap.set(filePath, fileInfo)
       this.refactorLocalFilesList()
