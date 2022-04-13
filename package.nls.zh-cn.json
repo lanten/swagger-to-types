@@ -17,7 +17,7 @@
   "command.openLink": "在浏览器中打开",
   "command.saveInterface": "保存接口",
   "command.local.updateInterface": "更新接口",
-  "command.local.copyRequest": "复制请求函数",
+  "command.local.copyRequest": "复制请求代码",
   "command.template.edit": "编辑生成模板",
 
   "text.search.placeholder": "请输入关键字",

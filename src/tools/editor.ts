@@ -1,7 +1,7 @@
 import fs from 'fs'
 import vscode from 'vscode'
 
-import { log, localize, WORKSPACE_PATH, config } from '.'
+import { log, localize, WORKSPACE_PATH, config, templateConfig } from '.'
 
 class SwaggerInterfaceProvider implements vscode.TextDocumentContentProvider {
   static scheme = 'swagger-interface-provider'
@@ -76,6 +76,17 @@ export class CodelensProviderLocal implements vscode.CodeLensProvider {
 
   public provideCodeLenses(doc: vscode.TextDocument): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     this.codeLenses = []
+
+    if (templateConfig.copyRequest) {
+      this.codeLenses.push(
+        new vscode.CodeLens(this.HEADER_RANGE, {
+          title: `${localize.getLocalize('command.local.copyRequest')}`,
+          command: 'cmd.local.copyRequest',
+          arguments: [{ path: doc.fileName }],
+        })
+      )
+    }
+
     this.codeLenses.push(
       new vscode.CodeLens(this.HEADER_RANGE, {
         title: `${localize.getLocalize('text.updateButton')}`,

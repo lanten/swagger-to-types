@@ -17,7 +17,7 @@
   "command.openLink": "Open in browser",
   "command.saveInterface": "Save interface",
   "command.local.updateInterface": "Update interface",
-  "command.local.copyRequest": "Copy request function",
+  "command.local.copyRequest": "Copy request code",
   "command.template.edit": "Edit build template",
 
   "text.search.placeholder": "Please enter keywords",

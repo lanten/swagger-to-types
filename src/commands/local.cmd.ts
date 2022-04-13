@@ -1,7 +1,7 @@
 import vscode from 'vscode'
 import path from 'path'
 
-import { log, localize } from '../tools'
+import { log, localize, templateConfig } from '../tools'
 
 import { ViewLocal, LocalItem } from '../views/local.view'
 import { ViewList } from '../views/list.view'
@@ -106,6 +106,31 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
             viewLocal.updateAll()
           }
         })
+    },
+
+    /** 复制请求代码 */
+    copyRequest(e: any) {
+      const filePath = e.path || e.options.filePath
+      const fileInfo = viewLocal.readLocalFile(filePath)
+
+      if (!fileInfo) {
+        return log.error('<copyRequest> fileInfo error.', true)
+      }
+
+      if (templateConfig.copyRequest) {
+        const str = templateConfig.copyRequest(fileInfo)
+        if (typeof str === 'string') {
+          vscode.env.clipboard.writeText(str)
+        } else {
+          vscode.env.clipboard.writeText(str.join('\n'))
+        }
+        log.info(
+          `${localize.getLocalize('command.local.copyRequest')}${localize.getLocalize('success')} <${fileInfo.name}>`,
+          true
+        )
+      } else {
+        log.error('<copyRequest> copyRequest is undefined.', true)
+      }
     },
   }
 
