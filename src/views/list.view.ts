@@ -246,7 +246,6 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   }
 
   getInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath) {
-    console.log(this.interFacePathNameMap, savePath, `${savePath}/${pathName}`)
     return this.interFacePathNameMap.get(`${savePath}/${pathName}`)
   }
 

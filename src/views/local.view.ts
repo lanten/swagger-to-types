@@ -157,7 +157,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
               continue
             }
             const swaggerItem = this.viewList.getInterFacePathNameMap(
-              item.fileName,
+              item.namespace,
               item.savePath
             ) as unknown as TreeInterface
             if (!swaggerItem) {
