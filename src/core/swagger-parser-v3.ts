@@ -62,6 +62,7 @@ export class OpenAPIV3Parser extends BaseParser {
     }
 
     const response = this.parseResponse(responses)
+    console.log({ description, response, responses })
 
     const itemRes: SwaggerJsonTreeItem = {
       groupName: this.configItem.title,
@@ -148,12 +149,30 @@ export class OpenAPIV3Parser extends BaseParser {
     return this.parseSchemaObject(requestBodySchema, '')
   }
 
+  getResponseData(responses: OpenAPIV3.ResponsesObject, key?: string): OpenAPIV3.MediaTypeObject | void {
+    const responseData = responses[key || 'default'] as OpenAPIV3.ResponseObject
+    let res: OpenAPIV3.MediaTypeObject | void
+
+    if (responseData) {
+      // WARN: 永远只取首位键值对，通常为：application/json，其它情况忽略
+      res = Object.values(responseData.content || {})?.[0]
+    }
+
+    if (!res && !key) {
+      for (const code in responses) {
+        const val = responses[code] as OpenAPIV3.ResponseObject
+        res = val?.content?.['application/json']
+        if (res) break
+      }
+    }
+
+    return res
+  }
+
   /** 解析接口返回值 */
   parseResponse(responses: OpenAPIV3.ResponsesObject): TreeInterfacePropertiesItem | string | undefined {
-    const responseBody = (responses[200] || responses['default'] || responses[201]) as OpenAPIV3.ResponseObject
+    const responseBodyContent = this.getResponseData(responses)
 
-    // WARN: 永远只取首位键值对，通常为：application/json，其它情况忽略
-    const responseBodyContent = Object.values(responseBody.content || {})?.[0]
     if (!responseBodyContent) {
       log.warn('parseResponse: responseBodyContent is null.')
       return void 0
@@ -215,8 +234,6 @@ export class OpenAPIV3Parser extends BaseParser {
       }
       return this.parseObject(itemSchema as SchemaItem<'object'>)
     }
-
-    // return res
   }
 
   /** 解析对象 */
@@ -236,57 +253,6 @@ export class OpenAPIV3Parser extends BaseParser {
       if (!allOfSingleSchema) return res
       res.item = this.parseProperties(allOfSingleSchema.properties, itemsRequiredNamesList)
     }
-
-    // TODO: allOf 转组合类型
-    // TODO: oneOf, anyOf 转联合类型
-
-    // let properties = res.properties
-
-    // if (!properties) {
-    //   const { allOf, oneOf, anyOf } = propertiesItem
-
-    //   let itemArr = allOf || oneOf || anyOf
-    //   const isUnion = !allOf && (oneOf || anyOf)
-    //   if (itemArr) {
-    //     itemArr = itemArr.filter((x: any) => x && x.$ref !== parentRef) // 终止递归类型嵌套
-    //   }
-
-    //   if (!itemArr || !itemArr.length) return res
-
-    //   if (isUnion) {
-    //     // TODO
-    //     // const itemUnion: TreeInterfacePropertiesItem['itemUnion'] = []
-    //     // itemArr.forEach((item) => {
-    //     //   const itemSchema = this.dereferenceSchema(item)
-    //     //   if (!itemSchema) {
-    //     //     log.warn('parseObject - itemUnion: itemSchema is null.')
-    //     //     return
-    //     //   }
-    //     //   itemUnion.push(this.parseSchemaObject(itemSchema, (item as any)?.$ref))
-    //     // })
-    //     // obj.itemUnion = itemUnion
-    //   } else {
-    //     let itemMerge: TreeInterfacePropertiesItem[] | string | undefined
-    //     itemArr.forEach((item) => {
-    //       const itemSchema = this.dereferenceSchema(item)
-    //       if (!itemSchema) {
-    //         log.warn('parseObject - itemUnion: itemSchema is null.')
-    //         return
-    //       }
-
-    //       console.log('parseObject ---- ', itemSchema)
-    //       const itemParsed = this.parseSchemaObject(itemSchema, (item as any)?.$ref)
-
-    //       if (itemMerge) {
-    //         itemMerge = this.mergeAllOf(itemMerge, itemParsed)
-    //       } else {
-    //         itemMerge = itemParsed
-    //       }
-    //     })
-    //   }
-
-    //   // arr.push(obj)
-    // }
 
     return res
   }

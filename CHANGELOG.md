@@ -8,6 +8,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - none
 
+## [1.2.2] 2022-08-03
+
+#### Fix
+
+- 修复 v3 未声明分组异常问题
+- 修复 v3 Response 获取异常问题
+
 ## [1.2.1] 2022-05-06
 
 #### Fix
