@@ -1,4 +1,4 @@
-import { BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
+import { BASE_INDENTATION, BASE_INDENTATION_COUNT, templateConfig } from '../tools'
 
 /**
  * 渲染 Typescript Interface
@@ -7,16 +7,16 @@ import { BASE_INDENTATION, BASE_INDENTATION_COUNT } from '../tools'
  */
 export function renderToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
-  const name = data.pathName
+  // const name = data.pathName
 
-  const paramsArr = removeEmptyLines(parseParams(data.params, 1))
-  const resArr = removeEmptyLines(parseResponse(data.response, 1))
+  const paramsArr = removeEmptyLines(parseParams(data, 1))
+  const resArr = removeEmptyLines(parseResponse(data, 1))
 
   let content = paramsArr
   if (content.length) content.push('')
   content = content.concat(resArr)
 
-  const lines: string[] = [...parseHeaderInfo(data), ...parseNameSpace(name, content), '']
+  const lines: string[] = [...parseHeaderInfo(data), ...parseNameSpace(data, content), '']
 
   return lines.join('\n')
 }
@@ -27,50 +27,43 @@ export function renderToInterface(data: TreeInterface): string {
  * @param content
  * @param indentation
  */
-function parseNameSpace(name: string, content: string[], indentation = 0): string[] {
+function parseNameSpace(item: TreeInterface, content: string[], indentation = 0): string[] {
   const indentationSpace = handleIndentation(indentation)
+
+  const nameH = templateConfig.namespace ? templateConfig.namespace(item) : item.pathName
+
   return [
-    `${indentationSpace}declare namespace ${name} {`,
+    `${indentationSpace}declare namespace ${nameH} {`,
     ...content.map((v) => `${indentationSpace}${v}`),
     `${indentationSpace}}`,
   ]
 }
 
-/**
- * 解析参数接口
- * @param params
- * @param indentation
- */
-function parseParams(
-  params: TreeInterfaceParamsItem[] | TreeInterfacePropertiesItem | string,
-  indentation = 0
-): string[] {
-  const res = parseProperties('Params', params, indentation)
+/** 解析参数接口 */
+function parseParams(data: TreeInterface, indentation = 0): string[] {
+  const res = parseProperties('Params', templateConfig?.params?.(data), Object.assign(data), data.params, indentation)
   // res.pop() // 删除多余空行
   return res
 }
 
-/**
- * 解析返回结果
- * @param response
- * @param indentation
- */
-function parseResponse(
-  response: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string,
-  indentation = 0
-): string[] {
-  const res = parseProperties('Response', response, indentation)
+/** 解析返回结果 */
+function parseResponse(data: TreeInterface, indentation = 0): string[] {
+  const res = parseProperties(
+    'Response',
+    templateConfig?.response?.(data),
+    Object.assign(data),
+    data.response,
+    indentation
+  )
   // res.pop() // 删除多余空行
   return res
 }
 
-/**
- * 解析详细属性
- * @param properties
- * @param indentation
- */
+/** 解析详细属性 */
 function parseProperties(
-  interfaceName: string,
+  interfaceType: 'Params' | 'Response',
+  interfaceName: string | undefined,
+  data: TreeInterface,
   properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string | undefined,
   indentation = 0
 ): string[] {
@@ -78,6 +71,8 @@ function parseProperties(
   const indentationSpace2 = handleIndentation(indentation + 1) // 二级缩进
   const interfaceList = []
   let content: string[] = []
+
+  if (!interfaceName) interfaceName = interfaceType
 
   if (Array.isArray(properties)) {
     if (properties.length === 1 && properties[0].name === '____body_root_param____') {
@@ -100,7 +95,7 @@ function parseProperties(
         type = `${interfaceName}${toUp(v.name)}`
         if (v.type === 'array') type = `${type}Item`
 
-        interfaceList.push(...parseProperties(type, v.item, indentation))
+        interfaceList.push(...parseProperties(interfaceType, type, data, v.item, indentation))
       }
 
       try {
@@ -139,7 +134,17 @@ function parseProperties(
         description = `${indentationSpace2}/** ${description} */\n`
       }
 
-      return `${description}${indentationSpace2}${v.name}${v.required ? ':' : '?:'} ${type}`
+      let keyValue = `${v.name}${v.required ? ':' : '?:'} ${type}`
+
+      if (interfaceType === 'Params' && templateConfig.paramsItem) {
+        const res = templateConfig.paramsItem(Object.assign({}, v, { type }), data)
+        if (res) keyValue = res
+      } else if (interfaceType === 'Response' && templateConfig.responseItem) {
+        const res = templateConfig.responseItem(Object.assign({}, v, { type }), data)
+        if (res) keyValue = res
+      }
+
+      return `${description}${indentationSpace2}${keyValue}`
     })
   } else if (typeof properties === 'object') {
     let arr: TreeInterfacePropertiesItem[] = []
@@ -147,7 +152,9 @@ function parseProperties(
     if (properties.properties && Array.isArray(properties.properties)) arr = properties.properties
     if (properties.item && Array.isArray(properties.item)) arr = properties.item
     if (arr.length) {
-      interfaceList.push(...parseProperties(`${interfaceName}${toUp(properties.name)}`, arr, indentation))
+      interfaceList.push(
+        ...parseProperties(interfaceType, `${interfaceName}${toUp(properties.name)}`, data, arr, indentation)
+      )
     }
   } else if (typeof properties === 'string') {
     interfaceList.push(`${indentationSpace}type ${interfaceName} = ${handleType(properties)}`, '')
@@ -165,16 +172,20 @@ function parseProperties(
  * @param data
  */
 function parseHeaderInfo(data: TreeInterface): string[] {
-  return [
+  const lines = [
     '/**',
-    ` * @name   ${data.title || ''} (${data.groupName})`,
-    ` * @base   ${data.basePath || ''}`,
-    ` * @path   ${data.path}`,
-    ` * @method ${data.method.toUpperCase()}`,
-    ` * @update ${new Date().toLocaleString()}`,
+    ` * @name     ${data.title || ''} (${data.groupName})`,
+    ` * @base     ${data.basePath || ''}`,
+    ` * @path     ${data.path}`,
+    ` * @method   ${data.method.toUpperCase()}`,
+    ` * @savePath ${data.savePath}`,
+    ` * @update   ${new Date().toLocaleString()}`,
     ' */',
     '',
   ]
+
+  return lines
+  // data.savePath ? ` * @savePath   ${data.savePath}` : undefined,
 }
 
 /**

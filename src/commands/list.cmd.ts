@@ -2,7 +2,16 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH, EXT_NAME, config, localize, preSaveDocument, saveDocument, log } from '../tools'
+import {
+  WORKSPACE_PATH,
+  EXT_NAME,
+  config,
+  localize,
+  preSaveDocument,
+  saveDocument,
+  log,
+  deleteEmptyProperty,
+} from '../tools'
 import { openListPicker, renderToInterface } from '../core'
 
 import { ViewList, ListItem } from '../views/list.view'
@@ -27,7 +36,7 @@ export function registerListCommands({
 
     /** 选择接口 */
     onSelect: (e: TreeInterface) => {
-      const { savePath = '' } = config.extConfig
+      const savePath = e.savePath || config.extConfig.savePath || ''
 
       const filePath = path.join(WORKSPACE_PATH || '', savePath, `${e.pathName}.d.ts`)
       preSaveDocument(renderToInterface(e), filePath, true)
@@ -37,33 +46,49 @@ export function registerListCommands({
     async add() {
       const titleText = localize.getLocalize('text.title')
       const urlText = localize.getLocalize('text.swaggerJsonUrl')
-      const orText = localize.getLocalize('text.or')
+      const savePathText = localize.getLocalize('text.config.savePath')
+
+      const url = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        title: localize.getLocalize('temp.input.placeholder', urlText),
+        placeHolder: 'http://',
+      })
+
+      if (!url) {
+        vscode.window.showErrorMessage(localize.getLocalize('temp.input.none', urlText))
+        return
+      }
+
+      config.extConfig.swaggerJsonUrl.forEach((v) => {
+        if (v.url === url) {
+          log.error(localize.getLocalize('text.exist', urlText), true)
+          throw new Error()
+        }
+      })
+
       const title = await vscode.window.showInputBox({
-        placeHolder: localize.getLocalize('temp.input.placeholder', titleText),
+        ignoreFocusOut: true,
+        title: localize.getLocalize('temp.input.placeholder', titleText),
       })
 
       if (!title) {
+        vscode.window.showErrorMessage(localize.getLocalize('temp.input.none', titleText))
         return
       }
 
-      const url = await vscode.window.showInputBox({
-        placeHolder: localize.getLocalize('temp.input.placeholder', urlText),
+      const savePath = await vscode.window.showInputBox({
+        ignoreFocusOut: true,
+        title: localize.getLocalize('temp.input.placeholder', savePathText),
+        placeHolder: `${config.extConfig.savePath} (${localize.getLocalize('text.canBeEmpty')})`,
       })
 
-      if (title && url) {
-        const swaggerJsonUrl = Object.assign([], config.extConfig.swaggerJsonUrl || [])
-        swaggerJsonUrl.push({ title, url })
-        config.setCodeConfig({ swaggerJsonUrl })
-        log.info(`<cmd.list.add> Add Swagger Project: [${title}]`)
-        setTimeout(() => {
-          viewList.refresh()
-        }, 200)
-      } else {
-        vscode.window.showErrorMessage(
-          localize.getLocalize('temp.input.none', [titleText, urlText].join(` ${orText} `))
-        )
-        return
-      }
+      const swaggerJsonUrl = Object.assign([], config.extConfig.swaggerJsonUrl || [])
+      swaggerJsonUrl.push(deleteEmptyProperty({ title, url, savePath }))
+      config.setCodeConfig({ swaggerJsonUrl })
+      log.info(`<cmd.list.add> Add Swagger Project: [${title}]`)
+      setTimeout(() => {
+        viewList.refresh()
+      }, 200)
     },
 
     /** 搜索接口列表 (远程) */
@@ -76,22 +101,26 @@ export function registerListCommands({
         if (!res.source) return log.error('Picker.res.source is undefined', true)
         if (!res.configItem) return log.error('Picker.res.configItem is undefined', true)
 
-        const listItem = viewList.transformToListItem(res.source, res.configItem)
+        let hasLocalFile = false
+        for (let i = 0; i < viewLocal.allSavePath.length; i++) {
+          const localPath = viewLocal.allSavePath[i]
+          const filePath = path.join(localPath, `${res.source.pathName}.d.ts`)
+          if (fs.existsSync(filePath)) {
+            const fileInfo = viewLocal.readLocalFile(filePath)
+            if (fileInfo) {
+              hasLocalFile = true
+              localTreeView.reveal(viewLocal.renderItem(fileInfo), { expand: true, select: true })
+            }
+          }
+        }
+        if (hasLocalFile) return // 已有本地文件
 
+        const listItem = viewList.transformToListItem(res.source, res.configItem)
         listTreeView.reveal(listItem, { expand: true, select: true }).then(() => {
           setTimeout(() => {
             commands.onSelect(res.source as unknown as TreeInterface)
           }, 100)
         })
-
-        const filePath = path.join(viewList.localPath, `${res.source.pathName}.d.ts`)
-        if (fs.existsSync(filePath)) {
-          const fileInfo = viewLocal.readLocalFile(filePath)
-          if (fileInfo) {
-            localTreeView.reveal(viewLocal.renderItem(fileInfo), { expand: true, select: true })
-          }
-        }
-        // const localItem = viewLocal.readLocalFile(res)
       })
     },
 

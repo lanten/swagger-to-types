@@ -1,7 +1,7 @@
 import fs from 'fs'
 import vscode from 'vscode'
 
-import { log, localize, WORKSPACE_PATH, config } from '.'
+import { log, localize, WORKSPACE_PATH, config, templateConfig } from '.'
 
 class SwaggerInterfaceProvider implements vscode.TextDocumentContentProvider {
   static scheme = 'swagger-interface-provider'
@@ -77,6 +77,16 @@ export class CodelensProviderLocal implements vscode.CodeLensProvider {
   public provideCodeLenses(doc: vscode.TextDocument): vscode.CodeLens[] | Thenable<vscode.CodeLens[]> {
     this.codeLenses = []
 
+    if (templateConfig.copyRequest) {
+      this.codeLenses.push(
+        new vscode.CodeLens(this.HEADER_RANGE, {
+          title: `${localize.getLocalize('command.local.copyRequest')}`,
+          command: 'cmd.local.copyRequest',
+          arguments: [{ path: doc.fileName }],
+        })
+      )
+    }
+
     this.codeLenses.push(
       new vscode.CodeLens(this.HEADER_RANGE, {
         title: `${localize.getLocalize('text.updateButton')}`,
@@ -93,7 +103,15 @@ vscode.workspace.registerTextDocumentContentProvider(SwaggerInterfaceProvider.sc
 
 vscode.languages.registerCodeLensProvider({ scheme: SwaggerInterfaceProvider.scheme }, new CodelensProvider())
 
+// TODO 多目录处理
+const savePaths = [config.extConfig.savePath]
+config.extConfig.swaggerJsonUrl.forEach((v) => {
+  if (v.savePath) {
+    savePaths.push(v.savePath)
+  }
+})
+
 vscode.languages.registerCodeLensProvider(
-  { scheme: 'file', language: 'typescript', pattern: `${WORKSPACE_PATH}/${config.extConfig.savePath}/**/*.d.ts` },
+  { scheme: 'file', language: 'typescript', pattern: `${WORKSPACE_PATH}/{${savePaths.join(',')}}/**/*.d.ts` },
   new CodelensProviderLocal()
 )

@@ -46,9 +46,9 @@ export function requireModule(modulePath: string, clearCache = true) {
  */
 export async function saveDocument(docStr: string, filePath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
-    if (!fs.existsSync(localPath)) {
-      fs.mkdirSync(localPath, { recursive: true })
+    const dir = path.dirname(filePath)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
     }
 
     try {

@@ -18,6 +18,7 @@ declare global {
       | 'file-ignore' // 本地文件
     title: string
     subTitle: string
+    savePath?: string
     // pathName?: string
     // fileName?: string
     // method?: string
@@ -64,6 +65,7 @@ declare global {
     pathName: string
     fileName: string
     operationId: string
+    savePath: string
     // produces: string[]
     // deprecated: boolean
   }
@@ -87,5 +89,7 @@ declare global {
     update?: string
     /** 忽略自动更新 */
     ignore?: boolean
+    /** 接口保存目录 */
+    savePath?: string
   }
 }

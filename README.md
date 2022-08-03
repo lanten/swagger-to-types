@@ -45,6 +45,107 @@
  */
 ```
 
+## Interface 模板
+
+| 方法名       | 参数                                       | 返回值             |
+| ------------ | ------------------------------------------ | ------------------ |
+| namespace    | TreeInterface                              | string             |
+| params       | TreeInterface                              | string             |
+| paramsItem   | TreeInterfacePropertiesItem, TreeInterface | string             |
+| response     | TreeInterface                              | string             |
+| responseItem | TreeInterfacePropertiesItem, TreeInterface | string             |
+| copyRequest  | FileHeaderInfo                             | string \| string[] |
+
+详细类型参考 [TemplateBaseType](../src/tools/get-templates.ts#L17)
+
+#### 添加分组前缀
+
+编辑 `.vscode/swagger-to-types.template.js` 文件
+
+```js
+function namespace(params) {
+  return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
+}
+
+module.exports = { namespace }
+```
+
+#### 将字段名转化为大驼峰
+
+编辑 `.vscode/swagger-to-types.template.js` 文件
+
+```js
+/**
+ * 首字母大写
+ * @param {String} str
+ */
+function toUp(str) {
+  if (typeof str !== 'string') return ''
+  return str.slice(0, 1).toUpperCase() + str.slice(1)
+}
+
+function paramsItem(item, params) {
+  // 项目标题(swaggerToTypes.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
+  if (params.groupName === 'demo-1') return
+
+  return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
+}
+
+module.exports = { paramsItem }
+```
+
+## 复制请求函数
+
+编辑 `.vscode/swagger-to-types.template.js` 文件
+
+如果导出了 `copyRequest` 函数，即可使用此功能
+
+相关按钮将出现在这几个位置：
+
+- 本地接口列表操作按钮
+- `.d.ts` 文件 标题栏操作按钮
+- `.d.ts` 文件 代码行首文字按钮
+
+下面是一个例子：
+
+```js
+/**
+ * 请求函数模板
+ *
+ * @param {{
+ *  fileName: string
+ *  ext: string
+ *  filePath: string
+ *  name?: string
+ *  namespace?: string
+ *  path?: string
+ *  method?: string
+ *  update?: string
+ *  ignore?: boolean
+ *  savePath?: string
+ * }} fileInfo
+ * @returns
+ */
+function copyRequest(fileInfo) {
+  return [
+    `/** ${fileInfo.name} */`,
+    `export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
+    `  return $api`,
+    `    .request< ${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
+    `      method: ${fileInfo.method},`,
+    `      ...options,`,
+    `    })`,
+    `    .then((res) => res.content || {})`,
+    `}`,
+  ]
+}
+
+module.exports = {
+  // ...
+  copyRequest,
+}
+```
+
 ## 源代码相关
 
 开发预览调试：在 vscode 中按下 <kbd>F5</kbd> 即可。
@@ -53,3 +154,4 @@
 
 - 支持 swagger v2 API
 - 支持 openapi 3.0.0 (1.1.4 新增)
+- 请不要对模板处理函数的参数直接进行赋值操作，这可能产生破坏性影响。

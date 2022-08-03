@@ -1,6 +1,7 @@
 import vscode from 'vscode'
+import path from 'path'
 
-import { log, localize } from '../tools'
+import { log, localize, templateConfig } from '../tools'
 
 import { ViewLocal, LocalItem } from '../views/local.view'
 import { ViewList } from '../views/list.view'
@@ -11,7 +12,9 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
     refresh: () => viewLocal.refresh(),
 
     /** 更新本地接口 */
-    async updateInterface(item: LocalItem & FileHeaderInfo & { path?: string }) {
+    async updateInterface(
+      item: LocalItem & FileHeaderInfo & { path: string; options?: any; savePath?: string; title?: string }
+    ) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
@@ -24,13 +27,12 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         }
       )
 
-      let fileInfo: FileHeaderInfo & { title?: string } = item
+      let fileInfo = item
       let isMenuAction = false
 
-      if (!item.namespace) {
+      if (!item.fileName) {
         isMenuAction = true
         if (item.options) {
-          // @ts-ignore
           fileInfo = item.options
         }
 
@@ -41,18 +43,22 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
         }
       }
 
-      if (!fileInfo || !fileInfo.namespace) {
+      if (!fileInfo || !fileInfo.fileName) {
         return log.error('<updateInterface> fileInfo error.', isMenuAction)
       }
 
-      const swaggerItem = viewList.interFacePathNameMap.get(fileInfo.namespace) as unknown as TreeInterface
+      const fileName = path.basename(fileInfo.fileName, '.d.ts')
+
+      const swaggerItem = viewList.getInterFacePathNameMap(fileName, fileInfo.savePath) as unknown as TreeInterface
+
+      console.log(fileName, swaggerItem)
 
       if (!swaggerItem) {
         return log.error('<updateInterface> swaggerItem is undefined.', isMenuAction)
       }
 
       viewList
-        .saveInterface(swaggerItem, fileInfo.filePath)
+        .saveInterface(swaggerItem, item.path)
         .then((res) => {
           if (res === 'no-change') {
             return log.info(
@@ -61,7 +67,8 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
             )
           }
 
-          viewLocal.updateSingle(fileInfo.filePath)
+          viewLocal.updateSingle(item.path)
+
           log.info(
             `${localize.getLocalize('command.local.updateInterface')} <${
               fileInfo.name || fileInfo.title
@@ -101,6 +108,31 @@ export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) 
             viewLocal.updateAll()
           }
         })
+    },
+
+    /** 复制请求代码 */
+    copyRequest(e: any) {
+      const filePath = e.path || e.options.filePath
+      const fileInfo = viewLocal.readLocalFile(filePath)
+
+      if (!fileInfo) {
+        return log.error('<copyRequest> fileInfo error.', true)
+      }
+
+      if (templateConfig.copyRequest) {
+        const str = templateConfig.copyRequest(fileInfo)
+        if (typeof str === 'string') {
+          vscode.env.clipboard.writeText(str)
+        } else {
+          vscode.env.clipboard.writeText(str.join('\n'))
+        }
+        log.info(
+          `${localize.getLocalize('command.local.copyRequest')}${localize.getLocalize('success')} <${fileInfo.name}>`,
+          true
+        )
+      } else {
+        log.error('<copyRequest> copyRequest is undefined.', true)
+      }
     },
   }
 

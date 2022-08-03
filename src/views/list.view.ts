@@ -40,10 +40,10 @@ interface ExtListItemConfig {
 export class ViewList extends BaseTreeProvider<ListItem> {
   /** Swagger JSON */
   public swaggerJsonMap: SwaggerJsonMap = new Map()
-  public interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
+  private interFacePathNameMap = new Map<string, SwaggerJsonTreeItem>()
   /** 接口更新时间 */
   public updateDate: string = formatDate(new Date(), 'H:I:S')
-  public localPath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
+  public globalSavePath = path.resolve(WORKSPACE_PATH || '', config.extConfig.savePath)
 
   constructor() {
     super()
@@ -219,7 +219,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     data.forEach((v) => {
       if (v.type === 'interface') {
         if (v.pathName) {
-          this.interFacePathNameMap.set(v.pathName, v)
+          this.setInterFacePathNameMap(v.pathName, v.savePath, v)
         }
         arr.push({
           label: v.title,
@@ -239,6 +239,14 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     })
 
     return arr
+  }
+
+  setInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath, item: SwaggerJsonTreeItem) {
+    this.interFacePathNameMap.set(`${savePath}/${pathName}`, item)
+  }
+
+  getInterFacePathNameMap(pathName: string, savePath: string = config.extConfig.savePath) {
+    return this.interFacePathNameMap.get(`${savePath}/${pathName}`)
   }
 
   /** 获取父级元素 */
@@ -279,7 +287,9 @@ export class ViewList extends BaseTreeProvider<ListItem> {
     const { compareChanges } = config.extConfig
     if (!item.pathName) return Promise.reject('SaveInterface Error')
 
-    const filePathH = filePath ?? path.join(this.localPath, `${item.pathName}.d.ts`)
+    const savePath = item.savePath ? path.resolve(WORKSPACE_PATH || '', item.savePath) : this.globalSavePath
+
+    const filePathH = filePath ?? path.join(savePath, `${item.pathName}.d.ts`)
     const nextStr = renderToInterface(item)
 
     if (compareChanges && fs.existsSync(filePathH)) {
@@ -328,7 +338,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
   /** settings.json 文件变更时触发 */
   public onConfigurationRefresh() {
     const { savePath } = config.extConfig
-    this.localPath = path.resolve(WORKSPACE_PATH || '', savePath)
+    this.globalSavePath = path.resolve(WORKSPACE_PATH || '', savePath)
     this.refresh()
   }
 }

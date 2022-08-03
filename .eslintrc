@@ -5,7 +5,8 @@
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "extends": ["prettier", "plugin:prettier/recommended"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "ignorePatterns": ["out", "dist", "**/*.d.ts"],
 
   "rules": {

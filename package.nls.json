@@ -17,7 +17,8 @@
   "command.openLink": "Open in browser",
   "command.saveInterface": "Save interface",
   "command.local.updateInterface": "Update interface",
-  "command.local.copyRequest": "Copy request function",
+  "command.local.copyRequest": "Copy request code",
+  "command.template.edit": "Edit build template",
 
   "text.search.placeholder": "Please enter keywords",
   "text.title": "Title",
@@ -39,6 +40,8 @@
   "text.noChange": "Interfaces no change",
   "text.preview": "Previewing",
   "text.clickToSave": "Click to save",
+  "text.canBeEmpty": "Can be empty",
+  "text.exist": "${1} already exists",
 
   "success": "Success",
   "failed": "Failed",

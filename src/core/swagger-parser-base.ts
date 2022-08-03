@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types'
-import { randomId, SwaggerJsonUrlItem, toCamel, isDef } from '../tools'
+import { randomId, SwaggerJsonUrlItem, toCamel, config, isDef } from '../tools'
 
 export abstract class BaseParser {
   public tagsMap = {}
@@ -25,6 +25,7 @@ export abstract class BaseParser {
       parentKey: this.configItem.url,
       title: item.name,
       subTitle: item.description || '',
+      savePath: this.configItem.savePath || config.extConfig.savePath,
       type: 'group',
     }
 
@@ -35,6 +36,10 @@ export abstract class BaseParser {
 
   /** 添加分组内元素 */
   pushGroupItem(tags: string[], itemRes: SwaggerJsonTreeItem) {
+    if (!itemRes.savePath) {
+      itemRes.savePath = this.configItem.savePath || config.extConfig.savePath
+    }
+
     if (tags && tags.length) {
       tags.forEach((tagStr: string) => {
         let tagIndex = this.tagsMap[tagStr]

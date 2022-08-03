@@ -93,3 +93,31 @@ export function setValueByPath<T = any>(obj: any, path: string, value: any): voi
 export function isDef<T>(val: T): val is NonNullable<T> {
   return val !== undefined && val !== null
 }
+
+/**
+ * 删除指定值的属性
+ * @param obj
+ * @param v
+ * @returns
+ */
+export function deleteProperty<T>(obj: T, v: any): T {
+  const res = {} as T
+  const isArray = Array.isArray(v)
+  for (const key in obj) {
+    if (isArray) {
+      if (!v.includes(obj[key])) res[key as string] = obj[key]
+    } else {
+      if (obj[key] !== v) res[key as string] = obj[key]
+    }
+  }
+  return res
+}
+
+/**
+ * 删除对象中空值字段
+ * @param obj
+ * @returns
+ */
+export function deleteEmptyProperty<T>(obj: T) {
+  return deleteProperty(obj, [undefined, null, ''])
+}

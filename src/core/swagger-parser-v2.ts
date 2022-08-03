@@ -1,6 +1,6 @@
 import { OpenAPIV2 } from 'openapi-types'
 
-import { toCamel, randomId, SwaggerJsonUrlItem, log, getValueByPath } from '../tools'
+import { toCamel, randomId, SwaggerJsonUrlItem, log, getValueByPath, config } from '../tools'
 
 export function parseSwaggerJson(
   swaggerJson: OpenAPIV2.Document,
@@ -17,6 +17,7 @@ export function parseSwaggerJson(
       parentKey: configItem.url,
       title: item.name,
       subTitle: item.description || '',
+      savePath: configItem.savePath || config.extConfig.savePath,
       type: 'group',
     }
 
@@ -63,9 +64,6 @@ export function parseSwaggerJson(
           })
         }
 
-        if (paramsBody.name === 'awardsIds') {
-          console.log(paramsSource)
-        }
         if (paramsSource && paramsSource.properties) {
           const { properties } = paramsSource
           for (const name in properties) {
@@ -113,6 +111,7 @@ export function parseSwaggerJson(
       path,
       pathName,
       fileName,
+      savePath: configItem.savePath || config.extConfig.savePath,
       ...item,
     }
 
