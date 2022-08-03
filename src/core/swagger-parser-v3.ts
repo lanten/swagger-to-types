@@ -62,7 +62,6 @@ export class OpenAPIV3Parser extends BaseParser {
     }
 
     const response = this.parseResponse(responses)
-    console.log({ description, response, responses })
 
     const itemRes: SwaggerJsonTreeItem = {
       groupName: this.configItem.title,
