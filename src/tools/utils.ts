@@ -89,3 +89,7 @@ export function setValueByPath<T = any>(obj: any, path: string, value: any): voi
     }
   }
 }
+
+export function isDef<T>(val: T): val is NonNullable<T> {
+  return val !== undefined && val !== null
+}

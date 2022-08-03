@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types'
-import { randomId, SwaggerJsonUrlItem, toCamel } from '../tools'
+import { randomId, SwaggerJsonUrlItem, toCamel, isDef } from '../tools'
 
 export abstract class BaseParser {
   public tagsMap = {}
@@ -29,6 +29,8 @@ export abstract class BaseParser {
     }
 
     this.result.push(tagItem)
+
+    return itemIndex
   }
 
   /** 添加分组内元素 */
@@ -37,8 +39,9 @@ export abstract class BaseParser {
       tags.forEach((tagStr: string) => {
         let tagIndex = this.tagsMap[tagStr]
         if (tagIndex === undefined) {
-          tagIndex = this.tagsMap['未知分组']
-          if (!tagIndex) {
+          // tagIndex = this.tagsMap['未知分组']
+          tagIndex = this.addGroup({ name: tagStr, description: '' })
+          if (!isDef(tagIndex)) {
             this.addGroup({ name: '未知分组', description: '分组ID在TAG表中未找到 (无效 Tag)' })
             tagIndex = this.tagsMap['未知分组']
           }
