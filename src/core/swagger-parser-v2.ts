@@ -9,6 +9,8 @@ export function parseSwaggerJson(
   const { tags, paths, definitions } = swaggerJson
   const res: SwaggerJsonTreeItem[] = []
 
+  // console.log(swaggerJson)
+
   function addTag(item: { name: string; description?: string }) {
     const itemIndex = res.length
     tagsMap[item.name] = itemIndex
@@ -57,7 +59,7 @@ export function parseSwaggerJson(
         const paramsSource = paramsBody.schema && getSwaggerJsonRef(paramsBody.schema, definitions)
 
         if (paramsBody?.schema?.type && !paramsSource?.properties?.length) {
-          paramsSource.properties?.push({
+          paramsSource?.properties?.push({
             name: '____body_root_param____', // TAG 根级参数处理
             description: paramsBody.description,
             ...paramsBody.schema,
@@ -142,11 +144,17 @@ export function parseSwaggerJson(
     // return itemRes
   }
 
-  for (const path in paths) {
-    const pathItem = paths[path]
-    const pathItemKeys = Object.keys(pathItem)
+  try {
+    for (const path in paths) {
+      const pathItem = paths[path]
+      const pathItemKeys = Object.keys(pathItem)
 
-    pathItemKeys.forEach((method) => parseMethodItem(path, pathItem as any, method, pathItemKeys.length > 1))
+      pathItemKeys.forEach((method) => {
+        parseMethodItem(path, pathItem as any, method, pathItemKeys.length > 1)
+      })
+    }
+  } catch (error) {
+    log.error(error, true)
   }
 
   return res
@@ -176,11 +184,11 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
   }
 
   if (!refData) {
-    log.error(JSON.stringify({ res: refData, originalRef }, undefined, 2), true)
+    log.error('getSwaggerJsonRef Error:' + JSON.stringify({ res: refData, originalRef, schema }, undefined, 2), true)
   }
 
   const propertiesList: TreeInterfacePropertiesItem[] = []
-  const { properties, required = [] } = refData
+  const { properties, required = [] } = refData || {}
 
   if (properties) {
     for (const key in properties) {
