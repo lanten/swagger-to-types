@@ -4,9 +4,11 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [TODO]
+## [1.2.4]
 
-- none
+#### Fix
+
+- 修复本地接口列表更新功能错误
 
 ## [1.2.2] 2022-08-03
 

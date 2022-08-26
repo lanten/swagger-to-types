@@ -31,6 +31,10 @@
 
 - 搜索接口列表: <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>F</kbd>
 
+---
+
+以下为可选配置：
+
 ## 忽略一键更新
 
 在 `.d.ts` 文件头部注释中添加 `@ignore` 标识, 可以在一键更新本地接口时忽略当前文件.
@@ -47,6 +51,8 @@
 
 ## Interface 模板
 
+用于在某些特殊场景下定制产出的内容格式。
+
 | 方法名       | 参数                                       | 返回值             |
 | ------------ | ------------------------------------------ | ------------------ |
 | namespace    | TreeInterface                              | string             |
@@ -56,9 +62,9 @@
 | responseItem | TreeInterfacePropertiesItem, TreeInterface | string             |
 | copyRequest  | FileHeaderInfo                             | string \| string[] |
 
-详细类型参考 [TemplateBaseType](../src/tools/get-templates.ts#L17)
+详细类型参考 [TemplateBaseType](src/tools/get-templates.ts#L11)
 
-#### 添加分组前缀
+#### 示例: 添加分组前缀
 
 编辑 `.vscode/swagger-to-types.template.js` 文件
 
@@ -70,7 +76,7 @@ function namespace(params) {
 module.exports = { namespace }
 ```
 
-#### 将字段名转化为大驼峰
+#### 示例: 将字段名转化为大驼峰
 
 编辑 `.vscode/swagger-to-types.template.js` 文件
 
@@ -95,6 +101,8 @@ module.exports = { paramsItem }
 ```
 
 ## 复制请求函数
+
+配置一个请求函数模板用于快速复制
 
 编辑 `.vscode/swagger-to-types.template.js` 文件
 
@@ -131,7 +139,7 @@ function copyRequest(fileInfo) {
     `/** ${fileInfo.name} */`,
     `export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
     `  return $api`,
-    `    .request< ${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
+    `    .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
     `      method: ${fileInfo.method},`,
     `      ...options,`,
     `    })`,
