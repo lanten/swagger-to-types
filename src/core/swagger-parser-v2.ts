@@ -176,15 +176,21 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
     if (item$ref) $ref = item$ref
   }
 
+  let refPath = ''
+
   if (originalRef && definitions) {
-    refData = definitions[originalRef]
+    refPath = originalRef?.trim().replace(/�/g, '')
+    refData = definitions[refPath]
   } else if ($ref) {
-    const refPath = $ref.replace('#/definitions/', '').replace('/', '.')
+    refPath = $ref.trim().replace('#/definitions/', '').replace('/', '.').replace(/�/g, '')
     refData = getValueByPath(definitions, refPath)
   }
 
   if (!refData) {
-    log.error('getSwaggerJsonRef Error:' + JSON.stringify({ res: refData, originalRef, schema }, undefined, 2), true)
+    log.error(
+      'getSwaggerJsonRef Error:' + JSON.stringify({ res: refData, originalRef, schema, refPath }, undefined, 2),
+      true
+    )
   }
 
   const propertiesList: TreeInterfacePropertiesItem[] = []
