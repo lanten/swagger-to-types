@@ -179,10 +179,10 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
   let refPath = ''
 
   if (originalRef && definitions) {
-    refPath = originalRef?.trim().replace(/�/g, '')
+    refPath = originalRef?.trim()
     refData = definitions[refPath]
   } else if ($ref) {
-    refPath = $ref.trim().replace('#/definitions/', '').replace('/', '.').replace(/�/g, '')
+    refPath = $ref.trim().replace('#/definitions/', '').replace('/', '.')
     refData = getValueByPath(definitions, refPath)
   }
 

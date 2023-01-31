@@ -10,10 +10,13 @@ import {
   registerTemplateCommands,
 } from './commands'
 
-const viewList = new ViewList()
-const viewLocal = new ViewLocal(viewList)
+let viewList: ViewList
+let viewLocal: ViewLocal
 
 export function activate(ctx: vscode.ExtensionContext) {
+  viewList = new ViewList()
+  viewLocal = new ViewLocal(viewList)
+
   const { reloadWhenSettingsChanged } = config.extConfig
   // global.ctx = ctx
 
@@ -38,7 +41,7 @@ export function activate(ctx: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-  viewLocal.destroy()
+  viewLocal?.destroy()
 
   log.info('Extension deactivated.')
 }

@@ -45,6 +45,8 @@ export function requestJson(url: string): Promise<OpenAPI.Document & DocumentCom
         },
       },
       (res) => {
+        res.setEncoding('utf-8') // 解决中文乱码
+
         let dataStr = ''
         res.on('data', (data: Buffer) => {
           dataStr += data.toString()
