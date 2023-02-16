@@ -6,7 +6,7 @@
   "icon": "assets/app-icon.png",
   "publisher": "lanten",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.61.0"
   },
   "main": "./out/src/main.js",
   "keywords": [
