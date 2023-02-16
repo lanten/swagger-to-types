@@ -6,9 +6,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.2.6]
 
+#### Fix
+
 - 中文乱码问题
+- v3 api responses 解析异常问题
 
 ## [1.2.5]
+
+#### Fix
 
 - swagger ref `�` 乱码问题
 

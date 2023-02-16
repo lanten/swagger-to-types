@@ -149,8 +149,19 @@ export class OpenAPIV3Parser extends BaseParser {
   }
 
   getResponseData(responses: OpenAPIV3.ResponsesObject, key?: string): OpenAPIV3.MediaTypeObject | void {
-    const responseData = responses[key || 'default'] as OpenAPIV3.ResponseObject
+    let responseData = responses[key || 'default'] as OpenAPIV3.ResponseObject
     let res: OpenAPIV3.MediaTypeObject | void
+
+    // 如果没有指定 key 或 default，取第一个 content 不为空的值
+    if (!responseData) {
+      for (const k in responses) {
+        const v = responses[k] as OpenAPIV3.ResponseObject
+        if (v?.content) {
+          responseData = v
+          break
+        }
+      }
+    }
 
     if (responseData) {
       // WARN: 永远只取首位键值对，通常为：application/json，其它情况忽略
