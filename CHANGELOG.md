@@ -4,6 +4,10 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.7]
+
+- 更改接口标题优先级
+
 ## [1.2.6]
 
 #### Fix
