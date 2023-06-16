@@ -229,7 +229,7 @@ export function handleType(type?: string): string {
 }
 
 /**
- * 将枚举类型解析为联合
+ * 将枚举类型解析为元组
  * @param name
  * @param enumArr
  * @param indentation
