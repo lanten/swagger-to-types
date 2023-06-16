@@ -2,7 +2,7 @@
 
 将 Swagger JSON 导出为 Typescript interface
 
-每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`, `Response`, 和一些额外 `interface`.
+每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`, `Response`, 每一个DTO都能生成独立的 `interface`.
 
 ## 预览
 
