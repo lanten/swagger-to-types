@@ -57,7 +57,7 @@ export class BaseTreeProvider<T> implements vscode.TreeDataProvider<T> {
   public readonly workspaceRoot = WORKSPACE_PATH || ''
 
   getTreeItem(element: T): vscode.TreeItem {
-    return element
+    return element as vscode.TreeItem
   }
 
   getChildren(): Thenable<T[]> {
