@@ -4,6 +4,10 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [TODO]
+
+- [ ] 更新接口时，本地文件读取 LF/CRLF 问题
+
 ## [1.2.7]
 
 - 更改接口标题优先级
