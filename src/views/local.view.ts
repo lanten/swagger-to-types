@@ -115,7 +115,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
         ext: fileName.replace(/^.+\.(.+)$/, '$1'),
       }
 
-      headerStr.replace(/\*\s*@([^\s]+)[^\S\n]*([^\n]*?)\n/g, (_, key, value) => {
+      headerStr.replace(/\*\s*@([^\s]+)[^\S\n]*([^\n]*?)\r?\n/g, (_, key, value) => {
         headerInfo[key] = value || true
         return ''
       })

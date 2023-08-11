@@ -221,7 +221,7 @@ export function handleType(type?: string): string {
       return 'any // BUG: Type Error (ref)'
 
     case 'object':
-      return 'Record<string, any>'
+      return 'any'
 
     default:
       return type || 'any'

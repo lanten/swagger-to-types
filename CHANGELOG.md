@@ -6,7 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
-- [ ] 更新接口时，本地文件读取 LF/CRLF 问题
+## [1.2.8] 2023-08-11
+
+- 更新接口时，本地文件读取 LF/CRLF 问题
+- 默认 object 从 Record<string, any> 替换为 any
 
 ## [1.2.7]
 
