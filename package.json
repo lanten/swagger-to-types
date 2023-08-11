@@ -256,7 +256,7 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "rm -rf ./out && tsc -p ./",
+    "compile": "bash build.sh",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js"
