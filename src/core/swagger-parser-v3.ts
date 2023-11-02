@@ -150,7 +150,7 @@ export class OpenAPIV3Parser extends BaseParser {
 
   getResponseData(responses: OpenAPIV3.ResponsesObject, key?: string): OpenAPIV3.MediaTypeObject | void {
     let responseData = responses[key || 'default'] as OpenAPIV3.ResponseObject
-    let res: OpenAPIV3.MediaTypeObject | void
+    let res: OpenAPIV3.MediaTypeObject | void = undefined
 
     // 如果没有指定 key 或 default，取第一个 content 不为空的值
     if (!responseData) {
