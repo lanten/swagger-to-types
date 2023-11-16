@@ -8,6 +8,9 @@
 
 ![img](./assets/images/preview.png)
 
+## ⚠️⚠️⚠️ 注意 ⚠️⚠️⚠️
+请确保所在项目的 `package.json` 中没有 `"type": "module",` 字段，否则插件无法正常工作。
+
 ## Config
 
 | 名称 | 说明 | 类型 | 默认 |
