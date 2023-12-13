@@ -1,13 +1,10 @@
 {
   "app.title": "Swagger API",
   "app.category": "Swagger API",
-
   "view.list.title": "Swagger 接口列表",
   "view.local.title": "本地接口列表",
-
   "viewsWelcome.emptyList": "[添加 Swagger API](command:cmd.list.add)\n[打开工作区设置](command:cmd.common.setting)\n",
   "viewsWelcome.emptyLocal": "本地接口列表为空",
-
   "command.list.refresh": "刷新远程接口列表",
   "command.local.refresh": "刷新本地接口列表",
   "command.add": "添加 API",
@@ -19,13 +16,13 @@
   "command.local.updateInterface": "更新接口",
   "command.local.copyRequest": "复制请求代码",
   "command.template.edit": "编辑生成模板",
-
   "text.search.placeholder": "请输入关键字",
   "text.title": "标题",
   "text.swaggerJsonUrl": "Swagger Json Url",
   "text.noWorkspace": "需要工作区",
   "text.or": "或",
   "text.config.swaggerJsonUrl": "Swagger API 列表",
+  "text.config.swaggerJsonHeaders": "追加请求头 (全局)",
   "text.config.savePath": "Typescript 接口文件保存路径",
   "text.config.showStatusbarItem": "显示状态栏按钮",
   "text.config.compareChanges": "是否在更新接口时比对更改 (无更改不更新)",
@@ -42,14 +39,11 @@
   "text.clickToSave": "点击保存",
   "text.canBeEmpty": "可以为空",
   "text.exist": "${1}已存在",
-
   "success": "成功",
   "failed": "失败",
-
   "error.path": "错误的路径",
   "error.action": "操作失败, 详情请查看日志",
   "error.other": "未知错误",
-
   "temp.input.placeholder": "请输入 ${1}",
   "temp.input.none": "输入的 ${1} 不能为空"
 }

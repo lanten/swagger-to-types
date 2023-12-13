@@ -25,12 +25,16 @@ export interface SwaggerJsonUrlItem {
   basePath?: string
   /** `.d.ts` 文件保存路径 (独立) */
   savePath?: string
+  /** 追加请求头 */
+  headers?: Record<string, string>
 }
 
 /** vscode 配置项 */
 export interface CodeConfig {
   /** swagger 项目配置 */
   swaggerJsonUrl: SwaggerJsonUrlItem[]
+  /** 追加请求头 (全局) */
+  swaggerJsonHeaders?: Record<string, string>
   /** `.d.ts` 文件保存路径 (公共) */
   savePath: string
   /** 是否显示状态栏按钮 */

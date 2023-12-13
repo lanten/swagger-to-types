@@ -1,13 +1,10 @@
 {
   "app.title": "Swagger API",
   "app.category": "Swagger API",
-
   "view.list.title": "Swagger API List",
   "view.local.title": "Local API List",
-
   "viewsWelcome.emptyList": "[Add Swagger API](command:cmd.list.add)\n[Open Workspace Settings](command:cmd.common.setting)\n",
   "viewsWelcome.emptyLocal": "The local interface list is empty",
-
   "command.list.refresh": "Refresh the list of remote interfaces",
   "command.local.refresh": "Refresh the list of local interfaces",
   "command.add": "Add API",
@@ -19,13 +16,13 @@
   "command.local.updateInterface": "Update interface",
   "command.local.copyRequest": "Copy request code",
   "command.template.edit": "Edit build template",
-
   "text.search.placeholder": "Please enter keywords",
   "text.title": "Title",
   "text.swaggerJsonUrl": "Swagger Json Url",
   "text.noWorkspace": "Must be in the workspace",
   "text.or": "or",
   "text.config.swaggerJsonUrl": "Swagger API List",
+  "text.config.swaggerJsonHeaders": "Append Request Header (Global)",
   "text.config.savePath": "Typescript Interface Save Path",
   "text.config.showStatusbarItem": "Show statusbar button",
   "text.config.compareChanges": "Compare the changes when updating the interface (no changes will not update) ",
@@ -42,14 +39,11 @@
   "text.clickToSave": "Click to save",
   "text.canBeEmpty": "Can be empty",
   "text.exist": "${1} already exists",
-
   "success": "Success",
   "failed": "Failed",
-
   "error.path": "Wrong path",
   "error.action": "Operation failed, please check log for details",
   "error.other": "unknown error",
-
   "temp.input.placeholder": "Please enter ${1}",
   "temp.input.none": "The entered ${1} cannot be empty"
 }

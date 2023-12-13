@@ -103,7 +103,7 @@ export class ViewList extends BaseTreeProvider<ListItem> {
 
       if (this.swaggerJsonMap.has(item.url) && !update) return resolve(this.swaggerJsonMap)
 
-      getSwaggerJson(item.url)
+      getSwaggerJson(item)
         .then((res) => {
           this.updateDate = formatDate(new Date(), 'H:I:S')
           if (res.swagger) {

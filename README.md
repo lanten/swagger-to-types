@@ -2,13 +2,14 @@
 
 将 Swagger JSON 导出为 Typescript interface
 
-每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`, `Response`, 每一个DTO都能生成独立的 `interface`.
+每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`, `Response`, 每一个 DTO 都能生成独立的 `interface`.
 
 ## 预览
 
 ![img](./assets/images/preview.png)
 
 ## ⚠️⚠️⚠️ 注意 ⚠️⚠️⚠️
+
 请确保所在项目的 `package.json` 中没有 `"type": "module",` 字段，否则插件无法正常工作。
 
 ## Config
@@ -16,6 +17,7 @@
 | 名称 | 说明 | 类型 | 默认 |
 | --- | --- | --- | --- |
 | swaggerToTypes.swaggerJsonUrl | Swagger API 列表 | [SwaggerJsonUrlItem](#SwaggerJsonUrlItem)[] | [] |
+| swaggerToTypes.swaggerJsonHeaders | 追加请求头 (全局) | object | {} |
 | swaggerToTypes.savePath | `.d.ts` 接口文件保存路径 | string | 'types/swagger-interfaces' |
 | swaggerToTypes.showStatusbarItem | 显示状态栏按钮 | boolean | `true` |
 | swaggerToTypes.compareChanges | 是否在更新接口时比对更改 (无更改不更新) | boolean | `true` |
@@ -23,12 +25,13 @@
 
 ## SwaggerJsonUrlItem
 
-| 属性     | 说明                 | 类型   | 是否必填 |
-| -------- | -------------------- | ------ | -------- |
-| title    | 项目标题             | string | \*       |
-| url      | swagger json url     | string | \*       |
-| link     | 在浏览器打开外部链接 | string |          |
-| basePath | basePath             | string |          |
+| 属性     | 说明                               | 类型   | 是否必填 |
+| -------- | ---------------------------------- | ------ | -------- |
+| title    | 项目标题                           | string | \*       |
+| url      | swagger json url                   | string | \*       |
+| link     | 在浏览器打开外部链接               | string |          |
+| basePath | basePath                           | string |          |
+| headers  | 自定义请求头信息 (如鉴权 Token 等) | object |          |
 
 ## 快捷键
 

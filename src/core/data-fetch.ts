@@ -3,7 +3,7 @@ import http from 'http'
 import https from 'https'
 import { OpenAPI } from 'openapi-types'
 
-import { log, requireModule, WORKSPACE_PATH } from '../tools'
+import { log, config, requireModule, WORKSPACE_PATH, type SwaggerJsonUrlItem } from '../tools'
 
 interface DocumentCommom {
   swagger?: string
@@ -11,12 +11,12 @@ interface DocumentCommom {
 }
 
 /** 获取 Swagger JSON 数据 */
-export async function getSwaggerJson(url: string) {
-  if (/^https?:\/\//.test(url)) {
-    return requestJson(url)
+export async function getSwaggerJson(item: SwaggerJsonUrlItem) {
+  if (/^https?:\/\//.test(item.url)) {
+    return requestJson(item)
   } else {
     try {
-      const res = requireModule(path.join(WORKSPACE_PATH || '', url))
+      const res = requireModule(path.join(WORKSPACE_PATH || '', item.url))
       return Promise.resolve(res)
     } catch (err) {
       log.error(err, true)
@@ -26,7 +26,7 @@ export async function getSwaggerJson(url: string) {
 }
 
 /** 发起请求 */
-export function requestJson(url: string): Promise<OpenAPI.Document & DocumentCommom> {
+export function requestJson({ url, headers = {} }: SwaggerJsonUrlItem): Promise<OpenAPI.Document & DocumentCommom> {
   return new Promise((resolve, reject) => {
     let TM: NodeJS.Timeout
     const request = /^https/.test(url) ? https.request : http.request
@@ -42,6 +42,8 @@ export function requestJson(url: string): Promise<OpenAPI.Document & DocumentCom
           Accept: '*/*',
           'Accept-Encoding': 'utf-8',
           'Content-Type': 'application/x-www-form-urlencoded',
+          ...config.extConfig.swaggerJsonHeaders,
+          ...headers,
         },
       },
       (res) => {

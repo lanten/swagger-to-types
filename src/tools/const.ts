@@ -9,12 +9,13 @@ export const WORKSPACE_PATH = workspaceFolders ? workspaceFolders[0].uri.fsPath.
 /** 插件设置 */
 export const CONFIG_LIST = <const>[
   'swaggerJsonUrl',
+  'swaggerJsonHeaders',
   'savePath',
   'compareChanges',
   'showStatusbarItem',
   'reloadWhenSettingsChanged',
 ]
-export type ExtConfigItem = typeof CONFIG_LIST[number]
+export type ExtConfigItem = (typeof CONFIG_LIST)[number]
 
 /** 插件名称 */
 export const EXT_NAME = packageJson.name

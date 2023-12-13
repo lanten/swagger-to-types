@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.9] 2023-12-11
+
+- 支持自定义请求头，可用于配置鉴权信息
+
 ## [1.2.8] 2023-08-11
 
 - 更新接口时，本地文件读取 LF/CRLF 问题
