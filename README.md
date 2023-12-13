@@ -8,10 +8,6 @@
 
 ![img](./assets/images/preview.png)
 
-## ⚠️⚠️⚠️ 注意 ⚠️⚠️⚠️
-
-请确保所在项目的 `package.json` 中没有 `"type": "module",` 字段，否则插件无法正常工作。
-
 ## Config
 
 | 名称 | 说明 | 类型 | 默认 |
@@ -72,7 +68,9 @@
 
 #### 示例: 添加分组前缀
 
-编辑 `.vscode/swagger-to-types.template.js` 文件
+编辑 `.vscode/swagger-to-types.template.cjs` 文件。
+
+> ⚠️⚠️⚠️ 注意: 若所在项目的 `package.json` 存在 `"type": "module",` 字段，模板配置文件必须为 `.cjs` 后缀，否则插件无法正常工作。
 
 ```js
 function namespace(params) {

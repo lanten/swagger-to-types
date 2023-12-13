@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.10] 2023-12-11
+
+- 支持 cjs 格式模板文件读取
+
 ## [1.2.9] 2023-12-11
 
 - 支持自定义请求头，可用于配置鉴权信息

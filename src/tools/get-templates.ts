@@ -19,10 +19,9 @@ export interface TemplateBaseType {
 
 export let templateConfig: TemplateBaseType = {}
 
-const workspaceConfigPath = path.join(WORKSPACE_PATH || '', '.vscode', TEMPLATE_FILE_NAME)
-
 /** 获取工作区模板配置 */
 export function getWorkspaceTemplateConfig(): TemplateBaseType {
+  const workspaceConfigPath = getWorkspaceTemplatePath()
   if (fs.existsSync(workspaceConfigPath)) {
     templateConfig = requireModule(workspaceConfigPath)
   }
@@ -36,11 +35,14 @@ export function getWorkspaceTemplateConfig(): TemplateBaseType {
   return templateConfig
 }
 
-getWorkspaceTemplateConfig()
+export function getWorkspaceTemplatePath() {
+  const workspaceConfigFileName = path.join(WORKSPACE_PATH || '', '.vscode', TEMPLATE_FILE_NAME)
 
-/** 监听文件保存 */
-vscode.workspace.onDidSaveTextDocument(({ languageId, fileName }) => {
-  // 过滤非 TS 语言文件
-  if (languageId !== 'javascript' && fileName !== workspaceConfigPath) return
-  getWorkspaceTemplateConfig()
-})
+  if (fs.existsSync(`${workspaceConfigFileName}.js`)) {
+    return `${workspaceConfigFileName}.js`
+  } else {
+    return `${workspaceConfigFileName}.cjs`
+  }
+}
+
+getWorkspaceTemplateConfig()

@@ -2,13 +2,21 @@ import fs from 'fs'
 import path from 'path'
 import vscode from 'vscode'
 
-import { WORKSPACE_PATH, TEMPLATE_FILE_NAME, DEFAULT_TEMPLATE_FILE_PATH, mkdirRecursive, log, localize } from '../tools'
+import {
+  WORKSPACE_PATH,
+  TEMPLATE_FILE_NAME,
+  DEFAULT_TEMPLATE_FILE_PATH,
+  mkdirRecursive,
+  log,
+  localize,
+  getWorkspaceTemplatePath,
+} from '../tools'
 
 export function registerTemplateCommands() {
   const commands = {
     edit() {
       const vscodeConfigFolderPath = path.join(WORKSPACE_PATH || '', '.vscode')
-      const workspaceConfigPath = path.join(vscodeConfigFolderPath, TEMPLATE_FILE_NAME)
+      const workspaceConfigPath = getWorkspaceTemplatePath()
 
       if (!fs.existsSync(vscodeConfigFolderPath)) {
         try {
