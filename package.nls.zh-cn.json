@@ -27,6 +27,7 @@
   "text.config.showStatusbarItem": "显示状态栏按钮",
   "text.config.compareChanges": "是否在更新接口时比对更改 (无更改不更新)",
   "text.config.reloadWhenSettingsChanged": "当用户设置更改时重新加载数据. (在某些频繁刷新设置的情况下需要关闭)",
+  "text.config.addBasePathToNamespaceName": "将 basePath 添加到命名空间名称中 (如果存在)",
   "text.confirmDeleteFile": "确认删除文件?",
   "text.confirm": "确认",
   "text.cancel": "取消",

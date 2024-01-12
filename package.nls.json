@@ -27,6 +27,7 @@
   "text.config.showStatusbarItem": "Show statusbar button",
   "text.config.compareChanges": "Compare the changes when updating the interface (no changes will not update) ",
   "text.config.reloadWhenSettingsChanged": "Reload the data when the user settings are changed. (It needs to be closed in some cases where the settings are frequently refreshed)",
+  "text.config.addBasePathToNamespaceName": "Add basePath to namespace name (if exists)",
   "text.confirmDeleteFile": "Are you sure to delete the file?",
   "text.confirm": "Confirm",
   "text.cancel": "Cancel",
