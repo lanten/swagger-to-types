@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.11] 2023-12-11
+
+#### Fix
+
+- 修复获取用户语言异常导致插件加载失败问题
+
 ## [1.2.10] 2023-12-11
 
 - 支持 cjs 格式模板文件读取

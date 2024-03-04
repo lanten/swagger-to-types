@@ -3,21 +3,35 @@ import zhCN from '../../package.nls.zh-cn.json'
 
 const langs = {
   en,
+  'en-us': en,
   'zh-cn': zhCN,
 }
 
 class Localize {
-  public locale: string
-  public localize: any
+  public readonly userLang: string
+  public readonly localizeMap: Record<string, string> = {}
 
   constructor() {
-    this.locale = ''
-    this.localize = {}
+    this.userLang = this.getUserLang()
+
+    if (this.userLang) {
+      this.localizeMap = langs[this.userLang] || langs['en-us']
+    }
   }
 
-  init({ locale }: { locale: string }) {
-    this.locale = locale
-    this.localize = langs[locale]
+  private getUserLang(): string {
+    let langEnvObj: {
+      locale?: string
+      osLocale?: string
+    }
+
+    try {
+      langEnvObj = JSON.parse(process.env.VSCODE_NLS_CONFIG || '{}')
+    } catch (error) {
+      langEnvObj = {}
+    }
+
+    return langEnvObj?.locale || 'en-us'
   }
 
   /**
@@ -25,8 +39,8 @@ class Localize {
    * @param key
    * @param params
    */
-  getLocalize(key: string, ...params: string[]): string {
-    let res = this.localize[key] || key
+  public getLocalize(key: string, ...params: string[]): string {
+    let res = this.localizeMap[key] || key
     if (params.length) {
       params.forEach((val, i) => {
         res = res.replace(`\${${i + 1}}`, val)
@@ -38,5 +52,3 @@ class Localize {
 
 /** 多语言 */
 export const localize = new Localize()
-
-localize.init(JSON.parse(process.env.VSCODE_NLS_CONFIG || ''))
