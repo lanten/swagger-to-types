@@ -1,169 +1,171 @@
 # swagger-to-types README
 
-将 Swagger JSON 导出为 Typescript interface
+[中文说明](./README-zh-cn.md)
 
-每个接口生成一个 `namespace` (用于分组,避免重名), 包含 `Params`, `Response`, 每一个 DTO 都能生成独立的 `interface`.
+Export Swagger JSON to Typescript interface
 
-## 预览
+Each interface generates a `namespace` (for grouping and avoiding duplicate names), including `Params`, `Response`, and each DTO can generate an independent `interface`.
+
+## Preview
 
 ![img](./assets/images/preview.png)
 
 ## Config
 
-| 名称 | 说明 | 类型 | 默认 |
+| Name | Description | Type | Default |
 | --- | --- | --- | --- |
-| swaggerToTypes.swaggerJsonUrl | Swagger API 列表 | [SwaggerJsonUrlItem](#SwaggerJsonUrlItem)[] | [] |
-| swaggerToTypes.swaggerJsonHeaders | 追加请求头 (全局) | object | {} |
-| swaggerToTypes.savePath | `.d.ts` 接口文件保存路径 | string | 'types/swagger-interfaces' |
-| swaggerToTypes.showStatusbarItem | 显示状态栏按钮 | boolean | `true` |
-| swaggerToTypes.compareChanges | 是否在更新接口时比对更改 (无更改不更新) | boolean | `true` |
-| swaggerToTypes.reloadWhenSettingsChanged | 当用户设置更改时重新加载数据. (在某些频繁刷新设置的情况下需要关闭) | boolean | `true` |
+| swaggerToTypes.swaggerJsonUrl | Swagger API list | [SwaggerJsonUrlItem](#SwaggerJsonUrlItem)[] | [] |
+| swaggerToTypes.swaggerJsonHeaders | Append request headers (global) | object | {} |
+| swaggerToTypes.savePath | `.d.ts` interface file save path | string | 'types/swagger-interfaces' |
+| swaggerToTypes.showStatusbarItem | Show status bar button | boolean | `true` |
+| swaggerToTypes.compareChanges | Whether to compare changes when updating the interface (no change, no update) | boolean | `true` |
+| swaggerToTypes.reloadWhenSettingsChanged | Reload data when user settings change. (Need to be turned off in some cases of frequent refresh settings) | boolean | `true` |
 
 ## SwaggerJsonUrlItem
 
-| 属性     | 说明                               | 类型   | 是否必填 |
+| Attribute | Description | Type | Required |
 | -------- | ---------------------------------- | ------ | -------- |
-| title    | 项目标题                           | string | \*       |
-| url      | swagger json url                   | string | \*       |
-| link     | 在浏览器打开外部链接               | string |          |
-| basePath | basePath                           | string |          |
-| headers  | 自定义请求头信息 (如鉴权 Token 等) | object |          |
+| title | Project title | string | \* |
+| url | swagger json url | string | \* |
+| link | Open external link in browser | string | |
+| basePath | basePath | string | |
+| headers | Custom request header information (such as authentication Token, etc.) | object | |
 
-## 快捷键
+## Shortcut keys
 
-- 搜索接口列表: <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>F</kbd>
+- Search interface list: <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>F</kbd>
 
 ---
 
-以下为可选配置：
+The following are optional configurations:
 
-## 忽略一键更新
+## Ignore one-click update
 
-在 `.d.ts` 文件头部注释中添加 `@ignore` 标识, 可以在一键更新本地接口时忽略当前文件.
+Add the `@ignore` tag to the header comment of the `.d.ts` file to ignore the current file when updating the local interface with one click.
 
 ```ts
 /**
- * @name   示例接口
- * @path   /demo/demo-api
- * @method POST
- * @update 10/19/2020, 11:22:53 AM
- * @ignore
- */
+* @name Example interface
+* @path /demo/demo-api
+* @method POST
+* @update 10/19/2020, 11:22:53 AM
+* @ignore
+*/
 ```
 
-## Interface 模板
+## Interface template
 
-用于在某些特殊场景下定制产出的内容格式。
+Used to customize the output content format in some special scenarios.
 
-| 方法名       | 参数                                       | 返回值             |
+| Method name | Parameters | Return value |
 | ------------ | ------------------------------------------ | ------------------ |
-| namespace    | TreeInterface                              | string             |
-| params       | TreeInterface                              | string             |
-| paramsItem   | TreeInterfacePropertiesItem, TreeInterface | string             |
-| response     | TreeInterface                              | string             |
-| responseItem | TreeInterfacePropertiesItem, TreeInterface | string             |
-| copyRequest  | FileHeaderInfo                             | string \| string[] |
+| namespace | TreeInterface | string |
+| params | TreeInterface | string |
+| paramsItem | TreeInterfacePropertiesItem, TreeInterface | string |
+| response | TreeInterface | string |
+| responseItem | TreeInterfacePropertiesItem, TreeInterface | string |
+| copyRequest | FileHeaderInfo | string \| string[] |
 
-详细类型参考 [TemplateBaseType](src/tools/get-templates.ts#L11)
+For detailed types, refer to [TemplateBaseType](src/tools/get-templates.ts#L11)
 
-#### 示例: 添加分组前缀
+#### Example: Add group prefix
 
-编辑 `.vscode/swagger-to-types.template.cjs` 文件。
+Edit the `.vscode/swagger-to-types.template.cjs` file.
 
-> ⚠️⚠️⚠️ 注意: 若所在项目的 `package.json` 存在 `"type": "module",` 字段，模板配置文件必须为 `.cjs` 后缀，否则插件无法正常工作。
+> ⚠️⚠️⚠️ Note: If the `package.json` of the project has the `"type": "module",` field, the template configuration file must have the `.cjs` suffix, otherwise the plugin will not work properly.
 
 ```js
 function namespace(params) {
-  return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
+return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
 }
 
 module.exports = { namespace }
 ```
 
-#### 示例: 将字段名转化为大驼峰
+#### Example: Convert field names to upper camel case
 
-编辑 `.vscode/swagger-to-types.template.js` 文件
+Edit `.vscode/swagger-to-types.template.js` file
 
 ```js
 /**
- * 首字母大写
- * @param {String} str
- */
+* Capitalize the first letter
+* @param {String} str
+*/
 function toUp(str) {
-  if (typeof str !== 'string') return ''
-  return str.slice(0, 1).toUpperCase() + str.slice(1)
+if (typeof str !== 'string') return ''
+return str.slice(0, 1).toUpperCase() + str.slice(1)
 }
 
 function paramsItem(item, params) {
-  // 项目标题(swaggerToTypes.swaggerJsonUrl[number].title) 为 demo-1 时忽略定制方案
-  if (params.groupName === 'demo-1') return
+// Project title (swaggerToTypes.swaggerJsonUrl[number].title) is demo-1 Ignore custom solutions when 
+if (params.groupName === 'demo-1') return
 
-  return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
+return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
 }
 
 module.exports = { paramsItem }
 ```
 
-## 复制请求函数
+## Copy request function
 
-配置一个请求函数模板用于快速复制
+Configure a request function template for quick copying
 
-编辑 `.vscode/swagger-to-types.template.js` 文件
+Edit the `.vscode/swagger-to-types.template.js` file
 
-如果导出了 `copyRequest` 函数，即可使用此功能
+If the `copyRequest` function is exported, this function can be used
 
-相关按钮将出现在这几个位置：
+Related buttons will appear in the following locations:
 
-- 本地接口列表操作按钮
-- `.d.ts` 文件 标题栏操作按钮
-- `.d.ts` 文件 代码行首文字按钮
+- Local interface list operation button
+- `.d.ts` file title bar operation button
+- `.d.ts` file code line first text button
 
-下面是一个例子：
+Here is an example:
 
 ```js
 /**
- * 请求函数模板
- *
- * @param {{
- *  fileName: string
- *  ext: string
- *  filePath: string
- *  name?: string
- *  namespace?: string
- *  path?: string
- *  method?: string
- *  update?: string
- *  ignore?: boolean
- *  savePath?: string
- * }} fileInfo
- * @returns
- */
+* Request function template
+*
+* @param {{
+* fileName: string
+* ext: string
+* filePath: string
+* name?: string
+* namespace?: string
+* path?: string
+* method?: string
+* update?: string
+* ignore?: boolean
+* savePath?: string
+* }} fileInfo
+* @returns
+*/
 function copyRequest(fileInfo) {
-  return [
-    `/** ${fileInfo.name} */`,
-    `export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
-    `  return $api`,
-    `    .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
-    `      method: ${fileInfo.method},`,
-    `      ...options,`,
-    `    })`,
-    `    .then((res) => res.content || {})`,
-    `}`,
-  ]
+return [
+`/** ${fileInfo.name} */`,
+`export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
+` return $api`,
+` .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
+` method: ${fileInfo.method},`,
+` ...options,`,
+` })`,
+` .then((res) => res.content || {})`,
+`}`,
+]
 }
 
 module.exports = {
-  // ...
-  copyRequest,
+// ...
+copyRequest,
 }
 ```
 
-## 源代码相关
+## Source code related
 
-开发预览调试：在 vscode 中按下 <kbd>F5</kbd> 即可。
+Development preview debugging: Press <kbd>F5</kbd> in vscode.
 
-## 注意
+## Note
 
-- 支持 swagger v2 API
-- 支持 openapi 3.0.0 (1.1.4 新增)
-- 请不要对模板处理函数的参数直接进行赋值操作，这可能产生破坏性影响。
+- Support swagger v2 API
+- Support openapi 3.0.0 (new in 1.1.4)
+- Please do not directly assign values to the parameters of the template processing function, which may have destructive effects.
