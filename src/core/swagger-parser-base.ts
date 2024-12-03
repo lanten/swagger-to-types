@@ -2,7 +2,7 @@ import { OpenAPIV3 } from 'openapi-types'
 import { randomId, SwaggerJsonUrlItem, toCamel, config, isDef } from '../tools'
 
 export abstract class BaseParser {
-  public tagsMap = {}
+  public tagsMap: any = {}
   public result: SwaggerJsonTreeItem[] = []
 
   constructor(public swaggerJson: OpenAPIV3.Document, public configItem: SwaggerJsonUrlItem) {

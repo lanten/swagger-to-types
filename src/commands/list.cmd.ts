@@ -200,6 +200,6 @@ export function registerListCommands({
   }
 
   for (const command in commands) {
-    vscode.commands.registerCommand(`cmd.list.${command}`, commands[command])
+    vscode.commands.registerCommand(`cmd.list.${command}`, (commands as any)[command])
   }
 }

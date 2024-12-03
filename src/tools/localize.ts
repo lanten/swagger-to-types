@@ -1,7 +1,7 @@
 import en from '../../package.nls.json'
 import zhCN from '../../package.nls.zh-cn.json'
 
-const langs = {
+const langs: Record<string, any> = {
   en,
   'en-us': en,
   'zh-cn': zhCN,

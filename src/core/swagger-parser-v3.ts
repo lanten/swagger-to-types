@@ -26,7 +26,7 @@ export class OpenAPIV3Parser extends BaseParser {
   parse() {
     const { paths } = this.swaggerJson
     for (const path in paths) {
-      const pathItem = paths[path]
+      const pathItem: any = paths[path]
       if (!pathItem) continue
       const pathItemKeys = Object.keys(pathItem)
       const multipleMethod = pathItemKeys.length > 1
@@ -150,7 +150,7 @@ export class OpenAPIV3Parser extends BaseParser {
 
   getResponseData(responses: OpenAPIV3.ResponsesObject, key?: string): OpenAPIV3.MediaTypeObject | void {
     let responseData = responses[key || 'default'] as OpenAPIV3.ResponseObject
-    let res: OpenAPIV3.MediaTypeObject | void = undefined
+    let res: OpenAPIV3.MediaTypeObject | undefined = undefined
 
     // 如果没有指定 key 或 default，取第一个 content 不为空的值
     if (!responseData) {
@@ -189,9 +189,10 @@ export class OpenAPIV3Parser extends BaseParser {
     }
 
     const responseBodySchema = this.dereferenceSchema(responseBodyContent.schema)
+
     if (!responseBodySchema) {
       log.warn('parseResponse: responseBodySchema is null.')
-      return void 0
+      return undefined
     }
 
     return this.parseSchemaObject(responseBodySchema, '')
@@ -309,7 +310,12 @@ export class OpenAPIV3Parser extends BaseParser {
   dereferenceSchema<T = OpenAPIV3.SchemaObject>(schema?: { $ref?: string } & Record<string, any>): T | undefined {
     if (!schema) return
     if (schema.$ref) {
-      const pathStr = schema.$ref.substring(1, schema.$ref.length)
+      let pathStr = schema.$ref
+
+      if (pathStr.startsWith('#')) {
+        pathStr = pathStr.substring(1, schema.$ref.length)
+      }
+
       return getValueByPath<T>(this.swaggerJson, pathStr)
     } else {
       return schema as T

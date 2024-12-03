@@ -16,7 +16,7 @@ export function toCamel(str: string, c?: boolean, s = '-'): string {
  * @param format 'YYYY-MM-DD HH:mm:ss.ms'
  */
 export function formatDate(date: Date = new Date(), format = 'YYYY-MM-DD HH:mm:ss.ms') {
-  const obj = {
+  const obj: any = {
     YYYY: date.getFullYear().toString().padStart(4, '0'),
     MM: (date.getMonth() + 1).toString().padStart(2, '0'),
     DD: date.getDate().toString().padStart(2, '0'),
@@ -51,7 +51,7 @@ export function randomId(t = 'id-xxxxx'): string {
 export function getValueByPath<T = any>(obj: any, path: string): T | undefined {
   if (!obj) return undefined
 
-  let tempObj = obj
+  let tempObj = { ...obj }
   let pathH = path.replace(/\[(\w+)\]/g, '.$1')
   pathH = pathH.replace(/^[\.|\/]/, '')
   const keyArr = pathH.split(/[\.|\/]/)
@@ -101,7 +101,7 @@ export function isDef<T>(val: T): val is NonNullable<T> {
  * @returns
  */
 export function deleteProperty<T>(obj: T, v: any): T {
-  const res = {} as T
+  const res = {} as any
   const isArray = Array.isArray(v)
   for (const key in obj) {
     if (isArray) {
