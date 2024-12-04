@@ -265,7 +265,7 @@
     }
   },
   "scripts": {
-    "deploy": "vsce publish --yarn",
+    "deploy": "vsce publish",
     "vscode:prepublish": "npm run compile",
     "compile": "node script/build.js",
     "watch": "tsc -watch -p ./",
