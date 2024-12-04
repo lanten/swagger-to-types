@@ -33,9 +33,6 @@ jobs:
       - name: Install dependencies
         run: rm -f package-lock.json && rm -rf node_modules && npm i
 
-      - name: test
-        run: echo "${{ secrets.VSCE_TOKEN }}"
-
       - name: Publish to vscode marketplace
         run: npm run deploy
         env:
