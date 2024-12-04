@@ -286,9 +286,9 @@
     "openapi-types": "^9.3.0",
     "prettier": "^2.4.1",
     "typescript": "^4.4.4",
+    "vsce": "^2.15.0",
     "vscode-test": "^1.6.1"
   },
-  "dependencies": {},
   "author": {
     "name": "Lanten",
     "url": "https://www.lanten.me/",
