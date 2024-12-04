@@ -18,6 +18,7 @@
 | swaggerToTypes.showStatusbarItem | 显示状态栏按钮 | boolean | `true` |
 | swaggerToTypes.compareChanges | 是否在更新接口时比对更改 (无更改不更新) | boolean | `true` |
 | swaggerToTypes.reloadWhenSettingsChanged | 当用户设置更改时重新加载数据. (在某些频繁刷新设置的情况下需要关闭) | boolean | `true` |
+| swaggerToTypes.maxReferenceCount | 单个 DTO 最大引用次数 | number | 5000 |
 
 ## SwaggerJsonUrlItem
 

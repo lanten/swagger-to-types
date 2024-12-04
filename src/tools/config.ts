@@ -43,6 +43,8 @@ export interface CodeConfig {
   compareChanges: boolean
   /** 用户设置更新时重新加载数据 */
   reloadWhenSettingsChanged: boolean
+  /** 最大引用次数 */
+  maxReferenceCount: number
 }
 
 export interface ExtConfig extends CodeConfig, LocalConfig {}

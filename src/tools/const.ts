@@ -14,6 +14,7 @@ export const CONFIG_LIST = <const>[
   'compareChanges',
   'showStatusbarItem',
   'reloadWhenSettingsChanged',
+  'maxReferenceCount',
 ]
 export type ExtConfigItem = (typeof CONFIG_LIST)[number]
 

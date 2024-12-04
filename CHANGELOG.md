@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.13] 2024-12-04
+
+#### Fix
+
+- 防止错误的 swagger 定义导致的循环引用问题
+
 ## [1.2.11] 2023-12-11
 
 #### Fix

@@ -51,7 +51,7 @@ export function randomId(t = 'id-xxxxx'): string {
 export function getValueByPath<T = any>(obj: any, path: string): T | undefined {
   if (!obj) return undefined
 
-  let tempObj = { ...obj }
+  let tempObj = obj
   let pathH = path.replace(/\[(\w+)\]/g, '.$1')
   pathH = pathH.replace(/^[\.|\/]/, '')
   const keyArr = pathH.split(/[\.|\/]/)

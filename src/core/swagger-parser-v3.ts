@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types'
 
 import { BaseParser, handleType } from './'
-import { randomId, getValueByPath, log } from '../tools'
+import { randomId, getValueByPath, log, config, localize } from '../tools'
 
 interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
@@ -25,12 +25,17 @@ type SchemaItem<T extends 'array' | 'object' | void = void> = Omit<SchemaType<T>
 export class OpenAPIV3Parser extends BaseParser {
   parse() {
     const { paths } = this.swaggerJson
-    for (const path in paths) {
-      const pathItem: any = paths[path]
-      if (!pathItem) continue
-      const pathItemKeys = Object.keys(pathItem)
-      const multipleMethod = pathItemKeys.length > 1
-      pathItemKeys.forEach((method) => this.parseMethodItem(path, pathItem[method], method, multipleMethod))
+
+    try {
+      for (const path in paths) {
+        const pathItem: any = paths[path]
+        if (!pathItem) continue
+        const pathItemKeys = Object.keys(pathItem)
+        const multipleMethod = pathItemKeys.length > 1
+        pathItemKeys.forEach((method) => this.parseMethodItem(path, pathItem[method], method, multipleMethod))
+      }
+    } catch (error) {
+      log.error(error, true)
     }
 
     return this.result
@@ -272,8 +277,14 @@ export class OpenAPIV3Parser extends BaseParser {
     const arr: TreeInterfacePropertiesItem[] = []
     for (const name in properties) {
       const schemaSource = properties[name] as OpenAPIV3.ReferenceObject
+
       const propertiesSchema = this.dereferenceSchema(schemaSource)
       if (!propertiesSchema) {
+        continue
+      }
+
+      if (propertiesSchema.refCount && propertiesSchema.refCount > 1000) {
+        log.error(`${localize.getLocalize('text.config.maxReferenceCount')}:${propertiesSchema.refCount} <${name}>`)
         continue
       }
 
@@ -307,7 +318,9 @@ export class OpenAPIV3Parser extends BaseParser {
   }
 
   /** SchemaObject 解引用 */
-  dereferenceSchema<T = OpenAPIV3.SchemaObject>(schema?: { $ref?: string } & Record<string, any>): T | undefined {
+  dereferenceSchema<T = OpenAPIV3.SchemaObject>(
+    schema?: { $ref?: string } & Record<string, any>
+  ): (T & { refCount?: number }) | undefined {
     if (!schema) return
     if (schema.$ref) {
       let pathStr = schema.$ref
@@ -316,9 +329,16 @@ export class OpenAPIV3Parser extends BaseParser {
         pathStr = pathStr.substring(1, schema.$ref.length)
       }
 
-      return getValueByPath<T>(this.swaggerJson, pathStr)
+      const res: any = getValueByPath<T>(this.swaggerJson, pathStr)
+
+      if (typeof res === 'object') {
+        // 记录引用次数
+        res.refCount = (res.refCount || 0) + 1
+      }
+
+      return res
     } else {
-      return schema as T
+      return schema as any
     }
   }
 }

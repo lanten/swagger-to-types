@@ -1,0 +1,53 @@
+name: Auto publish
+
+on:
+  push:
+    branches: ['master']
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      TZ: Asia/Hong_Kong
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3 # 获取代码
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # 设置 node 版本
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: rm -f package-lock.json && rm -rf node_modules && npm i
+
+      - name: Install vsce
+        run: npm install -g vsce
+
+      - name: Publish to vscode marketplace
+        run: vsce publish -p ${{ secrets.VSCE_TOKEN }}
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Create release tag
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git tag -a "release/$VERSION" -m "Auto-generated tag from GitHub Actions"
+          git push origin "release/$VERSION"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

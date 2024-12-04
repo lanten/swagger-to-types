@@ -20,16 +20,17 @@ Each interface generates a `namespace` (for grouping and avoiding duplicate name
 | swaggerToTypes.showStatusbarItem | Show status bar button | boolean | `true` |
 | swaggerToTypes.compareChanges | Whether to compare changes when updating the interface (no change, no update) | boolean | `true` |
 | swaggerToTypes.reloadWhenSettingsChanged | Reload data when user settings change. (Need to be turned off in some cases of frequent refresh settings) | boolean | `true` |
+| swaggerToTypes.maxReferenceCount | The maximum number of times to reference the same interface | number | 5000 |
 
 ## SwaggerJsonUrlItem
 
-| Attribute | Description | Type | Required |
-| -------- | ---------------------------------- | ------ | -------- |
-| title | Project title | string | \* |
-| url | swagger json url | string | \* |
-| link | Open external link in browser | string | |
-| basePath | basePath | string | |
-| headers | Custom request header information (such as authentication Token, etc.) | object | |
+| Attribute | Description                                                            | Type   | Required |
+| --------- | ---------------------------------------------------------------------- | ------ | -------- |
+| title     | Project title                                                          | string | \*       |
+| url       | swagger json url                                                       | string | \*       |
+| link      | Open external link in browser                                          | string |          |
+| basePath  | basePath                                                               | string |          |
+| headers   | Custom request header information (such as authentication Token, etc.) | object |          |
 
 ## Shortcut keys
 
@@ -45,26 +46,26 @@ Add the `@ignore` tag to the header comment of the `.d.ts` file to ignore the cu
 
 ```ts
 /**
-* @name Example interface
-* @path /demo/demo-api
-* @method POST
-* @update 10/19/2020, 11:22:53 AM
-* @ignore
-*/
+ * @name Example interface
+ * @path /demo/demo-api
+ * @method POST
+ * @update 10/19/2020, 11:22:53 AM
+ * @ignore
+ */
 ```
 
 ## Interface template
 
 Used to customize the output content format in some special scenarios.
 
-| Method name | Parameters | Return value |
+| Method name  | Parameters                                 | Return value       |
 | ------------ | ------------------------------------------ | ------------------ |
-| namespace | TreeInterface | string |
-| params | TreeInterface | string |
-| paramsItem | TreeInterfacePropertiesItem, TreeInterface | string |
-| response | TreeInterface | string |
-| responseItem | TreeInterfacePropertiesItem, TreeInterface | string |
-| copyRequest | FileHeaderInfo | string \| string[] |
+| namespace    | TreeInterface                              | string             |
+| params       | TreeInterface                              | string             |
+| paramsItem   | TreeInterfacePropertiesItem, TreeInterface | string             |
+| response     | TreeInterface                              | string             |
+| responseItem | TreeInterfacePropertiesItem, TreeInterface | string             |
+| copyRequest  | FileHeaderInfo                             | string \| string[] |
 
 For detailed types, refer to [TemplateBaseType](src/tools/get-templates.ts#L11)
 
@@ -76,7 +77,7 @@ Edit the `.vscode/swagger-to-types.template.cjs` file.
 
 ```js
 function namespace(params) {
-return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
+  return `${params.groupName.replace(/[\-\n\s\/\\]/g, '_')}_${params.pathName}`
 }
 
 module.exports = { namespace }
@@ -88,19 +89,19 @@ Edit `.vscode/swagger-to-types.template.js` file
 
 ```js
 /**
-* Capitalize the first letter
-* @param {String} str
-*/
+ * Capitalize the first letter
+ * @param {String} str
+ */
 function toUp(str) {
-if (typeof str !== 'string') return ''
-return str.slice(0, 1).toUpperCase() + str.slice(1)
+  if (typeof str !== 'string') return ''
+  return str.slice(0, 1).toUpperCase() + str.slice(1)
 }
 
 function paramsItem(item, params) {
-// Project title (swaggerToTypes.swaggerJsonUrl[number].title) is demo-1 Ignore custom solutions when 
-if (params.groupName === 'demo-1') return
+  // Project title (swaggerToTypes.swaggerJsonUrl[number].title) is demo-1 Ignore custom solutions when
+  if (params.groupName === 'demo-1') return
 
-return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
+  return `${toUp(item.name)}${item.required ? ':' : '?:'} ${item.type}`
 }
 
 module.exports = { paramsItem }
@@ -124,39 +125,39 @@ Here is an example:
 
 ```js
 /**
-* Request function template
-*
-* @param {{
-* fileName: string
-* ext: string
-* filePath: string
-* name?: string
-* namespace?: string
-* path?: string
-* method?: string
-* update?: string
-* ignore?: boolean
-* savePath?: string
-* }} fileInfo
-* @returns
-*/
+ * Request function template
+ *
+ * @param {{
+ * fileName: string
+ * ext: string
+ * filePath: string
+ * name?: string
+ * namespace?: string
+ * path?: string
+ * method?: string
+ * update?: string
+ * ignore?: boolean
+ * savePath?: string
+ * }} fileInfo
+ * @returns
+ */
 function copyRequest(fileInfo) {
-return [
-`/** ${fileInfo.name} */`,
-`export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
-` return $api`,
-` .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
-` method: ${fileInfo.method},`,
-` ...options,`,
-` })`,
-` .then((res) => res.content || {})`,
-`}`,
-]
+  return [
+    `/** ${fileInfo.name} */`,
+    `export async function unnamed(params?: ${fileInfo.namespace}.Params, options?: RequestOptions) {`,
+    ` return $api`,
+    ` .request<${fileInfo.namespace}.Response>('${fileInfo.path}', params, {`,
+    ` method: ${fileInfo.method},`,
+    ` ...options,`,
+    ` })`,
+    ` .then((res) => res.content || {})`,
+    `}`,
+  ]
 }
 
 module.exports = {
-// ...
-copyRequest,
+  // ...
+  copyRequest,
 }
 ```
 
