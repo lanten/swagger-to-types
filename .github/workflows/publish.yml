@@ -37,7 +37,9 @@ jobs:
         run: npm install -g vsce
 
       - name: Publish to vscode marketplace
-        run: vsce publish -p ${{ secrets.VSCE_TOKEN }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: vsce publish
 
       - name: Get version from package.json
         id: get_version
