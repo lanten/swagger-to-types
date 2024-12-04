@@ -38,8 +38,8 @@ jobs:
 
       - name: Publish to vscode marketplace
         env:
-          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
-        run: vsce publish
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+        run: vsce publish --token $VSCE_TOKEN
 
       - name: Get version from package.json
         id: get_version
