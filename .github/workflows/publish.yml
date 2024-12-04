@@ -39,7 +39,7 @@ jobs:
       - name: Publish to vscode marketplace
         env:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
-        run: vsce publish --token $VSCE_TOKEN
+        run: vsce publish -p $VSCE_TOKEN
 
       - name: Get version from package.json
         id: get_version
