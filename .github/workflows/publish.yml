@@ -33,13 +33,10 @@ jobs:
       - name: Install dependencies
         run: rm -f package-lock.json && rm -rf node_modules && npm i
 
-      - name: Install vsce
-        run: npm install -g vsce
-
       - name: Publish to vscode marketplace
+        run: npm run deploy
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
-        run: vsce publish
 
       - name: Get version from package.json
         id: get_version
