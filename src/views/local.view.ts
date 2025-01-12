@@ -109,7 +109,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
         '$1* @namespace $2\n'
       )
 
-      const headerInfo: FileHeaderInfo = {
+      const headerInfo: any = {
         fileName: fileName.replace(/^.+\/(.+?)(\.d)?\.{.+}$/, '$1'),
         filePath: fileName,
         ext: fileName.replace(/^.+\.(.+)$/, '$1'),
@@ -120,7 +120,7 @@ export class ViewLocal extends BaseTreeProvider<LocalItem> {
         return ''
       })
 
-      return headerInfo
+      return headerInfo as FileHeaderInfo
     } catch (error) {
       log.error(`Read File Error - ${fileName}`)
     }

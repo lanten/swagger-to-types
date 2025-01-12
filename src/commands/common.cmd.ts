@@ -8,7 +8,7 @@ import { ListItem, ViewList } from '../views/list.view'
 import { LocalItem, ViewLocal } from '../views/local.view'
 
 export function registerCommonCommands(viewList: ViewList, viewLocal: ViewLocal) {
-  const commands = {
+  const commands: Record<string, any> = {
     // 设置
     setting() {
       if (WORKSPACE_PATH) {

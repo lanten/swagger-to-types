@@ -7,7 +7,7 @@ import { ViewLocal, LocalItem } from '../views/local.view'
 import { ViewList } from '../views/list.view'
 
 export function registerLocalCommands(viewList: ViewList, viewLocal: ViewLocal) {
-  const commands = {
+  const commands: Record<string, any> = {
     /** 刷新本地接口列表 */
     refresh: () => viewLocal.refresh(),
 

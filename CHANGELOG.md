@@ -8,9 +8,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [1.2.14] 2025-01-12
 
+#### Changed
+
+- 依赖升级
+
 #### Fix
 
 - 修复 openapi v2 schema 解析遗漏
+- 依赖升级导致的 typescript 类型错误
 
 ## [1.2.13] 2024-12-04
 

@@ -13,7 +13,7 @@ import {
 } from '../tools'
 
 export function registerTemplateCommands() {
-  const commands = {
+  const commands: Record<string, any> = {
     edit() {
       const vscodeConfigFolderPath = path.join(WORKSPACE_PATH || '', '.vscode')
       const workspaceConfigPath = getWorkspaceTemplatePath()

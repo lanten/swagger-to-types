@@ -65,7 +65,7 @@ class Config {
 
   initContext() {
     for (const key in this.extConfig) {
-      const val = this.extConfig[key]
+      const val = this.extConfig[key as keyof ExtConfig]
       vscode.commands.executeCommand('setContext', `config.${CONFIG_GROUP}.${key}`, val)
     }
   }
@@ -74,7 +74,7 @@ class Config {
    * 获取 vscode 配置
    */
   getCodeConfig(): CodeConfig {
-    const resConfig = {}
+    const resConfig: any = {}
     CONFIG_LIST.forEach((configKey) => {
       const settingsKey = `${CONFIG_GROUP}.${configKey}`
       resConfig[configKey] = workspace.getConfiguration().get(settingsKey)
@@ -89,7 +89,7 @@ class Config {
   setCodeConfig(config: Partial<CodeConfig>) {
     for (const configKey in config) {
       const settingsKey = `${CONFIG_GROUP}.${configKey}`
-      const val = config[configKey]
+      const val = config[configKey as keyof CodeConfig]
       workspace.getConfiguration().update(settingsKey, val, false)
     }
   }

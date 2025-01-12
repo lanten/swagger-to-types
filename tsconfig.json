@@ -12,7 +12,6 @@
     "skipLibCheck": true,
     "useUnknownInCatchVariables": false,
     "allowSyntheticDefaultImports": true,
-    "ignoreDeprecations": "5.0",
     "lib": ["ES2020"]
   },
   "include": ["src", "types"],
