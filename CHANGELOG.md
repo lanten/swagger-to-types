@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [TODO]
 
+## [1.2.14] 2025-01-12
+
+#### Fix
+
+- 修复 openapi v2 schema 解析遗漏
+
 ## [1.2.13] 2024-12-04
 
 #### Fix

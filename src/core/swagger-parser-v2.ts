@@ -26,9 +26,9 @@ export function parseSwaggerJson(
     res.push(tagItem)
   }
 
-  const tagsMap = {}
+  const tagsMap: any = {}
   if (tags && tags.length) {
-    tags.forEach((v) => {
+    tags.forEach((v: any) => {
       addTag({ name: v.name, description: v.description })
     })
   }
@@ -41,7 +41,7 @@ export function parseSwaggerJson(
    * @param multipleMethod 是否具有多个方法
    */
   function parseMethodItem(path: string, pathItem: OpenAPIV2.OperationObject, method: string, multipleMethod: boolean) {
-    const { summary, description, tags, parameters = [], responses = {}, ...item } = pathItem[method]
+    const { summary, description, tags, parameters = [], responses = {}, ...item } = (pathItem as any)[method]
     let fileName = path.slice(1, path.length).replace(/\//g, '-')
     if (multipleMethod) fileName += `-${method.toLowerCase()}`
     const pathName = toCamel(fileName)
@@ -215,6 +215,8 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
         let schema
         if (val.items.schema) {
           schema = val.items.schema
+        } else if (val.items.items && (val.items.items.originalRef || val.items.items.$ref)) {
+          schema = val.items.items
         } else if (val.items.originalRef || val.items.$ref) {
           schema = val.items
         } else if (val.items.type) {
