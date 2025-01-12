@@ -27,7 +27,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # 设置 node 版本
+          node-version: '22' # 设置 node 版本
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
