@@ -4,7 +4,11 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [TODO]
+## [1.2.15] 2025-03-30
+
+#### Fix
+
+- 修复枚举类型解析异常问题
 
 ## [1.2.14] 2025-01-12
 

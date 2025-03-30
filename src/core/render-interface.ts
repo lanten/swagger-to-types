@@ -237,7 +237,11 @@ export function handleType(type?: string): string {
  */
 function parseEnumToUnionType(enumArr?: string[]): string {
   if (!enumArr || !enumArr.length) return 'any'
-  return `${enumArr.map((v) => `'${v}'`).join(' | ')}`
+  return `${enumArr
+    .map((v) => {
+      return typeof v === 'string' ? `'${v}'` : `${v}`
+    })
+    .join(' | ')}`
 }
 
 /**
