@@ -229,7 +229,33 @@
         "swaggerToTypes.swaggerJsonUrl": {
           "type": "array",
           "default": [],
-          "description": "%text.config.swaggerJsonUrl%"
+          "description": "%text.config.swaggerJsonUrl%",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "%text.config.swaggerJsonUrl.title%"
+              },
+              "url": {
+                "type": "string",
+                "description": "%text.config.swaggerJsonUrl.url%"
+              },
+              "link": {
+                "type": "string",
+                "description": "%text.config.swaggerJsonUrl.link%"
+              },
+              "basePath": {
+                "type": "string",
+                "description": "%text.config.swaggerJsonUrl.basePath%"
+              },
+              "headers": {
+                "type": "object",
+                "description": "%text.config.swaggerJsonUrl.headers%"
+              }
+            },
+            "required": ["title", "url"]
+          }
         },
         "swaggerToTypes.swaggerJsonHeaders": {
           "type": "object",
