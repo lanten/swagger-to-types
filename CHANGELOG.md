@@ -4,6 +4,12 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.16] 2025-06-26
+
+#### Changed
+
+- 添加 VSCode 配置项自动补全 [@Nyaasu66.PR:#27](https://github.com/lanten/swagger-to-types/pull/27)
+
 ## [1.2.15] 2025-03-30
 
 #### Fix
