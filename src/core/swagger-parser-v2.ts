@@ -160,8 +160,12 @@ export function parseSwaggerJson(
   return res
 }
 
-// 递归获取 ref
-function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAPIV2.DefinitionsObject): any {
+// 递归获取 ref（parentRefs 沿调用栈累积，防止任意层级的循环引用）
+function getSwaggerJsonRef(
+  schema?: OpenAPIV2.SchemaObject,
+  definitions?: OpenAPIV2.DefinitionsObject,
+  parentRefs: Set<string> = new Set()
+): any {
   const { items, originalRef } = schema || {}
   let { $ref } = schema || {}
   let refData: any = {}
@@ -193,6 +197,13 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
     )
   }
 
+  // 循环引用防护：当前 ref 已在祖先链路上，停止递归仅返回元数据壳
+  if (refPath && parentRefs.has(refPath)) {
+    return Object.assign({}, refData, { properties: [], item: [] })
+  }
+
+  const nextRefs = refPath ? new Set(parentRefs).add(refPath) : parentRefs
+
   const propertiesList: TreeInterfacePropertiesItem[] = []
   const { properties, required = [] } = refData || {}
 
@@ -208,7 +219,7 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
       }
 
       if ((val.originalRef && val.originalRef != originalRef) || (val.$ref && val.$ref != $ref)) {
-        obj.item = getSwaggerJsonRef(val, definitions)
+        obj.item = getSwaggerJsonRef(val, definitions, nextRefs)
       }
 
       if (val.items) {
@@ -226,7 +237,7 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
         }
 
         if (schema && (schema.originalRef != originalRef || schema.$ref != $ref)) {
-          obj.item = getSwaggerJsonRef(schema, definitions)
+          obj.item = getSwaggerJsonRef(schema, definitions, nextRefs)
         }
       }
 

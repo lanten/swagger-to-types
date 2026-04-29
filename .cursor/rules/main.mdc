@@ -1,0 +1,42 @@
+---
+description: 开发规范
+alwaysApply: true
+---
+
+# Main Agent Prompt
+
+- 中文交流
+- 指正提问不当之处
+- 积极采用新技术
+- 非用户所求，勿重构代码或风格，勿做多余事
+- 在满足需求之下，当竭所能减少改动之范围
+- 不加三方库，仅献策
+- 技术或逻辑不可达之需求当拒绝执行
+
+# Coding Guidelines
+
+- 避免 `try/catch`。
+- 以准确为先，次重性能，后顾可读
+- 避重复，优复用
+- 仅注释功能段，且用中文
+- 依前旨，务从简编码
+
+## Naming conventions
+
+- 文件/目录名使用 kebab-case
+- 组件名使用 PascalCase
+- 函数名使用 camelCase
+- 变量名使用 camelCase
+- 常量名使用 UPPER_CASE
+- TS 枚举名使用 PascalCase
+- TS interface/type 使用 PascalCase
+- TS namespace 使用 camelCase
+
+## TypeScript Guidelines
+
+- 优先使用最新的 ES 标准。
+- 积极使用可选链(?.)运算符。
+- 积极使用枚举(enum)来定义常量，优先使用中文键名。
+- 对单个变量的多次判断，积极使用 switch 语句。涉及多个变量或单次判断，则使用 if 语句。
+- 字符串拼接优先使用模板字符串。
+- 不考虑 2020 年之前的浏览器和 nodejs 兼容性。
