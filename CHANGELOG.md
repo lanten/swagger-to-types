@@ -4,6 +4,17 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.18] 2026-04-29
+
+#### Fix
+
+- 修复 v2 解析器在多级循环引用（A→B→A 等）下的栈溢出问题
+- 循环引用字段不再降级为 `any`，渲染端会回指对应的 interface（支持自循环与互循环）
+
+#### Changed
+
+- 移除 v3 解析器中基于 `refCount` 的横向引用次数限制（会误伤被大量复用的公共类型），循环防护改为沿调用栈传递的 `parentRefs` 访问集
+
 ## [1.2.17] 2025-07-15
 
 #### Fix
