@@ -160,8 +160,20 @@ export function parseSwaggerJson(
   return res
 }
 
-// 递归获取 ref
-function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAPIV2.DefinitionsObject): any {
+// 提取 schema/val 携带的 ref 名（originalRef 优先，其次 $ref）
+function resolveRefName(v: any): string | undefined {
+  if (!v) return undefined
+  if (v.originalRef) return String(v.originalRef).trim()
+  if (v.$ref) return String(v.$ref).trim().replace('#/definitions/', '').replace('/', '.')
+  return undefined
+}
+
+// 递归获取 ref（parentRefs 沿调用栈累积已访问过的 ref，防止任意层级的循环引用）
+function getSwaggerJsonRef(
+  schema?: OpenAPIV2.SchemaObject,
+  definitions?: OpenAPIV2.DefinitionsObject,
+  parentRefs: Set<string> = new Set()
+): any {
   const { items, originalRef } = schema || {}
   let { $ref } = schema || {}
   let refData: any = {}
@@ -207,26 +219,42 @@ function getSwaggerJsonRef(schema?: OpenAPIV2.SchemaObject, definitions?: OpenAP
         titRef: val.title,
       }
 
-      if ((val.originalRef && val.originalRef != originalRef) || (val.$ref && val.$ref != $ref)) {
-        obj.item = getSwaggerJsonRef(val, definitions)
+      // Part 1: 属性自身是 ref（直接对象类型）
+      const directRef = resolveRefName(val)
+      if (directRef) {
+        if (parentRefs.has(directRef)) {
+          obj.cyclicRef = directRef
+        } else {
+          obj.ref = directRef
+          obj.item = getSwaggerJsonRef(val, definitions, new Set(parentRefs).add(directRef))
+        }
       }
 
+      // Part 2: 属性为数组，items 可能是 ref
       if (val.items) {
-        let schema
+        let itemsSchema: any
         if (val.items.schema) {
-          schema = val.items.schema
+          itemsSchema = val.items.schema
         } else if (val.items.items && (val.items.items.originalRef || val.items.items.$ref)) {
-          schema = val.items.items
+          itemsSchema = val.items.items
         } else if (val.items.originalRef || val.items.$ref) {
-          schema = val.items
+          itemsSchema = val.items
         } else if (val.items.type) {
           obj.itemsType = val.items.type
         } else if (val.originalRef || val.$ref) {
-          schema = val
+          itemsSchema = val
         }
 
-        if (schema && (schema.originalRef != originalRef || schema.$ref != $ref)) {
-          obj.item = getSwaggerJsonRef(schema, definitions)
+        const itemsRef = resolveRefName(itemsSchema)
+        if (itemsRef) {
+          if (parentRefs.has(itemsRef)) {
+            obj.cyclicRef = itemsRef
+            delete obj.item
+            delete obj.ref
+          } else {
+            obj.ref = itemsRef
+            obj.item = getSwaggerJsonRef(itemsSchema, definitions, new Set(parentRefs).add(itemsRef))
+          }
         }
       }
 

@@ -38,6 +38,11 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
 
+      - name: Publish to Open VSX Registry
+        run: npx ovsx publish -p "$OVSX_PAT"
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
+
       - name: Get version from package.json
         id: get_version
         run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
