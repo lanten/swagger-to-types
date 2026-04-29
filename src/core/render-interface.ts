@@ -9,8 +9,11 @@ export function renderToInterface(data: TreeInterface): string {
   // const name = data.operationId.replace('_', '')
   // const name = data.pathName
 
-  const paramsArr = removeEmptyLines(parseParams(data, 1))
-  const resArr = removeEmptyLines(parseResponse(data, 1))
+  // ref → 已生成的 interface 名映射，用于将循环引用回指已存在的 interface
+  const refMap = new Map<string, string>()
+
+  const paramsArr = removeEmptyLines(parseParams(data, 1, refMap))
+  const resArr = removeEmptyLines(parseResponse(data, 1, refMap))
 
   let content = paramsArr
   if (content.length) content.push('')
@@ -40,20 +43,28 @@ function parseNameSpace(item: TreeInterface, content: string[], indentation = 0)
 }
 
 /** 解析参数接口 */
-function parseParams(data: TreeInterface, indentation = 0): string[] {
-  const res = parseProperties('Params', templateConfig?.params?.(data), Object.assign(data), data.params, indentation)
+function parseParams(data: TreeInterface, indentation = 0, refMap: Map<string, string> = new Map()): string[] {
+  const res = parseProperties(
+    'Params',
+    templateConfig?.params?.(data),
+    Object.assign(data),
+    data.params,
+    indentation,
+    refMap
+  )
   // res.pop() // 删除多余空行
   return res
 }
 
 /** 解析返回结果 */
-function parseResponse(data: TreeInterface, indentation = 0): string[] {
+function parseResponse(data: TreeInterface, indentation = 0, refMap: Map<string, string> = new Map()): string[] {
   const res = parseProperties(
     'Response',
     templateConfig?.response?.(data),
     Object.assign(data),
     data.response,
-    indentation
+    indentation,
+    refMap
   )
   // res.pop() // 删除多余空行
   return res
@@ -65,7 +76,8 @@ function parseProperties(
   interfaceName: string | undefined,
   data: TreeInterface,
   properties: TreeInterfacePropertiesItem | TreeInterfacePropertiesItem[] | string | undefined,
-  indentation = 0
+  indentation = 0,
+  refMap: Map<string, string> = new Map()
 ): string[] {
   const indentationSpace = handleIndentation(indentation) // 一级缩进
   const indentationSpace2 = handleIndentation(indentation + 1) // 二级缩进
@@ -91,16 +103,25 @@ function parseProperties(
 
     content = properties.map((v) => {
       let type = handleType(v.type)
-      if (v.item) {
+
+      // 循环引用：直接复用已注册的 interface 名
+      const cyclicName = v.cyclicRef ? refMap.get(v.cyclicRef) : undefined
+
+      if (cyclicName) {
+        type = cyclicName
+      } else if (v.item) {
         type = `${interfaceName}${toUp(v.name)}`
         if (v.type === 'array') type = `${type}Item`
 
-        interfaceList.push(...parseProperties(interfaceType, type, data, v.item, indentation))
+        // 注册当前 ref → 即将生成的 interface 名（首登记优先，确保循环点能回指到此名）
+        if (v.ref && !refMap.has(v.ref)) refMap.set(v.ref, type)
+
+        interfaceList.push(...parseProperties(interfaceType, type, data, v.item, indentation, refMap))
       }
 
       try {
         // @ts-ignore
-        if (!v.item.properties.length) type = 'Record<string, unknown>'
+        if (!cyclicName && !v.item.properties.length) type = 'Record<string, unknown>'
       } catch (error) {
         // console.warn(error)
       }
@@ -152,8 +173,9 @@ function parseProperties(
     if (properties.properties && Array.isArray(properties.properties)) arr = properties.properties
     if (properties.item && Array.isArray(properties.item)) arr = properties.item
     if (arr.length) {
+      // 根 interface 不注册 ref，让首个由字段路径派生出的子 interface 名作为该 ref 的标准回指目标
       interfaceList.push(
-        ...parseProperties(interfaceType, `${interfaceName}${toUp(properties.name)}`, data, arr, indentation)
+        ...parseProperties(interfaceType, `${interfaceName}${toUp(properties.name)}`, data, arr, indentation, refMap)
       )
     }
   } else if (typeof properties === 'string') {

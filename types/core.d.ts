@@ -50,6 +50,10 @@ declare global {
     itemsType?: string
     default?: any
     items?: ParametersItems
+    /** 该属性来源的 schema ref（用于在渲染端建立 ref → interface 名映射） */
+    ref?: string
+    /** 循环引用回指目标 ref（命中循环时由解析器写入，渲染端据此复用已生成的 interface 名） */
+    cyclicRef?: string
   }
 
   interface TreeInterface {

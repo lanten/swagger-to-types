@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types'
 
 import { BaseParser, handleType } from './'
-import { randomId, getValueByPath, log, config, localize } from '../tools'
+import { randomId, getValueByPath, log, config } from '../tools'
 
 interface DereferenceItem extends Required<OpenAPIV3.OperationObject> {}
 
@@ -20,6 +20,10 @@ type SchemaItem<T extends 'array' | 'object' | void = void> = Omit<SchemaType<T>
   itemsRequiredNamesList?: string[]
   /** 子代类型 */
   itemsType?: string
+  /** 该 schema 来源的 ref（透传给渲染端） */
+  ref?: string
+  /** 循环引用回指 ref */
+  cyclicRef?: string
 }
 
 export class OpenAPIV3Parser extends BaseParser {
@@ -144,13 +148,16 @@ export class OpenAPIV3Parser extends BaseParser {
       return void 0
     }
 
+    const rootRef = (requestBodyContent.schema as OpenAPIV3.ReferenceObject)?.$ref
     const requestBodySchema = this.dereferenceSchema(requestBodyContent.schema)
     if (!requestBodySchema) {
       log.warn('parseRequestBody: requestBodySchema is null.')
       return void 0
     }
 
-    return this.parseSchemaObject(requestBodySchema, '')
+    const result = this.parseSchemaObject(requestBodySchema, '')
+    if (rootRef) result.ref = rootRef
+    return result
   }
 
   getResponseData(responses: OpenAPIV3.ResponsesObject, key?: string): OpenAPIV3.MediaTypeObject | void {
@@ -193,6 +200,7 @@ export class OpenAPIV3Parser extends BaseParser {
       return void 0
     }
 
+    const rootRef = (responseBodyContent.schema as OpenAPIV3.ReferenceObject)?.$ref
     const responseBodySchema = this.dereferenceSchema(responseBodyContent.schema)
 
     if (!responseBodySchema) {
@@ -200,10 +208,17 @@ export class OpenAPIV3Parser extends BaseParser {
       return undefined
     }
 
-    return this.parseSchemaObject(responseBodySchema, '')
+    const result = this.parseSchemaObject(responseBodySchema, '')
+    if (rootRef) result.ref = rootRef
+    return result
   }
 
-  parseSchemaObject(schema: OpenAPIV3.SchemaObject, name: string, itemsRequiredNamesList?: string[]) {
+  parseSchemaObject(
+    schema: OpenAPIV3.SchemaObject,
+    name: string,
+    itemsRequiredNamesList?: string[],
+    parentRefs: Set<string> = new Set()
+  ) {
     let requiredBoolean = false
     if (itemsRequiredNamesList) {
       requiredBoolean = itemsRequiredNamesList.includes(name)
@@ -213,19 +228,22 @@ export class OpenAPIV3Parser extends BaseParser {
       const { required, items, ...val } = schema
       return this.parseArray(
         { ...val, name, items, required: requiredBoolean, itemsRequiredNamesList: required },
-        (items as any)?.$ref
+        parentRefs
       )
     } else {
       const { required, ...val } = schema
-      return this.parseObject({ ...val, name, required: requiredBoolean, itemsRequiredNamesList: required })
+      return this.parseObject(
+        { ...val, name, required: requiredBoolean, itemsRequiredNamesList: required },
+        parentRefs
+      )
     }
   }
 
   /** 解析数组 */
-  parseArray(arrayItem: SchemaItem<'array'>, parentRef?: string): TreeInterfacePropertiesItem {
+  parseArray(arrayItem: SchemaItem<'array'>, parentRefs: Set<string> = new Set()): TreeInterfacePropertiesItem {
     const { type, description } = arrayItem
+    const $ref: string | undefined = (arrayItem.items as OpenAPIV3.ReferenceObject)?.$ref
     const items = this.dereferenceSchema(arrayItem.items) || {}
-    const $ref: string | undefined = (arrayItem.items as OpenAPIV3.ReferenceObject).$ref
 
     const { type: itemsType, ...itemsData } = items
 
@@ -246,36 +264,45 @@ export class OpenAPIV3Parser extends BaseParser {
       return itemSchema
     }
 
-    if (parentRef === $ref) {
+    // 循环引用防护：当前 ref 已在祖先链路上，停止递归并标记回指目标
+    if ($ref && parentRefs.has($ref)) {
+      itemSchema.cyclicRef = $ref
       return itemSchema
     }
 
+    if ($ref) itemSchema.ref = $ref
+
+    const nextRefs = $ref ? new Set(parentRefs).add($ref) : parentRefs
+
     if (itemsType === 'array') {
-      return this.parseArray(itemSchema as SchemaItem<'array'>, $ref)
+      return this.parseArray(itemSchema as SchemaItem<'array'>, nextRefs)
     } else {
       if (items.required) {
         itemSchema.itemsRequiredNamesList = items.required
       }
-      return this.parseObject(itemSchema as SchemaItem<'object'>, $ref)
+      return this.parseObject(itemSchema as SchemaItem<'object'>, nextRefs)
     }
   }
 
   /** 解析对象 */
-  parseObject(propertiesItem: SchemaItem<'object'>, parentRef?: string): TreeInterfacePropertiesItem {
+  parseObject(
+    propertiesItem: SchemaItem<'object'>,
+    parentRefs: Set<string> = new Set()
+  ): TreeInterfacePropertiesItem {
     const { properties, allOf, itemsRequiredNamesList } = propertiesItem
     const res: TreeInterfacePropertiesItem = {
       ...propertiesItem,
     }
 
     if (res.properties) {
-      res.item = this.parseProperties(properties, itemsRequiredNamesList, parentRef)
+      res.item = this.parseProperties(properties, itemsRequiredNamesList, parentRefs)
       return res
     }
 
     if (allOf && allOf.length === 1) {
       const allOfSingleSchema = this.dereferenceSchema(allOf[0])
       if (!allOfSingleSchema) return res
-      res.item = this.parseProperties(allOfSingleSchema.properties, itemsRequiredNamesList, parentRef)
+      res.item = this.parseProperties(allOfSingleSchema.properties, itemsRequiredNamesList, parentRefs)
     }
 
     return res
@@ -284,26 +311,38 @@ export class OpenAPIV3Parser extends BaseParser {
   parseProperties(
     properties: OpenAPIV3.BaseSchemaObject['properties'],
     itemsRequiredNamesList?: string[],
-    parentRef?: string
+    parentRefs: Set<string> = new Set()
   ) {
     const arr: TreeInterfacePropertiesItem[] = []
     for (const name in properties) {
       const schemaSource = properties[name] as OpenAPIV3.ReferenceObject
+      const $ref = schemaSource?.$ref
+
+      // 循环引用防护：属性的 ref 已在祖先链路上，停止下钻并标记回指目标
+      if ($ref && parentRefs.has($ref)) {
+        const required = itemsRequiredNamesList ? itemsRequiredNamesList.includes(name) : false
+        const stub = this.dereferenceSchema(schemaSource) || {}
+        arr.push({
+          name,
+          required,
+          type: stub.type,
+          description: stub.description,
+          item: [],
+          cyclicRef: $ref,
+        } as TreeInterfacePropertiesItem)
+        continue
+      }
 
       const propertiesSchema = this.dereferenceSchema(schemaSource)
       if (!propertiesSchema) {
         continue
       }
 
-      if (propertiesSchema.refCount && propertiesSchema.refCount > 200) {
-        log.error(
-          `${localize.getLocalize('text.config.maxReferenceCount')}:${propertiesSchema.refCount} <${name}>`,
-          true
-        )
-        continue
-      } else {
-        arr.push(this.parseSchemaObject(propertiesSchema, name, itemsRequiredNamesList))
-      }
+      const nextRefs = $ref ? new Set(parentRefs).add($ref) : parentRefs
+
+      const parsed = this.parseSchemaObject(propertiesSchema, name, itemsRequiredNamesList, nextRefs)
+      if ($ref) parsed.ref = $ref
+      arr.push(parsed)
     }
     return arr
   }
@@ -333,9 +372,7 @@ export class OpenAPIV3Parser extends BaseParser {
   }
 
   /** SchemaObject 解引用 */
-  dereferenceSchema<T = OpenAPIV3.SchemaObject>(
-    schema?: { $ref?: string } & Record<string, any>
-  ): (T & { refCount?: number }) | undefined {
+  dereferenceSchema<T = OpenAPIV3.SchemaObject>(schema?: { $ref?: string } & Record<string, any>): T | undefined {
     if (!schema) return
     if (schema.$ref) {
       let pathStr = schema.$ref
@@ -344,16 +381,8 @@ export class OpenAPIV3Parser extends BaseParser {
         pathStr = pathStr.substring(1, schema.$ref.length)
       }
 
-      const res: any = getValueByPath<T>(this.swaggerJson, pathStr)
-
-      if (typeof res === 'object') {
-        // 记录引用次数
-        res.refCount = (res.refCount || 0) + 1
-      }
-
-      return res
+      return getValueByPath<T>(this.swaggerJson, pathStr)
     } else {
-      schema.refCount = (schema.refCount || 0) + 1
       return schema as any
     }
   }
