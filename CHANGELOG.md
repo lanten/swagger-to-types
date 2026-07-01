@@ -4,6 +4,13 @@ All notable changes to the "swagger-to-types" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.2.19] 2026-07-01
+
+#### Fix
+
+- 修复多维数组类型渲染异常，`string[][]` 不再生成 `array[]`
+- v2/v3 解析器保留数组维度，支持基础类型与对象引用的多维数组输出
+
 ## [1.2.18] 2026-04-29
 
 #### Fix

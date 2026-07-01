@@ -5,6 +5,10 @@ declare global {
     default?: string
     enum?: string[]
     type: string
+    items?: ParametersItems
+    schema?: ParametersItems
+    originalRef?: string
+    $ref?: string
   }
 
   interface SwaggerJsonTreeItem extends Partial<TreeInterface> {
@@ -48,6 +52,8 @@ declare global {
     title?: string
     titRef?: string
     itemsType?: string
+    /** 数组维度，string[][] 为 2 */
+    arrayDepth?: number
     default?: any
     items?: ParametersItems
     /** 该属性来源的 schema ref（用于在渲染端建立 ref → interface 名映射） */

@@ -90,7 +90,7 @@ function parseProperties(
     if (properties.length === 1 && properties[0].name === '____body_root_param____') {
       let type = properties[0].type
       if (type === 'array') {
-        type = `${type === 'array' ? handleType(properties[0].items?.type) : type}[]`
+        type = parseArrayType(properties[0], type)
       }
 
       const description: string = properties[0].description
@@ -133,10 +133,7 @@ function parseProperties(
       }
 
       if (v.type === 'array') {
-        if ((v.enum || v.items?.enum) && type !== 'any') {
-          type = `(${type})`
-        }
-        type = `${type === 'array' ? handleType(v.itemsType || 'any') : type}[]`
+        type = parseArrayType(v, type)
       }
 
       let defaultValDesc = v.default || v.items?.default || ''
@@ -248,6 +245,46 @@ export function handleType(type?: string): string {
     default:
       return type || 'any'
   }
+}
+
+/** 解析数组类型，保留 string[][] 这类多维数组结构 */
+function parseArrayType(item: TreeInterfacePropertiesItem, currentType: string): string {
+  let type = currentType
+  if (type === 'array') {
+    type = getArrayLeafType(item)
+  }
+
+  if ((item.enum || item.items?.enum) && type !== 'any') {
+    type = `(${type})`
+  }
+
+  return `${type}${'[]'.repeat(getArrayDepth(item))}`
+}
+
+/** 获取数组维度；旧数据没有 arrayDepth 时从 items 兜底推断 */
+function getArrayDepth(item: TreeInterfacePropertiesItem): number {
+  if (item.arrayDepth && item.arrayDepth > 0) return item.arrayDepth
+
+  let depth = 1
+  let items = item.items
+  while (items?.type === 'array' && items.items) {
+    depth += 1
+    items = items.items
+  }
+
+  return depth
+}
+
+/** 获取多维数组最终叶子类型 */
+function getArrayLeafType(item: TreeInterfacePropertiesItem): string {
+  if (item.itemsType && item.itemsType !== 'array') return handleType(item.itemsType)
+
+  let items = item.items
+  while (items?.type === 'array' && items.items) {
+    items = items.items
+  }
+
+  return handleType(items?.type && items.type !== 'array' ? items.type : item.itemsType || 'any')
 }
 
 /**

@@ -20,6 +20,8 @@ type SchemaItem<T extends 'array' | 'object' | void = void> = Omit<SchemaType<T>
   itemsRequiredNamesList?: string[]
   /** 子代类型 */
   itemsType?: string
+  /** 数组维度，string[][] 为 2 */
+  arrayDepth?: number
   /** 该 schema 来源的 ref（透传给渲染端） */
   ref?: string
   /** 循环引用回指 ref */
@@ -240,7 +242,11 @@ export class OpenAPIV3Parser extends BaseParser {
   }
 
   /** 解析数组 */
-  parseArray(arrayItem: SchemaItem<'array'>, parentRefs: Set<string> = new Set()): TreeInterfacePropertiesItem {
+  parseArray(
+    arrayItem: SchemaItem<'array'>,
+    parentRefs: Set<string> = new Set(),
+    arrayDepth = 1
+  ): TreeInterfacePropertiesItem {
     const { type, description } = arrayItem
     const $ref: string | undefined = (arrayItem.items as OpenAPIV3.ReferenceObject)?.$ref
     const items = this.dereferenceSchema(arrayItem.items) || {}
@@ -251,6 +257,7 @@ export class OpenAPIV3Parser extends BaseParser {
       name: arrayItem.name,
       type,
       itemsType,
+      arrayDepth,
       description,
       ...itemsData,
       required: undefined,
@@ -275,7 +282,7 @@ export class OpenAPIV3Parser extends BaseParser {
     const nextRefs = $ref ? new Set(parentRefs).add($ref) : parentRefs
 
     if (itemsType === 'array') {
-      return this.parseArray(itemSchema as SchemaItem<'array'>, nextRefs)
+      return this.parseArray(itemSchema as SchemaItem<'array'>, nextRefs, arrayDepth + 1)
     } else {
       if (items.required) {
         itemSchema.itemsRequiredNamesList = items.required

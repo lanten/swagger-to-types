@@ -168,6 +168,18 @@ function resolveRefName(v: any): string | undefined {
   return undefined
 }
 
+function getArrayItemsInfo(items: any): { depth: number; schema: any } {
+  let depth = 1
+  let schema = items?.schema || items
+
+  while (schema?.type === 'array' && schema.items) {
+    depth += 1
+    schema = schema.items.schema || schema.items
+  }
+
+  return { depth, schema }
+}
+
 // 递归获取 ref（parentRefs 沿调用栈累积已访问过的 ref，防止任意层级的循环引用）
 function getSwaggerJsonRef(
   schema?: OpenAPIV2.SchemaObject,
@@ -232,15 +244,15 @@ function getSwaggerJsonRef(
 
       // Part 2: 属性为数组，items 可能是 ref
       if (val.items) {
+        const arrayItemsInfo = getArrayItemsInfo(val.items)
         let itemsSchema: any
-        if (val.items.schema) {
-          itemsSchema = val.items.schema
-        } else if (val.items.items && (val.items.items.originalRef || val.items.items.$ref)) {
-          itemsSchema = val.items.items
-        } else if (val.items.originalRef || val.items.$ref) {
-          itemsSchema = val.items
-        } else if (val.items.type) {
-          obj.itemsType = val.items.type
+        obj.arrayDepth = arrayItemsInfo.depth
+        obj.items = arrayItemsInfo.schema
+
+        if (arrayItemsInfo.schema?.originalRef || arrayItemsInfo.schema?.$ref) {
+          itemsSchema = arrayItemsInfo.schema
+        } else if (arrayItemsInfo.schema?.type) {
+          obj.itemsType = arrayItemsInfo.schema.type
         } else if (val.originalRef || val.$ref) {
           itemsSchema = val
         }
